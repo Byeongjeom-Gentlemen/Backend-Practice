@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     // 닉네임 중복 확인
     @Override
     public boolean checkByNickname(String nickname) {
-        return userRepository.existByNickname(nickname);
+        return userRepository.existsByNickname(nickname);
     }
 
     // 회원 생성
