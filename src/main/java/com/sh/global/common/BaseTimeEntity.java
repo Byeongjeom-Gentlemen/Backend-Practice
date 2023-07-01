@@ -1,4 +1,4 @@
-package com.sh.domain.user.domain;
+package com.sh.global.common;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
@@ -9,11 +9,12 @@ import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
+// 생성 날짜, 업데이트 날짜를 자동적으로 설정해주기 위한 객체
+// JpaAuditing
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseTimeEntity {
-
     @CreatedDate
     private LocalDateTime createdDate;
 

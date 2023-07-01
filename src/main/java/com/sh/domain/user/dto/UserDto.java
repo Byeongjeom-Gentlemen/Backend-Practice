@@ -33,7 +33,7 @@ public class UserDto {
 
     public User toEntity() {
         User user = User.builder()
-                .userId(id)
+                .id(id)
                 .pw(pw)
                 .nickname(nickname)
                 .build();

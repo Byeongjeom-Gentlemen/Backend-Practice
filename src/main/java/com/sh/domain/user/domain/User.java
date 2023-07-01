@@ -1,5 +1,6 @@
 package com.sh.domain.user.domain;
 
+import com.sh.global.common.BaseTimeEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
