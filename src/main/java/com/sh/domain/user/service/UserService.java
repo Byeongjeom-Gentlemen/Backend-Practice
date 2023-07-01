@@ -2,10 +2,13 @@ package com.sh.domain.user.service;
 
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.UserDto;
+import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+/*@Service */
 public interface UserService {
 
     // 아이디 중복 확인
@@ -16,5 +19,5 @@ public interface UserService {
 
     // 회원 생성
     @Transactional
-    void join(UserDto user);
+    Long join(UserDto user);
 }

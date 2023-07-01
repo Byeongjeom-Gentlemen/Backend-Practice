@@ -15,7 +15,6 @@ import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-/* @SpringBootTest */
 class UserRepositoryTest {
 
     @Autowired
