@@ -3,8 +3,11 @@ package com.sh.domain.user.service;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.UserDto;
 import com.sh.domain.user.repository.UserRepository;
+import com.sh.global.common.response.ErrorResponse;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,8 +42,11 @@ public class UserServiceImpl implements UserService {
         }
         // 비밀번호 암호화
         userDto.encryptPassword(passwordEncoder.encode(userDto.getPw()));
-        // 회원 생성
         User user = userRepository.save(userDto.toEntity());
+        System.out.println(user.getUserId());
+        System.out.println(user.getId());
+        System.out.println(user.getPw());
+        System.out.println(user.getNickname());
         // 성공 시 pk값 반환
         return user.getUserId();
     }
