@@ -16,15 +16,15 @@ import javax.validation.constraints.Size;
 @Setter
 public class UserDto {
     @NotBlank(message = "아이디를 입력해주세요")
-    @Pattern(regexp = "/^[a-zA-Z]{4,10}$/", message = "아이디는 4~10자 이내의 영문이여야 합니다.")
+    @Pattern(regexp = "^[a-zA-Z]{4,10}$", message = "아이디는 4~10자 이내의 영문이여야 합니다.")
     private String id;
 
     @NotBlank(message = "비밀번호를 입력해주세요")
-    @Pattern(regexp = "/^[a-zA-Z]{6,}[^0-9a-zA-Zㄱ-ㅎ가-힣]{1}$/", message = "비밀번호는 6자 이상의 영문이여야 합니다. 마지막에는 특수문자 1개를 포함해야 합니다.")
+    @Pattern(regexp = "^[a-zA-Z]{6,}[^0-9a-zA-Zㄱ-ㅎ가-힣]{1}$", message = "비밀번호는 6자 이상의 영문으로만 조합하고 마지막에는 특수문자 1개를 포함해야 합니다.")
     private String pw;
 
     @NotBlank(message = "닉네임을 입력해주세요")
-    @Pattern(regexp = "/^[가-힣]{2,4}$/", message = "닉네임은 2~4자 이내의 한글이여야 합니다.")
+    @Pattern(regexp = "^[가-힣]{2,4}$", message = "닉네임은 2~4자 이내의 한글이여야 합니다.")
     private String nickname;
 
     public void encryptPassword(String BCryptpassword) {

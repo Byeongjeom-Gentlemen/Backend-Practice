@@ -2,6 +2,7 @@ package com.sh.global.exception;
 
 import com.sh.global.common.response.BasicResponse;
 import com.sh.global.common.response.ErrorResponse;
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -10,30 +11,34 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.ArrayList;
+import java.util.List;
 
 // 예외발생 시 처리해주는 객체
-@ControllerAdvice
-@RestController
-public class ExceptionAdvisor {
+@RestControllerAdvice
+public class ExceptionManager {
 
-    // @Valid를 통한 유효성 검사에서 실패했을 시 수행하는 로직
+    // RuntimeException
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> runtimeExceptionHandler(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(e.getMessage(), "500"));
+    }
+
+
+    // @Valid를 통한 유효성 검사에서 실패
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<? extends BasicResponse> processValidationError(MethodArgumentNotValidException exception) {
+    public ResponseEntity<?> processValidationError(MethodArgumentNotValidException exception) {
         BindingResult bindingResult = exception.getBindingResult();
 
-        StringBuilder sb = new StringBuilder();
+        List<ErrorResponse> errorList = new ArrayList<>();
         for(FieldError fieldError : bindingResult.getFieldErrors()) {
-            sb.append("[")
-                    .append(fieldError.getField())
-                    .append("\"(은)는 ")
-                    .append(fieldError.getDefaultMessage())
-                    .append(" 입력된 값 : [")
-                    .append(fieldError.getRejectedValue())
-                    .append("]")
-                    .append("\n");
+            errorList.add(new ErrorResponse(fieldError.getField(), fieldError.getDefaultMessage(), "400"));
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(sb.toString(), "400"));
+                .body(errorList);
     }
 }

@@ -18,6 +18,6 @@ public interface UserService {
     boolean checkByNickname(String nickname);
 
     // 회원 생성
-    @Transactional
+    /* @Transactional */
     Long join(UserDto user);
 }

@@ -7,16 +7,25 @@ import lombok.Setter;
 @Setter
 public class ErrorResponse extends BasicResponse {
 
+    private String data;
     private String errorMessage;
     private String errorCode;
 
-    public ErrorResponse(String errorMessage) {
+    /* public ErrorResponse(String errorMessage) {
         this.errorMessage = errorMessage;
         this.errorCode = "404";
-    }
+    }*/
 
-    public ErrorResponse(String errorMessage, String errorCode) {
+    public ErrorResponse(String data, String errorMessage, String errorCode) {
+        this.data = data;
         this.errorMessage = errorMessage;
         this.errorCode = errorCode;
     }
+
+    public ErrorResponse(String errorMessage, String errorCode) {
+        this.data = "";
+        this.errorMessage = errorMessage;
+        this.errorCode = errorCode;
+    }
+
 }
