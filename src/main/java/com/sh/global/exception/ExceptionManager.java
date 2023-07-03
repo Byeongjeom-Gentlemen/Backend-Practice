@@ -1,8 +1,6 @@
 package com.sh.global.exception;
 
-import com.sh.global.common.response.BasicResponse;
-import com.sh.global.common.response.ErrorResponse;
-import org.apache.catalina.connector.Response;
+import com.sh.global.common.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -24,7 +22,7 @@ public class ExceptionManager {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> runtimeExceptionHandler(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(e.getMessage(), "500"));
+                .body(new ApiResponse<>().errors("500", e.getMessage()));
     }
 
 
@@ -33,9 +31,9 @@ public class ExceptionManager {
     public ResponseEntity<?> processValidationError(MethodArgumentNotValidException exception) {
         BindingResult bindingResult = exception.getBindingResult();
 
-        List<ErrorResponse> errorList = new ArrayList<>();
+        List<ApiResponse> errorList = new ArrayList<>();
         for(FieldError fieldError : bindingResult.getFieldErrors()) {
-            errorList.add(new ErrorResponse(fieldError.getField(), fieldError.getDefaultMessage(), "400"));
+            errorList.add(new ApiResponse().fail(fieldError.getField(), fieldError.getDefaultMessage(), "400", "BAD_REQUEST"));
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

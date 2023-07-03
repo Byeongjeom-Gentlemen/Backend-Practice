@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 class UserTest {
     @Test
-    @DisplayName("createUser test")
+    @DisplayName("유저 생성 테스트")
     public void createUser() {
 
         // given

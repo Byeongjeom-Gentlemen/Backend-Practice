@@ -1,14 +1,16 @@
 package com.sh.domain.user.service;
 
 import com.sh.domain.user.domain.User;
+import com.sh.domain.user.dto.LoginDto;
 import com.sh.domain.user.dto.UserDto;
 import lombok.NoArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-/*@Service */
 public interface UserService {
 
     // 아이디 중복 확인
@@ -18,6 +20,9 @@ public interface UserService {
     boolean checkByNickname(String nickname);
 
     // 회원 생성
-    /* @Transactional */
-    Long join(UserDto user);
+    @Transactional
+    ResponseEntity<?> join(UserDto user);
+
+    @Transactional
+    ResponseEntity<?> login(LoginDto loginDto);
 }
