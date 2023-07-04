@@ -27,7 +27,7 @@ public class UserController {
 
     // 로그인
     @PostMapping("/api/v1/users/login")
-    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginDto loginDto) {
         return userService.login(loginDto);
     }
 

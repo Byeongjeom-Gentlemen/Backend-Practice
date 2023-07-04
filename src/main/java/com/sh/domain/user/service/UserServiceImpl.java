@@ -2,12 +2,11 @@ package com.sh.domain.user.service;
 
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.LoginDto;
-import com.sh.domain.user.dto.TokenDto;
 import com.sh.domain.user.dto.UserDto;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.common.ApiResponse;
-import com.sh.global.util.JwtToken;
-import com.sh.global.util.JwtTokenProvider;
+import com.sh.global.common.jwt.JwtToken;
+import com.sh.global.common.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,12 +79,17 @@ public class UserServiceImpl implements UserService {
                     .body(new ApiResponse<>().fail(loginDto, "비밀번호가 일치하지 않습니다.", "400", "BAD_REQUEST"));
         }
 
+        System.out.println(user.get().getId());
+        System.out.println(user.get().getPw());
         // Authentication 객체 생성
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.get().getId(), user.get().getPw());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getId(), loginDto.getPw());
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         // 검증된 인증 정보로 JWT 토큰 생성
         JwtToken token = jwtTokenProvider.generateToken(authentication);
+        System.out.println(token.getGrantType());
+        System.out.println(token.getAccessType());
+        System.out.println(token.getRefreshType());
         
         // user 정보와 JWT 토큰정보를 함께 응답
         HashMap<String, Object> response = new HashMap<>();

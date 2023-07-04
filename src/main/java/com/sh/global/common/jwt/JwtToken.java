@@ -1,4 +1,4 @@
-package com.sh.global.util;
+package com.sh.global.common.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +10,6 @@ import lombok.Data;
 public class JwtToken {
 
     private String grantType;
-    private String accessToken;
-    private String refreshToken;
+    private String accessType;
+    private String refreshType;
 }
