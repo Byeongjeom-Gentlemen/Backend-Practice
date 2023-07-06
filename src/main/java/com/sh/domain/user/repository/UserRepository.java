@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User save(User user);
 
     // 아이디 중복 확인
-    boolean existsById(String id);
+    boolean existsByUserId(String userId);
 
     // 닉네임 중복 확인
     boolean existsByNickname(String nickname);

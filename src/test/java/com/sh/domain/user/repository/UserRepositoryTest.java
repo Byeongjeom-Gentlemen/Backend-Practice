@@ -26,21 +26,21 @@ class UserRepositoryTest {
     public void saveTest() {
         // given
         User user = User.builder()
-                .id("ehftozl").pw("thdgus!").nickname("할로")
+                .userId("ehftozl").pw("thdgus!").nickname("할로")
                 .build();
 
         // when
         userRepository.save(user);
         List<User> list = userRepository.findAll();
         User my = list.get(0);
-        System.out.println(my.getId());
+        System.out.println(my.getUserId());
         System.out.println(my.getNickname());
         System.out.println(my.getCreatedDate());
         System.out.println(my.getModifiedDate());
 
 
         // then
-        Assertions.assertThat(my.getId()).isEqualTo("ehftozl");
+        Assertions.assertThat(my.getUserId()).isEqualTo("ehftozl");
         Assertions.assertThat(my.getPw()).isEqualTo("thdgus!");
         Assertions.assertThat(my.getNickname()).isEqualTo("할로");
     }

@@ -12,10 +12,10 @@ class UserTest {
         // given
 
         // when
-        User user = User.builder().id("ehftozl").pw("thdgus!").nickname("할로").build();
+        User user = User.builder().userId("ehftozl").pw("thdgus!").nickname("할로").build();
 
         // then
-        Assertions.assertThat(user.getId()).isEqualTo("ehftozl");
+        Assertions.assertThat(user.getUserId()).isEqualTo("ehftozl");
         Assertions.assertThat(user.getPw()).isEqualTo("thdgus!");
         Assertions.assertThat(user.getNickname()).isEqualTo("할로");
     }

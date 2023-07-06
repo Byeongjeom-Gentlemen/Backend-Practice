@@ -2,23 +2,14 @@ package com.sh.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sh.domain.user.domain.User;
-import com.sh.domain.user.dto.UserDto;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,7 +35,7 @@ class UserControllerTest {
 
         // when
         String body = mapper.writeValueAsString(
-                User.builder().id(id).pw(pw).nickname(nickname).build()
+                User.builder().userId(id).pw(pw).nickname(nickname).build()
         );
 
         // then
@@ -65,7 +56,7 @@ class UserControllerTest {
 
         // when
         String body = mapper.writeValueAsString(
-                User.builder().id(id).pw(pw).nickname(nickname).build()
+                User.builder().userId(id).pw(pw).nickname(nickname).build()
         );
 
         // then
@@ -86,7 +77,7 @@ class UserControllerTest {
 
         // when
         String body = mapper.writeValueAsString(
-                User.builder().id(id).pw(pw).nickname(nickname).build()
+                User.builder().userId(id).pw(pw).nickname(nickname).build()
         );
 
         // then
@@ -104,7 +95,7 @@ class UserControllerTest {
 
         // when
         String body02 = mapper.writeValueAsString(
-                User.builder().id(id02).pw(pw02).nickname(nickname02).build()
+                User.builder().userId(id02).pw(pw02).nickname(nickname02).build()
         );
 
         // then

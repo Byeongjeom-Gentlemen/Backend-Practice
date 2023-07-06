@@ -1,15 +1,10 @@
 package com.sh.domain.user.service;
 
-import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.LoginDto;
-import com.sh.domain.user.dto.UserDto;
-import lombok.NoArgsConstructor;
+import com.sh.domain.user.dto.UserRequestDto;
+import com.sh.domain.user.dto.UserResponseDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 public interface UserService {
 
@@ -21,8 +16,8 @@ public interface UserService {
 
     // 회원 생성
     @Transactional
-    ResponseEntity<?> join(UserDto user);
+    ResponseEntity<?> join(UserRequestDto user);
 
     @Transactional
-    ResponseEntity<?> login(LoginDto loginDto);
+    UserResponseDto login(LoginDto loginDto) throws Exception;
 }
