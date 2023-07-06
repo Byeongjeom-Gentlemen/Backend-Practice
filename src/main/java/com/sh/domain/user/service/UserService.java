@@ -16,7 +16,7 @@ public interface UserService {
 
     // 회원 생성
     @Transactional
-    ResponseEntity<?> join(UserRequestDto user);
+    Long join(UserRequestDto user) throws Exception;
 
     @Transactional
     UserResponseDto login(LoginDto loginDto) throws Exception;

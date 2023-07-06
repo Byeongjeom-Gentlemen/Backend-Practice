@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
     }
 
     // 회원 생성
-    @Override
+    /*@Override
     public ResponseEntity<?> join(UserRequestDto userRequestDto) {
         // 아이디 중복확인
         if(checkById(userRequestDto.getId())) {
@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
                     .body(new ApiResponse<>().fail(userRequestDto.getId(), "이미 사용중인 아이디입니다.", "409", "CONFLICT"));
         }
 
-        // 비밀번호 중복확인
+        // 닉네임 중복확인
         if(checkByNickname(userRequestDto.getNickname())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ApiResponse<>().fail(userRequestDto.getNickname(), "이미 사용중인 닉네임입니다.", "409", "CONFLICT"));
@@ -73,44 +73,53 @@ public class UserServiceImpl implements UserService {
         // 성공 시 pk값 반환
         return ResponseEntity.ok()
                 .body(new ApiResponse<>().success(user.getUserId(), "회원가입에 성공하였습니다."));
-    }
-
-    // 로그인
-    /*@Override
-    public ResponseEntity<?> login(LoginDto loginDto) {
-        Optional<User> user = userRepository.findById(loginDto.getId());
-        if(user.orElse(null) == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse<>().errors("404", "해당 아이디를 가진 회원이 존재하지 않습니다."));
-        }
-
-        if(!passwordEncoder.matches(loginDto.getPw(), user.get().getPw())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse<>().fail(loginDto, "비밀번호가 일치하지 않습니다.", "400", "BAD_REQUEST"));
-        }
-
-
-        return ResponseEntity.ok().body(new ApiResponse<>().success(response, "로그인이 성공하였습니다."));
     }*/
 
     @Override
-    public UserResponseDto login(LoginDto loginDto) throws Exception {
-        Optional<User> user = userRepository.findById(loginDto.getId());
-
-        if(user.orElse(null) == null) {
-            throw new BadCredentialsException("잘못된 아이디입니다.");
+    public Long join(UserRequestDto userRequestDto) throws Exception {
+        // 아이디 중복확인
+        if(checkById(userRequestDto.getId())) {
+            throw new IllegalArgumentException("이미 사용중인 아이디입니다.");
         }
 
-        if(!passwordEncoder.matches(loginDto.getPw(), user.get().getPw())) {
+        // 닉네임 중복확인
+        if(checkByNickname(userRequestDto.getNickname())) {
+            throw new IllegalArgumentException("이미 사용중인 닉네임입니다.");
+        }
+        // 비밀번호 암호화
+        userRequestDto.encryptPassword(passwordEncoder.encode(userRequestDto.getPw()));
+        User user = User.builder()
+                .userId(userRequestDto.getId())
+                .pw(userRequestDto.getPw())
+                .nickname(userRequestDto.getNickname())
+                .build();
+        // 권한 부여
+        user.setRoles(Collections.singletonList(Authority.builder().name("ROLE_USER").build()));
+        userRepository.save(user);
+
+        // 성공 시 pk값 반환
+        return user.getId();
+    }
+
+    // 로그인
+    @Override
+    public UserResponseDto login(LoginDto loginDto) throws Exception {
+        User user = userRepository.findByUserId(loginDto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("아이디를 확인해주세요."));
+
+        if(!passwordEncoder.matches(loginDto.getPw(), user.getPw())) {
             throw new BadCredentialsException("비밀번호를 확인해주세요.");
         }
 
         return UserResponseDto.builder()
-                .id(user.get().getId())
-                .userId(user.get().getUserId())
-                .nickname(user.get().getNickname())
-                .roles(user.get().getRoles())
-                .token(jwtProvider.createToken(user.get().getUserId(), user.get().getRoles()))
+                .id(user.getId())
+                .userId(user.getUserId())
+                .nickname(user.getNickname())
+                .createdDate(user.getCreatedDate())
+                .modifiedDate(user.getModifiedDate())
+                .roles(user.getRoles())
+                .result("success")
+                .token(jwtProvider.createToken(user.getUserId(), user.getRoles()))
                 .build();
     }
 }

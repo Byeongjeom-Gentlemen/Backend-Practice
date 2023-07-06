@@ -3,6 +3,7 @@ package com.sh.global.exception;
 import com.sh.global.common.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,7 +21,7 @@ public class ExceptionManager {
 
     // RuntimeException
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> runtimeExceptionHandler(RuntimeException e) {
+    public ResponseEntity<ApiResponse> runtimeExceptionHandler(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiResponse<>().errors("500", e.getMessage()));
     }
@@ -39,4 +40,16 @@ public class ExceptionManager {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(errorList);
     }
+
+    /*@ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse> illegalArgumentError(IllegalArgumentException exception) {
+        return ResponseEntity
+    }*/
+
+    // 로그인 비밀번호 불일치
+    /*@ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse> passwordMatchesError(BadCredentialsException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiResponse().fail(null, exception.getMessage(), "401", "Unauthorized"));
+    }*/
 }

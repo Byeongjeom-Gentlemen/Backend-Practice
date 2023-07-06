@@ -16,9 +16,4 @@ public class LoginDto {
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
     private String pw;
-
-    // 로그인 과정에서 필요한 UsernamePasswordAuthenticationToken 생성
-    public UsernamePasswordAuthenticationToken toAuthentication() {
-        return new UsernamePasswordAuthenticationToken(id, pw);
-    }
 }
