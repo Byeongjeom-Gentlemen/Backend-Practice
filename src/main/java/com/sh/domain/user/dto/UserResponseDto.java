@@ -23,14 +23,15 @@ public class UserResponseDto {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private List<Authority> roles = new ArrayList<>();
+    private String result;
     private String token;
 
-    public UserResponseDto(User user) {
+    /*public UserResponseDto(User user) {
         this.id = user.getId();
         this.userId = user.getUserId();
         this.nickname = user.getNickname();
         this.createdDate = user.getCreatedDate();
         this.modifiedDate = user.getModifiedDate();
         this.roles = user.getRoles();
-    }
+    }*/
 }

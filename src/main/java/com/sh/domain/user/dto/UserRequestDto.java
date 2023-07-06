@@ -10,6 +10,7 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor  // 기본 생성자 생성
 @Getter
 @Setter
+@Builder
 public class UserRequestDto {
     @NotBlank(message = "아이디를 입력해주세요")
     @Pattern(regexp = "^[a-zA-Z]{4,10}$", message = "아이디는 4~10자 이내의 영문이여야 합니다.")
@@ -25,15 +26,5 @@ public class UserRequestDto {
 
     public void encryptPassword(String BCryptpassword) {
         this.pw = BCryptpassword;
-    }
-
-    public User toEntity() {
-        User user = User.builder()
-                .userId(id)
-                .pw(pw)
-                .nickname(nickname)
-                .build();
-
-        return user;
     }
 }
