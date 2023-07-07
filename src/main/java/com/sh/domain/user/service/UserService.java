@@ -6,6 +6,8 @@ import com.sh.domain.user.dto.UserResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface UserService {
 
     // 아이디 중복 확인
@@ -17,7 +19,11 @@ public interface UserService {
     // 회원 생성
     @Transactional
     Long join(UserRequestDto user) throws Exception;
-
+    
+    // 로그인
     @Transactional
     UserResponseDto login(LoginDto loginDto) throws Exception;
+    
+    // 내 정보 조회
+    UserResponseDto selectMe(HttpServletRequest request);
 }
