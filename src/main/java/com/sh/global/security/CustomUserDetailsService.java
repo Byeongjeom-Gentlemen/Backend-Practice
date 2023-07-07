@@ -2,7 +2,6 @@ package com.sh.global.security;
 
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
-import com.sh.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,17 +10,26 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class JpaUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 
-        User user = userRepository.findByUserId(userId).orElseThrow(
-                () -> new UsernameNotFoundException("Invalid authentication.")
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid authentication.")
         );
 
         return new CustomUserDetails(user);
     }
+
+    // 해당하는 User 의 데이터가 존재한다면 UserDetails 객체로 만들어서 리턴
+    /*private UserDetails createUserDetails(User user) {
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getUserId())
+                .password(user.getPw())
+                .roles(user.getRoles().toArray(new String[0]))
+                .build();
+    }*/
 }

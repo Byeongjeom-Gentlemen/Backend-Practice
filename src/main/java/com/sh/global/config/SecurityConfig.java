@@ -106,7 +106,7 @@ public class SecurityConfig {
                 // h2와 user 관련 요청 모두 허용
                 .antMatchers("/h2-console/**", "/api/v1/users/**").permitAll()
                 // 해당 권한이 있는 사용자에게만 허용
-                .antMatchers("/api/v1/users/me").hasRole("USER")
+                .antMatchers("/api/v1/users/me/**").hasRole("ROLE_USER")
                 .anyRequest().denyAll()
                 .and()
                 // JWT 인증 필터 적용

@@ -3,6 +3,7 @@ package com.sh.domain.user.service;
 import com.sh.domain.user.domain.Authority;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.LoginDto;
+import com.sh.domain.user.dto.TokenDto;
 import com.sh.domain.user.dto.UserRequestDto;
 import com.sh.domain.user.dto.UserResponseDto;
 import com.sh.domain.user.repository.UserRepository;
@@ -13,12 +14,15 @@ import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -104,14 +108,14 @@ public class UserServiceImpl implements UserService {
     // 로그인
     @Override
     public UserResponseDto login(LoginDto loginDto) throws Exception {
-        User user = userRepository.findByUserId(loginDto.getId())
+        /*User user = userRepository.findByUserId(loginDto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("아이디를 확인해주세요."));
 
         if(!passwordEncoder.matches(loginDto.getPw(), user.getPw())) {
             throw new BadCredentialsException("비밀번호를 확인해주세요.");
-        }
+        }*/
 
-        return UserResponseDto.builder()
+        /*return UserResponseDto.builder()
                 .id(user.getId())
                 .userId(user.getUserId())
                 .nickname(user.getNickname())
@@ -120,6 +124,26 @@ public class UserServiceImpl implements UserService {
                 .roles(user.getRoles())
                 .result("success")
                 .token(jwtProvider.createToken(user.getUserId(), user.getRoles()))
-                .build();
+                .build();*/
+        
+        // 1. id / pw를 기반으로 Authentication 객체 생성
+        // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getId(), passwordEncoder.encode(loginDto.getPw()));
+
+        // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
+        // authenticate 메서드가 실행될 때 CustomUserDetailsService의 loadUserByUsername 실행
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+        // 3. 인증 정보를 기반으로 JWT 생성
+        TokenDto token = jwtProvider.generateToken(authentication);
+
+        return UserResponseDto.builder()
+                .id()
+    }
+
+    // 내 정보 조회
+    @Override
+    public UserResponseDto selectMe(HttpServletRequest request) {
+        request.getHeader("")
     }
 }
