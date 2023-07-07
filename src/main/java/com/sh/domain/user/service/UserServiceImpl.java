@@ -9,6 +9,7 @@ import com.sh.domain.user.dto.UserResponseDto;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.common.ApiResponse;
 import com.sh.global.common.jwt.JwtProvider;
+import com.sh.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.springframework.http.HttpStatus;
@@ -80,15 +81,15 @@ public class UserServiceImpl implements UserService {
     }*/
 
     @Override
-    public Long join(UserRequestDto userRequestDto) throws Exception {
+    public Long join(UserRequestDto userRequestDto) {
         // 아이디 중복확인
         if(checkById(userRequestDto.getId())) {
-            throw new IllegalArgumentException("이미 사용중인 아이디입니다.");
+            throw new CustomException("이미 사용중인 아이디입니다.");
         }
 
         // 닉네임 중복확인
         if(checkByNickname(userRequestDto.getNickname())) {
-            throw new IllegalArgumentException("이미 사용중인 닉네임입니다.");
+            throw new CustomException("이미 사용중인 닉네임입니다.");
         }
         // 비밀번호 암호화
         userRequestDto.encryptPassword(passwordEncoder.encode(userRequestDto.getPw()));
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserService {
                 .nickname(userRequestDto.getNickname())
                 .build();
         // 권한 부여
-        user.setRoles(Collections.singletonList(Authority.builder().name("ROLE_USER").build()));
+        user.setRoles(Collections.singletonList(Authority.builder().name("USER").build()));
         userRepository.save(user);
 
         // 성공 시 pk값 반환
@@ -107,7 +108,9 @@ public class UserServiceImpl implements UserService {
 
     // 로그인
     @Override
-    public UserResponseDto login(LoginDto loginDto) throws Exception {
+    public UserResponseDto login(LoginDto loginDto) {
+        System.out.println(loginDto.getId());
+        System.out.println(loginDto.getPw());
         /*User user = userRepository.findByUserId(loginDto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("아이디를 확인해주세요."));
 
@@ -128,7 +131,7 @@ public class UserServiceImpl implements UserService {
         
         // 1. id / pw를 기반으로 Authentication 객체 생성
         // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getId(), passwordEncoder.encode(loginDto.getPw()));
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getId(), loginDto.getPw());
 
         // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
         // authenticate 메서드가 실행될 때 CustomUserDetailsService의 loadUserByUsername 실행
@@ -137,13 +140,21 @@ public class UserServiceImpl implements UserService {
         // 3. 인증 정보를 기반으로 JWT 생성
         TokenDto token = jwtProvider.generateToken(authentication);
 
+        Optional<User> user = userRepository.findByUserId(loginDto.getId());
         return UserResponseDto.builder()
-                .id()
+                .id(user.get().getId())
+                .userId(user.get().getUserId())
+                .nickname(user.get().getNickname())
+                .createdDate(user.get().getCreatedDate())
+                .modifiedDate(user.get().getModifiedDate())
+                .roles(user.get().getRoles())
+                .token(token)
+                .build();
     }
 
     // 내 정보 조회
-    @Override
+    /*@Override
     public UserResponseDto selectMe(HttpServletRequest request) {
         request.getHeader("")
-    }
+    }*/
 }

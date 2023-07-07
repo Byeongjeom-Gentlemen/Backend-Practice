@@ -1,5 +1,6 @@
 package com.sh.global.security;
 
+import com.sh.domain.user.domain.Authority;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,20 +17,20 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("Invalid authentication.")
-        );
-
-        return new CustomUserDetails(user);
+        System.out.println(userId);
+        return userRepository.findByUserId(userId)
+                .map(this::createUserDetails)
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid authentication."));
     }
 
     // 해당하는 User 의 데이터가 존재한다면 UserDetails 객체로 만들어서 리턴
-    /*private UserDetails createUserDetails(User user) {
+    private UserDetails createUserDetails(User user) {
+        CustomUserDetails users = new CustomUserDetails(user);
+
         return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUserId())
-                .password(user.getPw())
-                .roles(user.getRoles().toArray(new String[0]))
+                .username(users.getUsername())
+                .password(users.getPassword())
+                .roles(users.getUser().getRoles().get(0).getName())
                 .build();
-    }*/
+    }
 }

@@ -18,12 +18,12 @@ public interface UserService {
 
     // 회원 생성
     @Transactional
-    Long join(UserRequestDto user) throws Exception;
+    Long join(UserRequestDto user);
     
     // 로그인
     @Transactional
-    UserResponseDto login(LoginDto loginDto) throws Exception;
+    UserResponseDto login(LoginDto loginDto);
     
     // 내 정보 조회
-    UserResponseDto selectMe(HttpServletRequest request);
+    //UserResponseDto selectMe(HttpServletRequest request);
 }
