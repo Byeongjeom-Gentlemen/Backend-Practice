@@ -28,13 +28,13 @@ public class UserController {
     // @Validated : 스프링에서 제공하는 유효성 검증 어노테이션, 그룹별 유효성 검증이 가능, Errors errors로 에러 여부 판단
     // 회원가입
     @PostMapping("/api/v1/users")
-    public ResponseEntity<Long> join(@RequestBody @Valid UserRequestDto userRequestDto) throws Exception {
+    public ResponseEntity<Long> join(@RequestBody @Valid UserRequestDto userRequestDto){
         return ResponseEntity.created(URI.create("/api/v1/users")).body(userService.join(userRequestDto));
     }
 
     // 로그인
     @PostMapping("/api/v1/users/login")
-    public ResponseEntity<UserResponseDto> login(@RequestBody @Valid LoginDto loginDto) throws Exception {
+    public ResponseEntity<UserResponseDto> login(@RequestBody @Valid LoginDto loginDto){
         return ResponseEntity.ok().body(userService.login(loginDto));
     }
 

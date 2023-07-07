@@ -1,7 +1,6 @@
 package com.sh.global.security;
 
 import com.sh.domain.user.domain.User;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
