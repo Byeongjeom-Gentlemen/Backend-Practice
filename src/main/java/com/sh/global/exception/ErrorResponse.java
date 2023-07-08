@@ -21,12 +21,12 @@ public class ErrorResponse {
     @Getter
     static class CustomFieldError {
         private String field;
-        private String data;
+        private String invalidValue;
         private String reason;
 
         private CustomFieldError(FieldError fieldError) {
             this.field = fieldError.getField();
-            this.data = fieldError.getRejectedValue().toString();
+            this.invalidValue = fieldError.getRejectedValue().toString();
             this.reason = fieldError.getDefaultMessage();
         }
     }

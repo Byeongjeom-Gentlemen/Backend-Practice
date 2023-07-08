@@ -1,16 +1,12 @@
 package com.sh.global.exception;
 
-import com.sh.global.common.ApiResponse;
+import com.sh.global.exception.customexcpetion.AlreadyUsedUserIdException;
+import com.sh.global.exception.customexcpetion.AlreadyUsedUserNicknameException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.ArrayList;
-import java.util.List;
 
 // 예외발생 시 처리해주는 객체
 @RestControllerAdvice
@@ -18,16 +14,26 @@ public class GlobalExceptionManager {
 
     // @Valid를 통한 유효성 검사에서 실패
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> processValidationError(MethodArgumentNotValidException exception) {
-        BindingResult bindingResult = exception.getBindingResult();
-
-        List<ApiResponse> errorList = new ArrayList<>();
-        for(FieldError fieldError : bindingResult.getFieldErrors()) {
-            errorList.add(new ApiResponse().fail(fieldError.getField(), fieldError.getDefaultMessage(), "400", "BAD_REQUEST"));
-        }
-
+    public ResponseEntity<ErrorResponse> processValidationError(MethodArgumentNotValidException e) {
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_VALUE, e.getBindingResult());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(errorList);
+                .body(response);
+    }
+
+
+    @ExceptionHandler(AlreadyUsedUserIdException.class)
+    public ResponseEntity<ErrorResponse> existsByIdError(AlreadyUsedUserIdException e) {
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.ALREADY_EXISTS_ID, e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+
+
+    @ExceptionHandler(AlreadyUsedUserNicknameException.class)
+    public ResponseEntity<ErrorResponse> existsByNicknameError(AlreadyUsedUserNicknameException e) {
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.ALREADY_EXISTS_ID, e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(response);
     }
 
 }
