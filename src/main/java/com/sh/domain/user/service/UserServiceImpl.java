@@ -7,24 +7,17 @@ import com.sh.domain.user.dto.TokenDto;
 import com.sh.domain.user.dto.UserRequestDto;
 import com.sh.domain.user.dto.UserResponseDto;
 import com.sh.domain.user.repository.UserRepository;
-import com.sh.global.common.ApiResponse;
 import com.sh.global.common.jwt.JwtProvider;
-import com.sh.global.exception.CustomException;
+import com.sh.global.exception.customexcpetion.AlreadyUsedUserIdException;
+import com.sh.global.exception.customexcpetion.AlreadyUsedUserNicknameException;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -84,12 +77,12 @@ public class UserServiceImpl implements UserService {
     public Long join(UserRequestDto userRequestDto) {
         // 아이디 중복확인
         if(checkById(userRequestDto.getId())) {
-            throw new CustomException("이미 사용중인 아이디입니다.");
+            throw new AlreadyUsedUserIdException("이미 사용중인 아이디입니다.");
         }
 
         // 닉네임 중복확인
         if(checkByNickname(userRequestDto.getNickname())) {
-            throw new CustomException("이미 사용중인 닉네임입니다.");
+            throw new AlreadyUsedUserNicknameException("이미 사용중인 닉네임입니다.");
         }
         // 비밀번호 암호화
         userRequestDto.encryptPassword(passwordEncoder.encode(userRequestDto.getPw()));
