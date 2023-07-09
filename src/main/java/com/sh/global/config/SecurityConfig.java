@@ -2,30 +2,20 @@ package com.sh.global.config;
 
 import com.sh.global.common.jwt.JwtAuthenticationFilter;
 import com.sh.global.common.jwt.JwtProvider;
+import com.sh.global.security.CustomAccessDeniedHandler;
+import com.sh.global.security.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
 
 
 @Slf4j
@@ -59,11 +49,16 @@ public class SecurityConfig {
                 .and()
                 // 조건 별 요청 허용/제한 설정
                 .authorizeRequests()
-                // h2와 user 관련 요청 모두 허용
-                .antMatchers("/h2-console/**", "/api/v1/users/**").permitAll()
+                .antMatchers("/api/v1/users/me").authenticated()
+                .antMatchers("/api/v1/users/me").hasRole("USER")
+                // 이 외 모든 요청 허용
+                .antMatchers("/**").permitAll()
                 // 해당 권한이 있는 사용자에게만 허용
-                .antMatchers("/api/v1/users/me/**").hasRole("USER")
-                .anyRequest().denyAll()
+                //.anyRequest().denyAll()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                .accessDeniedHandler(new CustomAccessDeniedHandler())
                 .and()
                 // JWT 인증 필터 적용
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);

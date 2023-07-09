@@ -40,8 +40,9 @@ public class UserController {
 
     // 내 정보 조회
     @GetMapping("/api/v1/users/me")
-    public ResponseEntity<?> myProfile(HttpServletRequest requset) {
-        return ResponseEntity.ok().body(null);
+    // controller에서 요청을 수행하기 전 Filter가 요청 헤더에 대한 검증작업 수행(JwtAuthenticationFilter)
+    public ResponseEntity<UserResponseDto> myProfile() {
+        return ResponseEntity.ok().body(userService.selectMe());
     }
 
 }

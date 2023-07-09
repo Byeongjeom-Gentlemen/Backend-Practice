@@ -25,5 +25,5 @@ public interface UserService {
     UserResponseDto login(LoginDto loginDto);
     
     // 내 정보 조회
-    //UserResponseDto selectMe(HttpServletRequest request);
+    UserResponseDto selectMe();
 }

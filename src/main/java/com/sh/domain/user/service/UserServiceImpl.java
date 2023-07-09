@@ -10,6 +10,8 @@ import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.common.jwt.JwtProvider;
 import com.sh.global.exception.customexcpetion.AlreadyUsedUserIdException;
 import com.sh.global.exception.customexcpetion.AlreadyUsedUserNicknameException;
+import com.sh.global.exception.customexcpetion.UnauthorizedException;
+import com.sh.global.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -102,26 +105,6 @@ public class UserServiceImpl implements UserService {
     // 로그인
     @Override
     public UserResponseDto login(LoginDto loginDto) {
-        System.out.println(loginDto.getId());
-        System.out.println(loginDto.getPw());
-        /*User user = userRepository.findByUserId(loginDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("아이디를 확인해주세요."));
-
-        if(!passwordEncoder.matches(loginDto.getPw(), user.getPw())) {
-            throw new BadCredentialsException("비밀번호를 확인해주세요.");
-        }*/
-
-        /*return UserResponseDto.builder()
-                .id(user.getId())
-                .userId(user.getUserId())
-                .nickname(user.getNickname())
-                .createdDate(user.getCreatedDate())
-                .modifiedDate(user.getModifiedDate())
-                .roles(user.getRoles())
-                .result("success")
-                .token(jwtProvider.createToken(user.getUserId(), user.getRoles()))
-                .build();*/
-        
         // 1. id / pw를 기반으로 Authentication 객체 생성
         // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getId(), loginDto.getPw());
@@ -146,8 +129,17 @@ public class UserServiceImpl implements UserService {
     }
 
     // 내 정보 조회
-    /*@Override
-    public UserResponseDto selectMe(HttpServletRequest request) {
-        request.getHeader("")
-    }*/
+    @Override
+    public UserResponseDto selectMe() {
+        String userId = SecurityUtil.getCurrentUserId();
+        Optional<User> user = userRepository.findByUserId(userId);
+
+        return UserResponseDto.builder()
+                .id(user.get().getId())
+                .userId(user.get().getUserId())
+                .nickname(user.get().getNickname())
+                .createdDate(user.get().getCreatedDate())
+                .modifiedDate(user.get().getModifiedDate())
+                .build();
+    }
 }
