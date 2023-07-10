@@ -4,10 +4,14 @@ import com.sh.domain.user.domain.Authority;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -17,10 +21,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        System.out.println(userId);
         return userRepository.findByUserId(userId)
                 .map(this::createUserDetails)
-                .orElseThrow(() -> new UsernameNotFoundException("Invalid authentication."));
+                .orElseThrow(() -> new UsernameNotFoundException("아이디가 존재하지 않거나 비밀번호가 맞지 않습니다."));
     }
 
     // 해당하는 User 의 데이터가 존재한다면 UserDetails 객체로 만들어서 리턴

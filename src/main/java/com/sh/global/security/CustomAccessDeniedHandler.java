@@ -1,5 +1,6 @@
 package com.sh.global.security;
 
+import com.sh.global.common.jwt.JwtExceptionFilter;
 import com.sh.global.exception.ErrorCode;
 import org.json.JSONObject;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,11 +18,11 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
         ErrorCode errorCode;
-        errorCode = ErrorCode.PERMISSION_DENIED;
-        setResponse(response, errorCode);
+        errorCode = ErrorCode.FORBIDDEN_REQUEST_USER;
+        JwtExceptionFilter.setResponse(response, errorCode);
     }
 
-    private void setResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
+    /*private void setResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
@@ -31,5 +32,5 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         responseJson.put("status", errorCode.getStatus());
 
         response.getWriter().print(responseJson);
-    }
+    }*/
 }
