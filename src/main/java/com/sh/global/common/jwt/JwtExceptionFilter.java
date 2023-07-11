@@ -30,10 +30,15 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         try {
             chain.doFilter(request, response);
         } catch (JwtException e) {
+            String authorizationValue = request.getHeader("Authorization");
+            System.out.println(authorizationValue);
             String message = e.getMessage();
 
+            if(authorizationValue == null || authorizationValue.equals("")) {
+                setResponse(response, ErrorCode.UNKNOWN_ERROR);
+            }
             // 토큰이 만료된 경우
-            if(ErrorCode.EXPIRED_TOKEN.getMessage().equals(message)) {
+            else if(ErrorCode.EXPIRED_TOKEN.getMessage().equals(message)) {
                 setResponse(response, ErrorCode.EXPIRED_TOKEN);
             }
             // 잘못된 타입의 토큰인 경우
@@ -55,6 +60,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
     public static void setResponse(HttpServletResponse response, ErrorCode errorCode) {
         ObjectMapper objectMapper = new ObjectMapper();
+
         response.setStatus(errorCode.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setContentType("application/json;charset=UTF-8");

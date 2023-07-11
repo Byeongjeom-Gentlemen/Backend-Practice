@@ -132,7 +132,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto selectMe() {
         String userId = SecurityUtil.getCurrentUserId();
-        System.out.println(userId);
         Optional<User> user = userRepository.findByUserId(userId);
 
         return UserResponseDto.builder()

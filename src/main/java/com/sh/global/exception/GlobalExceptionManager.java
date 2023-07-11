@@ -5,6 +5,8 @@ import com.sh.global.exception.customexcpetion.AlreadyUsedUserNicknameException;
 import com.sh.global.exception.customexcpetion.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -34,6 +36,13 @@ public class GlobalExceptionManager {
     public ResponseEntity<ErrorResponse> existsByNicknameError(AlreadyUsedUserNicknameException e) {
         final ErrorResponse response = ErrorResponse.of(ErrorCode.ALREADY_EXISTS_ID, e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> badCredentialError(BadCredentialsException e) {
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_AUTHENTICATION);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(response);
     }
 
