@@ -4,6 +4,7 @@ import com.sh.domain.user.domain.Authority;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.EmptyStackException;
 
 @Service
 @RequiredArgsConstructor
@@ -20,10 +22,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String userId) throws BadCredentialsException {
         return userRepository.findByUserId(userId)
                 .map(this::createUserDetails)
-                .orElseThrow(() -> new UsernameNotFoundException("아이디가 존재하지 않거나 비밀번호가 맞지 않습니다."));
+                .orElseThrow(() -> new BadCredentialsException("사용자 인증에 실패하였습니다. 아이디 혹은 비밀번호를 확인하세요."));
     }
 
     // 해당하는 User 의 데이터가 존재한다면 UserDetails 객체로 만들어서 리턴
@@ -33,7 +35,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(users.getUsername())
                 .password(users.getPassword())
-                .roles(users.getUser().getRoles().get(0).getName())
+                .roles(String.valueOf(users.getAuthorities().stream()))
                 .build();
     }
 }
