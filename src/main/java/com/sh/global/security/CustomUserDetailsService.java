@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.EmptyStackException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +31,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     // 해당하는 User 의 데이터가 존재한다면 UserDetails 객체로 만들어서 리턴
     private UserDetails createUserDetails(User user) {
-        CustomUserDetails users = new CustomUserDetails(user);
+        return new org.springframework.security.core.userdetails.User(
+                user.getUserId(),
+                user.getPw(),
+                List.of(new SimpleGrantedAuthority(user.getRoles().toString()))
+        );
 
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(users.getUsername())
-                .password(users.getPassword())
-                .roles(String.valueOf(users.getAuthorities().stream()))
-                .build();
     }
 }

@@ -52,6 +52,7 @@ public class JwtProvider {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
+        System.out.println(authorities);
 
         long now = (new Date()).getTime();
 
@@ -99,25 +100,11 @@ public class JwtProvider {
 
     // 토큰 정보를 검증하는 메서드
     public boolean validateToken(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
-        } catch (SignatureException e) {
-            log.info("Invalid JWS Signature.");
-            throw new JwtException(ErrorCode.WRONG_TYPE_TOKEN.getMessage());
-        } catch (MalformedJwtException e) {
-            log.info("Invalid JWS Token.");
-            throw new JwtException(ErrorCode.UNSUPPORTED_TOKEN.getMessage());
-        } catch (UnsupportedJwtException e) {
-            log.info("Invalid JWS Token.");
-            throw new JwtException(ErrorCode.UNSUPPORTED_TOKEN.getMessage());
-        } catch (ExpiredJwtException e) {
-            log.info("Expired JWS Token.");
-            throw new JwtException(ErrorCode.EXPIRED_TOKEN.getMessage());
-        } catch (IllegalArgumentException e) {
-            log.info("JWS Token Compact Of Handler are Invalid.");
-            throw new JwtException(ErrorCode.UNKNOWN_ERROR.getMessage());
-        }
+        Jws<Claims> claimsJws = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token);
+        return !claimsJws.getBody().isEmpty();
     }
 
     private Claims parseClaims(String accessToken) {

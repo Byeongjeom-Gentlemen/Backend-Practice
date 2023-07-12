@@ -1,8 +1,6 @@
 package com.sh.global.exception;
 
-import com.sh.global.exception.customexcpetion.AlreadyUsedUserIdException;
-import com.sh.global.exception.customexcpetion.AlreadyUsedUserNicknameException;
-import com.sh.global.exception.customexcpetion.UnauthorizedException;
+import com.sh.global.exception.customexcpetion.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -42,6 +40,20 @@ public class GlobalExceptionManager {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> badCredentialError(BadCredentialsException e) {
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_AUTHENTICATION);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(response);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> userNotFoundError(UserNotFoundException e) {
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_FOUND_USER);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(response);
+    }
+
+    @ExceptionHandler(NotMatchesUserException.class)
+    public ResponseEntity<ErrorResponse> notMatchesError(NotMatchesUserException e) {
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_AUTHENTICATION, e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(response);
     }

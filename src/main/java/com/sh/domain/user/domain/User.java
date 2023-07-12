@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,11 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Authority> roles = new ArrayList<>();
+
+    // 탈퇴날짜
+    @Column(name = "withdrawal_date")
+    @Builder.Default
+    private LocalDateTime withdrawalDate = null;
 
     /*@Builder
     public User(String userId, String pw, String nickname) {

@@ -18,5 +18,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 닉네임 중복 확인
     boolean existsByNickname(String nickname);
 
+    // 사용자 아이디 찾기
     Optional<User> findByUserId(String userId);
+
+    // 회원 삭제
+    void delete(User user);
 }
