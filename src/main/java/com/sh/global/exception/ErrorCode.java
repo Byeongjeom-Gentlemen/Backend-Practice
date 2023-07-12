@@ -15,15 +15,18 @@ public enum ErrorCode {
 
     FORBIDDEN_REQUEST_USER(HttpStatus.FORBIDDEN, "U_018", "해당 리소스에 접근할 권한이 없습니다.(로그인 필요)"),
 
+    // 해당 유저가 없을 경우
+    NOT_FOUND_USER(HttpStatus.UNAUTHORIZED, "U_020", "해당 사용자가 존재하지 않습니다."),
+
     // 잘못된 인증(해당 아이디가 존재하지 않거나 비밀번호가 틀렸을 경우)
     INVALID_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "U_004", "사용자 인증에 실패하였습니다."),
 
-    UNKNOWN_ERROR(HttpStatus.UNAUTHORIZED,"U_005", "인증 토큰이 존재하지 않습니다.(유효하지 않은 토큰)"),
-    WRONG_TYPE_TOKEN(HttpStatus.UNAUTHORIZED, "U_006","잘못된 토큰 정보입니다."),
-    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "U_007","만료된 토큰 정보입니다."),
-    UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED, "U_008","지원하지 않는 토큰 방식입니다."),
-
-    ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "U_009","알 수 없는 이유로 요청이 거절되었습니다.");
+    // JWT
+    NON_TOKEN(HttpStatus.UNAUTHORIZED, "U_008", "토큰정보가 존재하지 않습니다."),
+    WRONG_TYPE_SIGNATURE(HttpStatus.UNAUTHORIZED, "U_005", "잘못된 JWT 서명입니다."),
+    WRONG_TYPE_TOKEN(HttpStatus.UNAUTHORIZED, "U_006", "유효하지 않은 구성의 토큰입니다.(지원되지 않는 형식이나 구성의 토큰입니다.)"),
+    EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "U_007", "만료된 토큰 정보입니다."),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "U_007", "잘못된 토큰 정보입니다.");
 
     private final HttpStatus status;
     private final String code;

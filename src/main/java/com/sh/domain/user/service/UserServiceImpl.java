@@ -8,9 +8,7 @@ import com.sh.domain.user.dto.UserRequestDto;
 import com.sh.domain.user.dto.UserResponseDto;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.common.jwt.JwtProvider;
-import com.sh.global.exception.customexcpetion.AlreadyUsedUserIdException;
-import com.sh.global.exception.customexcpetion.AlreadyUsedUserNicknameException;
-import com.sh.global.exception.customexcpetion.UnauthorizedException;
+import com.sh.global.exception.customexcpetion.*;
 import com.sh.global.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -46,36 +44,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByNickname(nickname);
     }
 
-    // 회원 생성
-    /*@Override
-    public ResponseEntity<?> join(UserRequestDto userRequestDto) {
-        // 아이디 중복확인
-        if(checkById(userRequestDto.getId())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ApiResponse<>().fail(userRequestDto.getId(), "이미 사용중인 아이디입니다.", "409", "CONFLICT"));
-        }
-
-        // 닉네임 중복확인
-        if(checkByNickname(userRequestDto.getNickname())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ApiResponse<>().fail(userRequestDto.getNickname(), "이미 사용중인 닉네임입니다.", "409", "CONFLICT"));
-        }
-        // 비밀번호 암호화
-        userRequestDto.encryptPassword(passwordEncoder.encode(userRequestDto.getPw()));
-        User user = User.builder()
-                    .userId(userRequestDto.getId())
-                    .pw(userRequestDto.getPw())
-                    .nickname(userRequestDto.getNickname())
-                    .build();
-        // 권한 부여
-        user.setRoles(Collections.singletonList(Authority.builder().name("ROLE_USER").build()));
-        userRepository.save(user);
-
-        // 성공 시 pk값 반환
-        return ResponseEntity.ok()
-                .body(new ApiResponse<>().success(user.getUserId(), "회원가입에 성공하였습니다."));
-    }*/
-
     @Override
     public Long join(UserRequestDto userRequestDto) {
         // 아이디 중복확인
@@ -95,7 +63,7 @@ public class UserServiceImpl implements UserService {
                 .nickname(userRequestDto.getNickname())
                 .build();
         // 권한 부여
-        user.setRoles(Collections.singletonList(Authority.builder().name("USER").build()));
+        user.setRoles(Collections.singletonList(Authority.builder().name("ROLE_USER").build()));
         userRepository.save(user);
 
         // 성공 시 pk값 반환
@@ -141,5 +109,57 @@ public class UserServiceImpl implements UserService {
                 .createdDate(user.get().getCreatedDate())
                 .modifiedDate(user.get().getModifiedDate())
                 .build();
+    }
+
+    // 회원 삭제
+    // 나중에 회원이 삭제되면 회원이 등록한 게시글, 댓글등도 같이 삭제
+    // CASCADE 옵션은 되도록 사용하지 않는다.
+    @Override
+    public void deleteUser(LoginDto users) {
+        // case01
+        /*// 회원 아이디가 없는 경우(null일 경우)
+        User me = userRepository.findByUserId(users.getId())
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+
+        // 이미 탈퇴한 회원인 경우
+        if(me.getWithdrawalDate() != null) {
+            throw new UserNotFoundException("이미 탈퇴한 회원입니다.");
+        }
+        
+        // 입력한 아이디와 비밀번호가 맞지 않는 경우
+        if(!passwordEncoder.matches(me.getPw(), users.getPw())) {
+            throw new NotMatchesUserException("사용자 인증에 실패하였습니다.");
+        }*/
+
+
+        // case02
+        userRepository.findByUserId(users.getId())
+                .map(data -> {
+                    if(data.getWithdrawalDate() != null) {
+                        throw new UserNotFoundException();
+                    }
+                    else if (!passwordEncoder.matches(data.getPw(), users.getPw())) {
+                        throw new NotMatchesUserException("사용자 인증에 실패하였습니다.");
+                    }
+                    userRepository.delete(data);
+                    return data;
+                }).orElseThrow(() -> new UserNotFoundException());
+
+
+        // case03
+        /*Optional<User> user = userRepository.findByUserId(users.getId());
+        if(!user.isPresent()) {
+            throw new UserNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+
+        user.ifPresent(data -> {
+            if(data.getWithdrawalDate() != null) {
+                throw new UserNotFoundException("탈퇴한 회원입니다.");
+            }
+            else if (!passwordEncoder.matches(data.getPw(), users.getPw())) {
+                throw new NotMatchesUserException("사용자 인증에 실패하였습니다.");
+            }
+        });*/
+
     }
 }

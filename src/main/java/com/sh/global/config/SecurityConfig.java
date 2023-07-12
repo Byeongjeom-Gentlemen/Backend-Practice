@@ -1,12 +1,13 @@
 package com.sh.global.config;
 
 import com.sh.global.common.jwt.JwtAuthenticationFilter;
-import com.sh.global.common.jwt.JwtExceptionFilter;
 import com.sh.global.common.jwt.JwtProvider;
+import com.sh.global.security.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -24,7 +25,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
-    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -49,18 +49,17 @@ public class SecurityConfig {
                 .and()
                 // 조건 별 요청 허용/제한 설정
                 .authorizeRequests()
-                // 해당 요청 접근 허용
-                .antMatchers("/h2-console/**","/api/v1/users", "/api/v1/users/login").permitAll()
-                /*.antMatchers("/api/v1/users/me").hasAuthority("USER")*/
-                // 이외의 요청은 인증필요
-                .anyRequest().authenticated()
-                /*.and()
+                // 해당 요청 인증필요
+                .antMatchers(HttpMethod.GET, "/api/v1/users/**").authenticated()
+                .antMatchers("/api/v1/users/me").hasRole("USER")
+                // 이외의 요청은 허용
+                .anyRequest().permitAll()
+                .and()
                 .exceptionHandling()
-                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())*/
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 // JWT 인증 필터 적용
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
 

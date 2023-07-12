@@ -1,5 +1,6 @@
 package com.sh.domain.user.service;
 
+import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.LoginDto;
 import com.sh.domain.user.dto.UserRequestDto;
 import com.sh.domain.user.dto.UserResponseDto;
@@ -26,4 +27,7 @@ public interface UserService {
     
     // 내 정보 조회
     UserResponseDto selectMe();
+
+    // 회원 삭제
+    void deleteUser(LoginDto user);
 }
