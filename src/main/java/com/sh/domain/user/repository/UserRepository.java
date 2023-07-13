@@ -23,4 +23,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 회원 삭제
     void delete(User user);
+
 }

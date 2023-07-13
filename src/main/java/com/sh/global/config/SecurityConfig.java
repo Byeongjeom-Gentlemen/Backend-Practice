@@ -51,6 +51,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 // 해당 요청 인증필요
                 .antMatchers(HttpMethod.GET, "/api/v1/users/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/v1/users").authenticated()
                 .antMatchers("/api/v1/users/me").hasRole("USER")
                 // 이외의 요청은 허용
                 .anyRequest().permitAll()

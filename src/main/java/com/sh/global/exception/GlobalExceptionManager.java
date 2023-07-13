@@ -53,7 +53,7 @@ public class GlobalExceptionManager {
 
     @ExceptionHandler(NotMatchesUserException.class)
     public ResponseEntity<ErrorResponse> notMatchesError(NotMatchesUserException e) {
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_AUTHENTICATION, e.getMessage());
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INVALID_AUTHENTICATION);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(response);
     }
