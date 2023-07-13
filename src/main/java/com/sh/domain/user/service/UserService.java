@@ -1,13 +1,12 @@
 package com.sh.domain.user.service;
 
 import com.sh.domain.user.domain.User;
-import com.sh.domain.user.dto.LoginDto;
 import com.sh.domain.user.dto.UserRequestDto;
+import com.sh.domain.user.dto.SignupRequestDto;
 import com.sh.domain.user.dto.UserResponseDto;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 public interface UserService {
 
@@ -19,15 +18,18 @@ public interface UserService {
 
     // 회원 생성
     @Transactional
-    Long join(UserRequestDto user);
+    Long join(SignupRequestDto user);
     
     // 로그인
     @Transactional
-    UserResponseDto login(LoginDto loginDto);
+    UserResponseDto login(UserRequestDto userRequestDto);
     
     // 내 정보 조회
     UserResponseDto selectMe();
 
+    @Transactional
     // 회원 삭제
-    void deleteUser(LoginDto user);
+    void deleteUser(UserRequestDto user);
+
+
 }

@@ -1,17 +1,13 @@
 package com.sh.domain.user.controller;
 
-import com.sh.domain.user.dto.LoginDto;
 import com.sh.domain.user.dto.UserRequestDto;
+import com.sh.domain.user.dto.SignupRequestDto;
 import com.sh.domain.user.dto.UserResponseDto;
 import com.sh.domain.user.service.UserService;
-import jdk.jshell.spi.ExecutionControlProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URI;
 
@@ -25,14 +21,14 @@ public class UserController {
     // @Validated : 스프링에서 제공하는 유효성 검증 어노테이션, 그룹별 유효성 검증이 가능, Errors errors로 에러 여부 판단
     // 회원가입
     @PostMapping("/api/v1/users")
-    public ResponseEntity<Long> join(@RequestBody @Valid UserRequestDto userRequestDto){
-        return ResponseEntity.created(URI.create("/api/v1/users")).body(userService.join(userRequestDto));
+    public ResponseEntity<Long> join(@RequestBody @Valid SignupRequestDto signupRequestDto){
+        return ResponseEntity.created(URI.create("/api/v1/users")).body(userService.join(signupRequestDto));
     }
 
     // 로그인
     @PostMapping("/api/v1/users/login")
-    public ResponseEntity<UserResponseDto> login(@RequestBody @Valid LoginDto loginDto){
-        return ResponseEntity.ok().body(userService.login(loginDto));
+    public ResponseEntity<UserResponseDto> login(@RequestBody @Valid UserRequestDto userRequestDto){
+        return ResponseEntity.ok().body(userService.login(userRequestDto));
     }
 
     // 내 정보 조회
@@ -45,7 +41,8 @@ public class UserController {
 
     // 회원 삭제
     @DeleteMapping("/api/v1/users")
-    public ResponseEntity<UserResponseDto> withdrawal(@RequestBody @Valid LoginDto loginDto) {
+    public ResponseEntity<UserResponseDto> withdrawal(@RequestBody @Valid UserRequestDto userRequestDto) {
+        userService.deleteUser(userRequestDto);
         return ResponseEntity.noContent().build();
     }
 }
