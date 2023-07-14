@@ -2,15 +2,12 @@ package com.sh.domain.user.service;
 
 import com.sh.domain.user.domain.Authority;
 import com.sh.domain.user.domain.User;
-import com.sh.domain.user.dto.UserRequestDto;
-import com.sh.domain.user.dto.TokenDto;
-import com.sh.domain.user.dto.SignupRequestDto;
-import com.sh.domain.user.dto.UserResponseDto;
+import com.sh.domain.user.dto.*;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.common.jwt.JwtProvider;
 import com.sh.global.exception.customexcpetion.*;
 import com.sh.global.security.SecurityUtil;
-import com.sh.global.util.UserStatus;
+import com.sh.global.common.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -20,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -85,14 +81,16 @@ public class UserServiceImpl implements UserService {
         // 3. 인증 정보를 기반으로 JWT 생성
         TokenDto token = jwtProvider.generateToken(authentication);
 
-        Optional<User> user = userRepository.findByUserId(userRequestDto.getId());
+        User user = userRepository.findByUserId(userRequestDto.getId())
+                .orElseThrow(() -> new UserNotFoundException());
+
         return UserResponseDto.builder()
-                .id(user.get().getId())
-                .userId(user.get().getUserId())
-                .nickname(user.get().getNickname())
-                .createdDate(user.get().getCreatedDate())
-                .modifiedDate(user.get().getModifiedDate())
-                .roles(user.get().getRoles())
+                .id(user.getId())
+                .userId(user.getUserId())
+                .nickname(user.getNickname())
+                .createdDate(user.getCreatedDate())
+                .modifiedDate(user.getModifiedDate())
+                .roles(user.getRoles())
                 .token(token)
                 .build();
     }
@@ -101,14 +99,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto selectMe() {
         String userId = SecurityUtil.getCurrentUserId();
-        Optional<User> user = userRepository.findByUserId(userId);
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException());
 
         return UserResponseDto.builder()
-                .id(user.get().getId())
-                .userId(user.get().getUserId())
-                .nickname(user.get().getNickname())
-                .createdDate(user.get().getCreatedDate())
-                .modifiedDate(user.get().getModifiedDate())
+                .id(user.getId())
+                .userId(user.getUserId())
+                .nickname(user.getNickname())
+                .createdDate(user.getCreatedDate())
+                .modifiedDate(user.getModifiedDate())
                 .build();
     }
 
@@ -128,4 +127,41 @@ public class UserServiceImpl implements UserService {
                     return data;
                 }).orElseThrow(() -> new UserNotFoundException()));
     }
+
+    // 회원 수정(PATCH)
+    @Override
+    public void modifyMe(UpdateUserRequestDto user) {
+        User afterUser = userRepository.findByUserId(user.getUserId())
+                .map(data -> {
+                    if(data.getStatus().equals(UserStatus.WITHDRAWAL_USER)) {
+                        throw new UserNotFoundException();
+                    }
+                    return data;
+                })
+                .orElseThrow(() -> new UserNotFoundException());
+
+        // 아이디 수정 시
+        if(user.getAfterId() != null && userRepository.existsByUserId(user.getAfterId())) {
+            throw new AlreadyUsedUserIdException("이미 사용중인 아이디입니다.");
+        } else if (user.getAfterId() == null) {
+            user.setAfterId(afterUser.getUserId());
+        }
+
+        // 닉네임 수정 시
+        if(user.getAfterNickname() != null && userRepository.existsByNickname(user.getAfterNickname())) {
+            throw new AlreadyUsedUserNicknameException("이미 사용중인 닉네임입니다.");
+        } else if (user.getAfterNickname() == null) {
+            user.setAfterNickname(afterUser.getNickname());
+        }
+
+        // 비밀번호 수정 시
+        if(user.getAfterPw() != null) {
+            user.encryptPassword(passwordEncoder.encode(user.getAfterPw()));
+        } else {
+            user.setAfterPw(afterUser.getPw());
+        }
+
+        afterUser.updateUser(user);
+    }
+
 }

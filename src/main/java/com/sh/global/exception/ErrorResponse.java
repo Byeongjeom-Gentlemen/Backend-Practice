@@ -48,6 +48,7 @@ public class ErrorResponse {
         this.errors = List.of(new CustomFieldError("", "", exceptionMessage));
     }
 
+    // 정적 팩토리
     public static ErrorResponse of(ErrorCode errorCode) {
         return new ErrorResponse(errorCode, Collections.emptyList());
     }
