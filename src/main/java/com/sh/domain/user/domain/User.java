@@ -1,17 +1,15 @@
 package com.sh.domain.user.domain;
 
+import com.sh.domain.user.dto.UpdateUserRequestDto;
 import com.sh.global.common.BaseTimeEntity;
-import com.sh.global.util.UserStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.sh.global.common.UserStatus;
+import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@DynamicUpdate
 // 논리 삭제(실제 DB에서 삭제하지 않고 필드 값을 추가하여 삭제 여부를 판단
 // @Where을 사용해 해당 값만 select하도록 설정(삭제된 회원은 조회 시 조회안됨)
 @Where(clause = "not user_status = 'withdrawn'")
@@ -53,4 +52,12 @@ public class User extends BaseTimeEntity {
         this.roles = role;
         role.forEach(o -> o.setUser(this));
     }
+
+    // 회원 수정
+    public void updateUser (UpdateUserRequestDto user) {
+        this.userId = user.getAfterId();
+        this.pw = user.getAfterPw();
+        this.nickname = user.getAfterNickname();
+    }
+
 }

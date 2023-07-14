@@ -1,6 +1,8 @@
 package com.sh.global.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sh.global.exception.ErrorCode;
+import com.sh.global.exception.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.http.HttpHeaders;
@@ -46,11 +48,13 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        JSONObject responseJson = new JSONObject();
-        responseJson.put("code", errorcode.getCode());
-        responseJson.put("status", errorcode.getStatus());
-        responseJson.put("message", errorcode.getMessage());
+        ObjectMapper objectMapper = new ObjectMapper();
+        ErrorResponse errorResponse = ErrorResponse.of(errorcode);
 
-        response.getWriter().println(responseJson);
+        try {
+            response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -32,7 +32,7 @@ public class GlobalExceptionManager {
 
     @ExceptionHandler(AlreadyUsedUserNicknameException.class)
     public ResponseEntity<ErrorResponse> existsByNicknameError(AlreadyUsedUserNicknameException e) {
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.ALREADY_EXISTS_ID, e.getMessage());
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.ALREADY_EXISTS_NICKNAME, e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(response);
     }

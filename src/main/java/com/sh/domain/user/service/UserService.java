@@ -1,6 +1,7 @@
 package com.sh.domain.user.service;
 
 import com.sh.domain.user.domain.User;
+import com.sh.domain.user.dto.UpdateUserRequestDto;
 import com.sh.domain.user.dto.UserRequestDto;
 import com.sh.domain.user.dto.SignupRequestDto;
 import com.sh.domain.user.dto.UserResponseDto;
@@ -31,5 +32,11 @@ public interface UserService {
     // 회원 삭제
     void deleteUser(UserRequestDto user);
 
+    @Transactional
+    // 회원 수정(PATCH)
+    void modifyMe(UpdateUserRequestDto user);
+    /*void modifyId(SignupRequestDto user);
+    void modifyPassword(SignupRequestDto user);
+    void modifyNickname(SignupRequestDto user);*/
 
 }

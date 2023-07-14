@@ -1,5 +1,6 @@
 package com.sh.domain.user.controller;
 
+import com.sh.domain.user.dto.UpdateUserRequestDto;
 import com.sh.domain.user.dto.UserRequestDto;
 import com.sh.domain.user.dto.SignupRequestDto;
 import com.sh.domain.user.dto.UserResponseDto;
@@ -41,8 +42,16 @@ public class UserController {
 
     // 회원 삭제
     @DeleteMapping("/api/v1/users")
-    public ResponseEntity<UserResponseDto> withdrawal(@RequestBody @Valid UserRequestDto userRequestDto) {
+    public ResponseEntity<UserResponseDto> deleteUser(@RequestBody @Valid UserRequestDto userRequestDto) {
         userService.deleteUser(userRequestDto);
         return ResponseEntity.noContent().build();
     }
+
+    // 회원 수정(PATCH)
+    @PatchMapping("/api/v1/users/me")
+    public ResponseEntity<UserResponseDto> modify(@RequestBody @Valid UpdateUserRequestDto user) {
+        userService.modifyMe(user);
+        return ResponseEntity.noContent().build();
+    }
+
 }
