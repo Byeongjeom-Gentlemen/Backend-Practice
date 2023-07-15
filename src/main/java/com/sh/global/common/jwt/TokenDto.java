@@ -1,4 +1,4 @@
-package com.sh.domain.user.dto;
+package com.sh.global.common.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

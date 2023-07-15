@@ -1,13 +1,7 @@
 package com.sh.domain.user.service;
 
-import com.sh.domain.user.domain.User;
-import com.sh.domain.user.dto.UpdateUserRequestDto;
-import com.sh.domain.user.dto.UserRequestDto;
-import com.sh.domain.user.dto.SignupRequestDto;
-import com.sh.domain.user.dto.UserResponseDto;
+import com.sh.domain.user.dto.*;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 public interface UserService {
 
@@ -23,20 +17,19 @@ public interface UserService {
     
     // 로그인
     @Transactional
-    UserResponseDto login(UserRequestDto userRequestDto);
+    UserLoginResponseDto login(UserBasicRequestDto userBasicRequestDto);
     
     // 내 정보 조회
-    UserResponseDto selectMe();
+    UserBasicResponseDto selectMe();
 
     @Transactional
     // 회원 삭제
-    void deleteUser(UserRequestDto user);
+    void deleteUser(UserBasicRequestDto user);
 
-    @Transactional
     // 회원 수정(PATCH)
+    @Transactional
     void modifyMe(UpdateUserRequestDto user);
-    /*void modifyId(SignupRequestDto user);
-    void modifyPassword(SignupRequestDto user);
-    void modifyNickname(SignupRequestDto user);*/
 
+    // 다른 회원 조회
+    UserBasicResponseDto selectOtherUser(Long id);
 }
