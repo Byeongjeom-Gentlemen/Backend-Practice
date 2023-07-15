@@ -1,9 +1,6 @@
 package com.sh.domain.user.controller;
 
-import com.sh.domain.user.dto.UpdateUserRequestDto;
-import com.sh.domain.user.dto.UserRequestDto;
-import com.sh.domain.user.dto.SignupRequestDto;
-import com.sh.domain.user.dto.UserResponseDto;
+import com.sh.domain.user.dto.*;
 import com.sh.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,30 +25,37 @@ public class UserController {
 
     // 로그인
     @PostMapping("/api/v1/users/login")
-    public ResponseEntity<UserResponseDto> login(@RequestBody @Valid UserRequestDto userRequestDto){
-        return ResponseEntity.ok().body(userService.login(userRequestDto));
+    public ResponseEntity<UserLoginResponseDto> login(@RequestBody @Valid UserBasicRequestDto userBasicRequestDto){
+        return ResponseEntity.ok().body(userService.login(userBasicRequestDto));
     }
 
     // 내 정보 조회
     @GetMapping("/api/v1/users/me")
     // controller에서 요청을 수행하기 전 Filter가 요청 헤더에 대한 검증작업 수행(JwtAuthenticationFilter)
-    public ResponseEntity<UserResponseDto> myProfile() {
+    public ResponseEntity<UserBasicResponseDto> myProfile() {
         return ResponseEntity.ok().body(userService.selectMe());
     }
 
 
     // 회원 삭제
     @DeleteMapping("/api/v1/users")
-    public ResponseEntity<UserResponseDto> deleteUser(@RequestBody @Valid UserRequestDto userRequestDto) {
-        userService.deleteUser(userRequestDto);
+    public ResponseEntity<UserBasicResponseDto> deleteUser(@RequestBody @Valid UserBasicRequestDto userBasicRequestDto) {
+        userService.deleteUser(userBasicRequestDto);
         return ResponseEntity.noContent().build();
     }
 
     // 회원 수정(PATCH)
     @PatchMapping("/api/v1/users/me")
-    public ResponseEntity<UserResponseDto> modify(@RequestBody @Valid UpdateUserRequestDto user) {
+    public ResponseEntity<UserBasicResponseDto> modify(@RequestBody @Valid UpdateUserRequestDto user) {
         userService.modifyMe(user);
         return ResponseEntity.noContent().build();
+    }
+
+    // 다른 회원 조회
+    @GetMapping("/api/v1/users/{id}")
+    public ResponseEntity<UserBasicResponseDto> selectByOtherUser(@PathVariable("id") Long id) {
+        return ResponseEntity.ok()
+                .body(userService.selectOtherUser(id));
     }
 
 }

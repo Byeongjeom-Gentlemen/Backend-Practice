@@ -5,6 +5,7 @@ import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.common.jwt.JwtProvider;
+import com.sh.global.common.jwt.TokenDto;
 import com.sh.global.exception.customexcpetion.*;
 import com.sh.global.security.SecurityUtil;
 import com.sh.global.common.UserStatus;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -69,10 +69,10 @@ public class UserServiceImpl implements UserService {
 
     // 로그인
     @Override
-    public UserResponseDto login(UserRequestDto userRequestDto) {
+    public UserLoginResponseDto login(UserBasicRequestDto userBasicRequestDto) {
         // 1. id / pw를 기반으로 Authentication 객체 생성
         // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userRequestDto.getId(), userRequestDto.getPw());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userBasicRequestDto.getId(), userBasicRequestDto.getPw());
 
         // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
         // authenticate 메서드가 실행될 때 CustomUserDetailsService의 loadUserByUsername 실행
@@ -81,41 +81,27 @@ public class UserServiceImpl implements UserService {
         // 3. 인증 정보를 기반으로 JWT 생성
         TokenDto token = jwtProvider.generateToken(authentication);
 
-        User user = userRepository.findByUserId(userRequestDto.getId())
+        User user = userRepository.findByUserId(userBasicRequestDto.getId())
                 .orElseThrow(() -> new UserNotFoundException());
 
-        return UserResponseDto.builder()
-                .id(user.getId())
-                .userId(user.getUserId())
-                .nickname(user.getNickname())
-                .createdDate(user.getCreatedDate())
-                .modifiedDate(user.getModifiedDate())
-                .roles(user.getRoles())
-                .token(token)
-                .build();
+        return UserLoginResponseDto.of(user, token);
     }
 
     // 내 정보 조회
     @Override
-    public UserResponseDto selectMe() {
+    public UserBasicResponseDto selectMe() {
         String userId = SecurityUtil.getCurrentUserId();
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException());
 
-        return UserResponseDto.builder()
-                .id(user.getId())
-                .userId(user.getUserId())
-                .nickname(user.getNickname())
-                .createdDate(user.getCreatedDate())
-                .modifiedDate(user.getModifiedDate())
-                .build();
+        return UserBasicResponseDto.of(user);
     }
 
     // 회원 삭제
     // 나중에 회원이 삭제되면 회원이 등록한 게시글, 댓글등도 같이 삭제
     // CASCADE 옵션은 되도록 사용하지 않는다.
     @Override
-    public void deleteUser(UserRequestDto users) {
+    public void deleteUser(UserBasicRequestDto users) {
         userRepository.delete(userRepository.findByUserId(users.getId())
                 .map(data -> {
                     if(data.getStatus().equals(UserStatus.WITHDRAWAL_USER.getStatus())) {
@@ -162,6 +148,21 @@ public class UserServiceImpl implements UserService {
         }
 
         afterUser.updateUser(user);
+    }
+
+    // 다른 회원 조회
+    @Override
+    public UserBasicResponseDto selectOtherUser(Long id) {
+        User user = userRepository.findById(id)
+                .map(data -> {
+                    if(data.getStatus().equals(UserStatus.WITHDRAWAL_USER)) {
+                        throw new UserNotFoundException();
+                    }
+                    return data;
+                })
+                .orElseThrow(() -> new UserNotFoundException());
+
+        return UserBasicResponseDto.of(user);
     }
 
 }
