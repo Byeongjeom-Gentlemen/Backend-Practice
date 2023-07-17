@@ -2,14 +2,13 @@ package com.sh.domain.user.domain;
 
 import com.sh.domain.user.dto.UpdateUserRequestDto;
 import com.sh.global.common.BaseTimeEntity;
-import com.sh.global.common.UserStatus;
+import com.sh.global.util.UserStatus;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 

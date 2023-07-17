@@ -21,8 +21,10 @@ public class UserLoginResponseDto {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private List<Authority> roles = new ArrayList<>();
+    // JWT
     private TokenDto token;
 
+    // JWT
     public static UserLoginResponseDto from(User user, TokenDto token) {
         return UserLoginResponseDto.builder()
                 .id(user.getId())
