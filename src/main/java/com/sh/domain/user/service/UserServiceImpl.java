@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUserId(userBasicRequestDto.getId())
                 .orElseThrow(() -> new UserNotFoundException());
 
-        return UserLoginResponseDto.of(user, token);
+        return UserLoginResponseDto.from(user, token);
     }
 
     // 내 정보 조회
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException());
 
-        return UserBasicResponseDto.of(user);
+        return UserBasicResponseDto.from(user);
     }
 
     // 회원 삭제
@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(userRepository.findByUserId(users.getId())
                 .map(data -> {
                     if(data.getStatus().equals(UserStatus.WITHDRAWAL_USER.getStatus())) {
-                        throw new UserNotFoundException();
+                        throw new UserWithdrawalException();
                     }
                     else if (!passwordEncoder.matches(users.getPw(), data.getPw())) {
                         throw new NotMatchesUserException();
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService {
         User afterUser = userRepository.findByUserId(user.getUserId())
                 .map(data -> {
                     if(data.getStatus().equals(UserStatus.WITHDRAWAL_USER)) {
-                        throw new UserNotFoundException();
+                        throw new UserWithdrawalException();
                     }
                     return data;
                 })
@@ -156,13 +156,13 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .map(data -> {
                     if(data.getStatus().equals(UserStatus.WITHDRAWAL_USER)) {
-                        throw new UserNotFoundException();
+                        throw new UserWithdrawalException();
                     }
                     return data;
                 })
                 .orElseThrow(() -> new UserNotFoundException());
 
-        return UserBasicResponseDto.of(user);
+        return UserBasicResponseDto.from(user);
     }
 
 }
