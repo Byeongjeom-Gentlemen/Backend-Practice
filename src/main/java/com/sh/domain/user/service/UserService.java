@@ -3,6 +3,8 @@ package com.sh.domain.user.service;
 import com.sh.domain.user.dto.*;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface UserService {
 
     // 아이디 중복 확인

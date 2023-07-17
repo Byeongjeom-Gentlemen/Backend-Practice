@@ -8,7 +8,8 @@ import com.sh.global.common.jwt.JwtProvider;
 import com.sh.global.common.jwt.TokenDto;
 import com.sh.global.exception.customexcpetion.*;
 import com.sh.global.security.SecurityUtil;
-import com.sh.global.common.UserStatus;
+import com.sh.global.util.UserRole;
+import com.sh.global.util.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.util.Collections;
 
 @Service
@@ -28,6 +30,9 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
+    // 세션
+    private HttpSession session;
 
     // 아이디 중복 확인
     @Override
@@ -60,7 +65,7 @@ public class UserServiceImpl implements UserService {
                 .nickname(signupRequestDto.getNickname())
                 .build();
         // 권한 부여
-        user.setRoles(Collections.singletonList(Authority.builder().name("ROLE_USER").build()));
+        user.setRoles(Collections.singletonList(Authority.builder().name(UserRole.ROLE_USER.getDescription()).build()));
         userRepository.save(user);
 
         // 성공 시 pk값 반환
@@ -70,6 +75,7 @@ public class UserServiceImpl implements UserService {
     // 로그인
     @Override
     public UserLoginResponseDto login(UserBasicRequestDto userBasicRequestDto) {
+        // JWT
         // 1. id / pw를 기반으로 Authentication 객체 생성
         // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userBasicRequestDto.getId(), userBasicRequestDto.getPw());
