@@ -23,7 +23,7 @@ public class UserBasicResponseDto {
     private LocalDateTime modifiedDate;
 
 
-    public static UserBasicResponseDto of(User user) {
+    public static UserBasicResponseDto from(User user) {
         return UserBasicResponseDto.builder()
                 .id(user.getId())
                 .userId(user.getUserId())

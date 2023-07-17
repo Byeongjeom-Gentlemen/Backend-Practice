@@ -23,7 +23,7 @@ public class UserLoginResponseDto {
     private List<Authority> roles = new ArrayList<>();
     private TokenDto token;
 
-    public static UserLoginResponseDto of(User user, TokenDto token) {
+    public static UserLoginResponseDto from(User user, TokenDto token) {
         return UserLoginResponseDto.builder()
                 .id(user.getId())
                 .userId(user.getUserId())
