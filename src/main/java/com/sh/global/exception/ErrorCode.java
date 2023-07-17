@@ -22,6 +22,8 @@ public enum ErrorCode {
     // 잘못된 인증(해당 아이디가 존재하지 않거나 비밀번호가 틀렸을 경우)
     INVALID_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "U_004", "사용자 인증에 실패하였습니다."),
 
+    // 비회원일 경우
+    NON_LOGIN(HttpStatus.UNAUTHORIZED, "U_011", "로그인이 필요한 서비스 입니다."),
 
     // JWT
     NON_TOKEN(HttpStatus.UNAUTHORIZED, "U_008", "토큰정보가 존재하지 않습니다."),

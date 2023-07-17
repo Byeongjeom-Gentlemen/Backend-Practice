@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
         // String userId = SecurityUtil.getCurrentUserId();
 
         if(userId == null) {
-            throw new NotMatchesUserException();
+            throw new UserNonLoginException();
         }
 
         User user = userRepository.findByUserId(userId)
@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(UserBasicRequestDto users, String userId) {
         if(userId == null) {
-            throw new NotMatchesUserException();
+            throw new UserNonLoginException();
         }
 
         userRepository.delete(userRepository.findByUserId(users.getId())
@@ -152,7 +152,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void modifyMe(UpdateUserRequestDto user, String userId) {
         if(userId == null) {
-            throw new NotMatchesUserException();
+            throw new UserNonLoginException();
         }
 
         User afterUser = userRepository.findByUserId(user.getUserId())

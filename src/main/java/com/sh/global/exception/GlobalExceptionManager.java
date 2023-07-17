@@ -58,6 +58,13 @@ public class GlobalExceptionManager {
                 .body(response);
     }
 
+    @ExceptionHandler(UserNonLoginException.class)
+    public ResponseEntity<ErrorResponse> nonLoginError(UserNonLoginException e) {
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.NON_LOGIN);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(response);
+    }
+
 
     /*@ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> unAuthorizationError(UnauthorizedException e) {
