@@ -5,6 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+/*
 public class SecurityUtil {
 
     public static String getCurrentUserId() {
@@ -15,3 +16,4 @@ public class SecurityUtil {
         return authentication.getName();
     }
 }
+ */

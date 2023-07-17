@@ -1,8 +1,5 @@
 package com.sh.global.config;
 
-import com.sh.global.common.jwt.JwtAuthenticationFilter;
-import com.sh.global.common.jwt.JwtProvider;
-import com.sh.global.security.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtProvider jwtProvider;
+    // private final JwtProvider jwtProvider;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -43,8 +40,9 @@ public class SecurityConfig {
                 // Id, Pw 문자열을 Base64로 인코딩하여 전달하는 구조
                 .httpBasic().disable()
                 // 쿠키 기반인 아닌 JWT 기반이므로 사용X
-                .csrf().disable()
+                .csrf().disable();
                 // Spring Security 세션 정책 : 세션을 생성 및 사용하지 않음
+                /*
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 // 조건 별 요청 허용/제한 설정
@@ -61,7 +59,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 // JWT 인증 필터 적용
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class); */
 
         return http.build();
 

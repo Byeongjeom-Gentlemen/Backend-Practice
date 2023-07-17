@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.List;
 
+/*
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
@@ -39,3 +40,4 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     }
 }
+ */

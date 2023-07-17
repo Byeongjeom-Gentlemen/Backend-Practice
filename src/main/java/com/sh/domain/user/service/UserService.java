@@ -19,18 +19,18 @@ public interface UserService {
     
     // 로그인
     @Transactional
-    UserLoginResponseDto login(UserBasicRequestDto userBasicRequestDto);
+    UserLoginResponseDto login(UserBasicRequestDto userBasicRequestDto, HttpServletRequest httpServletRequest);
     
     // 내 정보 조회
-    UserBasicResponseDto selectMe();
+    UserBasicResponseDto selectMe(String userId);
 
     @Transactional
     // 회원 삭제
-    void deleteUser(UserBasicRequestDto user);
+    void deleteUser(UserBasicRequestDto user, String userId);
 
     // 회원 수정(PATCH)
     @Transactional
-    void modifyMe(UpdateUserRequestDto user);
+    void modifyMe(UpdateUserRequestDto user, String userId);
 
     // 다른 회원 조회
     UserBasicResponseDto selectOtherUser(Long id);
