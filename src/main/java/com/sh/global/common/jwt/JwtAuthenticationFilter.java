@@ -1,10 +1,11 @@
 package com.sh.global.common.jwt;
 
+/*
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sh.global.exception.ErrorCode;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.SecurityException;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -72,3 +74,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 }
+ */

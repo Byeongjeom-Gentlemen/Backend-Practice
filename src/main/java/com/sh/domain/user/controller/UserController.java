@@ -26,29 +26,31 @@ public class UserController {
 
     // 로그인
     @PostMapping("/api/v1/users/login")
-    public ResponseEntity<UserLoginResponseDto> login(@RequestBody @Valid UserBasicRequestDto userBasicRequestDto){
-        return ResponseEntity.ok().body(userService.login(userBasicRequestDto));
+    public ResponseEntity<UserLoginResponseDto> login(@RequestBody @Valid UserBasicRequestDto userBasicRequestDto, HttpServletRequest httpServletRequest){
+        return ResponseEntity.ok().body(userService.login(userBasicRequestDto, httpServletRequest));
     }
 
     // 내 정보 조회
     @GetMapping("/api/v1/users/me")
     // controller에서 요청을 수행하기 전 Filter가 요청 헤더에 대한 검증작업 수행(JwtAuthenticationFilter)
-    public ResponseEntity<UserBasicResponseDto> myProfile() {
-        return ResponseEntity.ok().body(userService.selectMe());
+    public ResponseEntity<UserBasicResponseDto> myProfile(@SessionAttribute(name = "userId", required = false) String userId) {
+        return ResponseEntity.ok().body(userService.selectMe(userId));
     }
 
 
     // 회원 삭제
     @DeleteMapping("/api/v1/users")
-    public ResponseEntity<UserBasicResponseDto> deleteUser(@RequestBody @Valid UserBasicRequestDto userBasicRequestDto) {
-        userService.deleteUser(userBasicRequestDto);
+    public ResponseEntity<UserBasicResponseDto> deleteUser(@RequestBody @Valid UserBasicRequestDto userBasicRequestDto,
+                                                           @SessionAttribute(name = "userId", required = false) String userId) {
+        userService.deleteUser(userBasicRequestDto, userId);
         return ResponseEntity.noContent().build();
     }
 
     // 회원 수정(PATCH)
     @PatchMapping("/api/v1/users/me")
-    public ResponseEntity<UserBasicResponseDto> modify(@RequestBody @Valid UpdateUserRequestDto user) {
-        userService.modifyMe(user);
+    public ResponseEntity<UserBasicResponseDto> modify(@RequestBody @Valid UpdateUserRequestDto user,
+                                                       @SessionAttribute(name = "userId", required = false) String userId) {
+        userService.modifyMe(user, userId);
         return ResponseEntity.noContent().build();
     }
 

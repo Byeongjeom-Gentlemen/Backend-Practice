@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+/*
 public class CustomUserDetails implements UserDetails {
 
     private final User user;
@@ -58,3 +59,4 @@ public class CustomUserDetails implements UserDetails {
     }
 
 }
+ */

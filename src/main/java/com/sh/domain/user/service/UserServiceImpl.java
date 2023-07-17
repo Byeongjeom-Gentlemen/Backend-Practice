@@ -4,20 +4,19 @@ import com.sh.domain.user.domain.Authority;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
 import com.sh.domain.user.repository.UserRepository;
-import com.sh.global.common.jwt.JwtProvider;
-import com.sh.global.common.jwt.TokenDto;
+import com.sh.global.common.SessionDto;
 import com.sh.global.exception.customexcpetion.*;
-import com.sh.global.security.SecurityUtil;
 import com.sh.global.util.UserRole;
 import com.sh.global.util.UserStatus;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Collections;
 
@@ -28,11 +27,9 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    /*
     private final JwtProvider jwtProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-
-    // 세션
-    private HttpSession session;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder; */
 
     // 아이디 중복 확인
     @Override
@@ -74,8 +71,8 @@ public class UserServiceImpl implements UserService {
 
     // 로그인
     @Override
-    public UserLoginResponseDto login(UserBasicRequestDto userBasicRequestDto) {
-        // JWT
+    public UserLoginResponseDto login(UserBasicRequestDto userBasicRequestDto, HttpServletRequest httpServletRequest) {
+        /* // JWT
         // 1. id / pw를 기반으로 Authentication 객체 생성
         // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userBasicRequestDto.getId(), userBasicRequestDto.getPw());
@@ -90,13 +87,40 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUserId(userBasicRequestDto.getId())
                 .orElseThrow(() -> new UserNotFoundException());
 
-        return UserLoginResponseDto.from(user, token);
+        return UserLoginResponseDto.from(user, token); */
+
+        // Session
+        User user = userRepository.findByUserId(userBasicRequestDto.getId())
+                .orElseThrow(() -> new UserNotFoundException());
+
+        if(!passwordEncoder.matches(userBasicRequestDto.getPw(), user.getPw())) {
+            throw new NotMatchesUserException();
+        }
+
+        httpServletRequest.getSession().invalidate();
+        HttpSession session = httpServletRequest.getSession(true);
+        session.setAttribute("userId", userBasicRequestDto.getId());
+        session.setMaxInactiveInterval(1800);
+
+        SessionDto sessions = SessionDto.builder()
+                .sessionId(session.getId())
+                .createTime(session.getCreationTime())
+                .validTime(session.getMaxInactiveInterval())
+                .build();
+
+        return UserLoginResponseDto.from(user, sessions);
     }
 
     // 내 정보 조회
     @Override
-    public UserBasicResponseDto selectMe() {
-        String userId = SecurityUtil.getCurrentUserId();
+    public UserBasicResponseDto selectMe(String userId) {
+        // JWT
+        // String userId = SecurityUtil.getCurrentUserId();
+
+        if(userId == null) {
+            throw new NotMatchesUserException();
+        }
+
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException());
 
@@ -107,7 +131,11 @@ public class UserServiceImpl implements UserService {
     // 나중에 회원이 삭제되면 회원이 등록한 게시글, 댓글등도 같이 삭제
     // CASCADE 옵션은 되도록 사용하지 않는다.
     @Override
-    public void deleteUser(UserBasicRequestDto users) {
+    public void deleteUser(UserBasicRequestDto users, String userId) {
+        if(userId == null) {
+            throw new NotMatchesUserException();
+        }
+
         userRepository.delete(userRepository.findByUserId(users.getId())
                 .map(data -> {
                     if(data.getStatus().equals(UserStatus.WITHDRAWAL_USER.getStatus())) {
@@ -122,7 +150,11 @@ public class UserServiceImpl implements UserService {
 
     // 회원 수정(PATCH)
     @Override
-    public void modifyMe(UpdateUserRequestDto user) {
+    public void modifyMe(UpdateUserRequestDto user, String userId) {
+        if(userId == null) {
+            throw new NotMatchesUserException();
+        }
+
         User afterUser = userRepository.findByUserId(user.getUserId())
                 .map(data -> {
                     if(data.getStatus().equals(UserStatus.WITHDRAWAL_USER)) {
