@@ -1,15 +1,14 @@
 package com.sh.domain.board.controller;
 
+import com.sh.domain.board.dto.BoardBasicResponseDto;
 import com.sh.domain.board.dto.BoardCreateRequestDto;
 import com.sh.domain.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 import java.net.URI;
 
 @RestController
@@ -24,5 +23,12 @@ public class BoardController {
                                        @SessionAttribute(name = "userId", required = false) String userId) {
         return ResponseEntity.created(URI.create("/api/v1/board"))
                 .body(boardService.createBoard(board, userId));
+    }
+
+    // 게시글 조회
+    @GetMapping("/api/v1/board/{boardId}")
+    public ResponseEntity<BoardBasicResponseDto> selectBoard(@PathVariable("boardId") Long boardId) {
+        return ResponseEntity.ok()
+                .body(boardService.selectBoard(boardId));
     }
 }

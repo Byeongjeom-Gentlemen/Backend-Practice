@@ -1,10 +1,10 @@
 package com.sh.global.exception;
 
-import com.sh.global.exception.customexcpetion.*;
+import com.sh.global.exception.customexcpetion.board.NotFoundBoardException;
+import com.sh.global.exception.customexcpetion.user.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -62,6 +62,13 @@ public class GlobalExceptionManager {
     public ResponseEntity<ErrorResponse> nonLoginError(UserNonLoginException e) {
         final ErrorResponse response = ErrorResponse.of(ErrorCode.NON_LOGIN);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(response);
+    }
+
+    @ExceptionHandler(NotFoundBoardException.class)
+    public ResponseEntity<ErrorResponse> notFoundBoardError(NotFoundBoardException e) {
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_FOUND_BOARD);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(response);
     }
 

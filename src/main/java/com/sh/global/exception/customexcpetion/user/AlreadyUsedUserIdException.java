@@ -1,4 +1,4 @@
-package com.sh.global.exception.customexcpetion;
+package com.sh.global.exception.customexcpetion.user;
 
 public class AlreadyUsedUserIdException extends RuntimeException {
 

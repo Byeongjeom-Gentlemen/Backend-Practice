@@ -2,12 +2,13 @@ package com.sh.domain.board.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardCreateRequestDto {
