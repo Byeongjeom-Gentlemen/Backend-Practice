@@ -2,6 +2,7 @@ package com.sh.domain.board.controller;
 
 import com.sh.domain.board.dto.BoardBasicResponseDto;
 import com.sh.domain.board.dto.BoardCreateRequestDto;
+import com.sh.domain.board.dto.UpdateBoardRequestDto;
 import com.sh.domain.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,14 @@ public class BoardController {
     public ResponseEntity<BoardBasicResponseDto> selectBoard(@PathVariable("boardId") Long boardId) {
         return ResponseEntity.ok()
                 .body(boardService.selectBoard(boardId));
+    }
+
+    // 게시글 수정
+    @PutMapping("/api/v1/board/{boardId}")
+    public ResponseEntity<BoardBasicResponseDto> modify(@PathVariable("boardId") Long boardId,
+                                                        @SessionAttribute(name = "userId", required = false) String userId,
+                                                        @RequestBody @Valid UpdateBoardRequestDto afterBoard) {
+        boardService.modifyBoard(boardId, userId, afterBoard);
+        return ResponseEntity.noContent().build();
     }
 }

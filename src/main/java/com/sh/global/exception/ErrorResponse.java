@@ -49,7 +49,7 @@ public class ErrorResponse {
     }
 
     // 정적 팩토리
-    public static ErrorResponse of(ErrorCode errorCode) {
+    public static ErrorResponse from(ErrorCode errorCode) {
         return new ErrorResponse(errorCode, Collections.emptyList());
     }
 
