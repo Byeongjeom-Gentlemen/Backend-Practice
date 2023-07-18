@@ -51,18 +51,23 @@ public class UserServiceImpl implements UserService {
         if(checkByNickname(signupRequestDto.getNickname())) {
             throw new AlreadyUsedUserNicknameException("이미 사용중인 닉네임입니다.");
         }
+
         // 비밀번호 암호화
         signupRequestDto.encryptPassword(passwordEncoder.encode(signupRequestDto.getPw()));
+
         User user = User.builder()
                 .userId(signupRequestDto.getId())
                 .pw(signupRequestDto.getPw())
                 .nickname(signupRequestDto.getNickname())
+                .status(UserStatus.ALIVE)
                 .build();
+        
         // 권한 부여
-        user.setRoles(Collections.singletonList(Authority.builder().name(UserRole.ROLE_USER.getDescription()).build()));
+        user.setRoles(Collections.singletonList(Authority.builder().name(UserRole.ROLE_USER).build()));
+        
+        // 회원 저장
         userRepository.save(user);
 
-        // 성공 시 pk값 반환
         return user.getId();
     }
 
@@ -134,15 +139,16 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.delete(userRepository.findByUserId(users.getId())
-                .map(data -> {
-                    if(data.getStatus().equals(UserStatus.WITHDRAWAL_USER.getStatus())) {
-                        throw new UserWithdrawalException();
-                    }
-                    else if (!passwordEncoder.matches(users.getPw(), data.getPw())) {
-                        throw new NotMatchesUserException();
-                    }
-                    return data;
-                }).orElseThrow(() -> new UserNotFoundException()));
+                        .map(data -> {
+                            if(data.getStatus().equals(UserStatus.WITHDRAWN)) {
+                                throw new UserWithdrawalException();
+                            }
+                            else if (!passwordEncoder.matches(users.getPw(), data.getPw())) {
+                                throw new NotMatchesUserException();
+                            }
+                            return data;
+                        })
+                .orElseThrow(() -> new UserNotFoundException()));
     }
 
     // 회원 수정(PATCH)
@@ -154,7 +160,7 @@ public class UserServiceImpl implements UserService {
 
         User afterUser = userRepository.findByUserId(user.getUserId())
                 .map(data -> {
-                    if(data.getStatus().equals(UserStatus.WITHDRAWAL_USER)) {
+                    if(data.getStatus().equals(UserStatus.WITHDRAWN)) {
                         throw new UserWithdrawalException();
                     }
                     return data;
@@ -190,7 +196,7 @@ public class UserServiceImpl implements UserService {
     public UserBasicResponseDto selectOtherUser(Long id) {
         User user = userRepository.findById(id)
                 .map(data -> {
-                    if(data.getStatus().equals(UserStatus.WITHDRAWAL_USER)) {
+                    if(data.getStatus().equals(UserStatus.WITHDRAWN)) {
                         throw new UserWithdrawalException();
                     }
                     return data;

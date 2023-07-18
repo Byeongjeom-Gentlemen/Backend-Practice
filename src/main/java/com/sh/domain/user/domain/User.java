@@ -20,8 +20,8 @@ import java.util.List;
 @Builder
 // 논리 삭제(실제 DB에서 삭제하지 않고 필드 값을 추가하여 삭제 여부를 판단
 // @Where을 사용해 해당 값만 select하도록 설정(삭제된 회원은 조회 시 조회안됨)
-@Where(clause = "not user_status = 'withdrawn'")
-@SQLDelete(sql = "UPDATE users SET user_status = 'withdrawn' where id = ?")
+//@Where(clause = "not user_status = 'WITHDRAWN'")
+@SQLDelete(sql = "UPDATE users SET user_status = 'WITHDRAWN' where id = ?")
 public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,8 +42,8 @@ public class User extends BaseTimeEntity {
 
     // 회원 상태
     @Column(name = "user_status")
-    @Builder.Default
-    private String status = UserStatus.ALIVE_USER.getStatus();
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
 
     // 권한 설정
     public void setRoles(List<Authority> role) {
