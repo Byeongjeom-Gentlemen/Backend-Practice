@@ -72,4 +72,20 @@ public class BoardServiceImpl implements BoardService {
 
         board.update(afterBoard);
     }
+
+    // 게시글 삭제
+    @Override
+    public void deleteBoard(Long boardId, String userId) {
+        if(userId == null) {
+            throw new UserNonLoginException();
+        }
+
+        boardRepository.delete(boardRepository.findById(boardId)
+                        .map(data -> {
+                            if(!data.getUser().getUserId().equals(userId)) {
+                                throw new NotMatchesWriterException();
+                            }
+                            return data;
+                        }).orElseThrow(() -> new NotFoundBoardException()));
+    }
 }
