@@ -10,4 +10,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     // 게시글 생성
     Board save(Board board);
+
+    // 게시글 조회
+    Optional<Board> findById(Long boardId);
 }

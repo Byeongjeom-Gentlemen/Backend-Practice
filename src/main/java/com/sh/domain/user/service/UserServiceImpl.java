@@ -5,18 +5,15 @@ import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.common.SessionDto;
-import com.sh.global.exception.customexcpetion.*;
+import com.sh.global.exception.customexcpetion.user.*;
 import com.sh.global.util.UserRole;
 import com.sh.global.util.UserStatus;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Collections;
 
