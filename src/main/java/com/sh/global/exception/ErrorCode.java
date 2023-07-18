@@ -35,7 +35,8 @@ public enum ErrorCode {
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "U_009", "잘못된 토큰 정보입니다."),
 
     /* BOARD */
-    NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, "B_001", "해당 게시글이 존재하지 않습니다");
+    NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, "B_001", "해당 게시글이 존재하지 않습니다"),
+    BOARD_NOT_AUTHORITY(HttpStatus.UNAUTHORIZED, "B_002", "해당 게시글에 대한 권한이 존재하지 않습니다.");
 
     private final HttpStatus status;
     private final String code;

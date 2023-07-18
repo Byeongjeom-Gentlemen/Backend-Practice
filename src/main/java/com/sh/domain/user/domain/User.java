@@ -18,7 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@DynamicUpdate
 // 논리 삭제(실제 DB에서 삭제하지 않고 필드 값을 추가하여 삭제 여부를 판단
 // @Where을 사용해 해당 값만 select하도록 설정(삭제된 회원은 조회 시 조회안됨)
 @Where(clause = "not user_status = 'withdrawn'")

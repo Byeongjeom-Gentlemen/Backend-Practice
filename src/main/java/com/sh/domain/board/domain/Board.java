@@ -1,5 +1,6 @@
 package com.sh.domain.board.domain;
 
+import com.sh.domain.board.dto.UpdateBoardRequestDto;
 import com.sh.domain.user.domain.User;
 import com.sh.global.common.BaseTimeEntity;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 @Entity
 @Getter
@@ -31,4 +33,10 @@ public class Board extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    // 게시글 수정
+    public void update(UpdateBoardRequestDto afterBoard) {
+        this.title = afterBoard.getTitle();
+        this.content = afterBoard.getContent();
+    }
 }
