@@ -41,4 +41,12 @@ public class BoardController {
         boardService.modifyBoard(boardId, userId, afterBoard);
         return ResponseEntity.noContent().build();
     }
+
+    // 게시글 삭제
+    @DeleteMapping("/api/v1/board/{boardId}")
+    public ResponseEntity<BoardBasicResponseDto> delete(@PathVariable("boardId") Long boardId,
+                                                        @SessionAttribute(name = "userId", required = false) String userId) {
+        boardService.deleteBoard(boardId, userId);
+        return ResponseEntity.noContent().build();
+    }
 }
