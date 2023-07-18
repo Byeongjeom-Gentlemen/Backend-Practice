@@ -1,6 +1,7 @@
 package com.sh.domain.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sh.global.util.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,8 @@ import java.util.List;
 // 사용자의 권한 목록 엔티티
 @Entity
 @Getter
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Authority {
 
@@ -21,9 +23,10 @@ public class Authority {
     @JsonIgnore
     private Long id;
 
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private UserRole name;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User users;

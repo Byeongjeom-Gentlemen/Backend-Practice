@@ -6,16 +6,9 @@ import lombok.Getter;
 public enum UserStatus {
 
     // 활동 유저
-    ALIVE_USER("alive"),
+    ALIVE,
     // 휴먼 유저
-    DORMANT_USER("dormant"),
+    DORMANT,
     // 탈퇴한 유저
-    WITHDRAWAL_USER("withdrawn");
-
-
-    private final String status;
-
-    UserStatus(final String status) {
-        this.status = status;
-    }
+    WITHDRAWN;
 }
