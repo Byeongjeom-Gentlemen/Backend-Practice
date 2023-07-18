@@ -48,6 +48,12 @@ public class BoardServiceImpl implements BoardService {
     public BoardBasicResponseDto selectBoard(Long boardId) {
 
         Board board = boardRepository.findById(boardId)
+                .map(data -> {
+                    if(data.getDelete_at() != null) {
+                        throw new NotFoundBoardException();
+                    }
+                    return data;
+                })
                 .orElseThrow(() -> new NotFoundBoardException());
 
         return BoardBasicResponseDto.from(board);
@@ -63,6 +69,12 @@ public class BoardServiceImpl implements BoardService {
 
         // 해당 게시글이 존재하지 않을 경우
         Board board = boardRepository.findById(boardId)
+                .map(data -> {
+                    if(data.getDelete_at() != null) {
+                        throw new NotFoundBoardException();
+                    }
+                    return data;
+                })
                 .orElseThrow(() -> new NotFoundBoardException());
 
         // 해당 게시글의 작성자가 다른 경우
@@ -82,7 +94,10 @@ public class BoardServiceImpl implements BoardService {
 
         boardRepository.delete(boardRepository.findById(boardId)
                         .map(data -> {
-                            if(!data.getUser().getUserId().equals(userId)) {
+                            if(data.getDelete_at() != null) {
+                                throw new NotFoundBoardException();
+                            }
+                            else if(!data.getUser().getUserId().equals(userId)) {
                                 throw new NotMatchesWriterException();
                             }
                             return data;

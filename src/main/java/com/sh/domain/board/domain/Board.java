@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Where(clause = "delete_at IS NULL")
 @SQLDelete(sql = "UPDATE board SET delete_at = CURRENT_TIMESTAMP where board_id = ?")
 public class Board extends BaseTimeEntity {
 
