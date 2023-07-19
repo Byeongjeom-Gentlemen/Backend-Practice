@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.13'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'com.diffplug.spotless' version '6.11.0'
 }
 
 group = 'com.sh'
@@ -27,6 +28,8 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' */
 
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
+
     /* 암호화를 위한 security 의존성 주입 */
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.security:spring-security-test'
@@ -45,4 +48,16 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+spotless {
+    java {
+        target("**/*.java")
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+        importOrder()
+        indentWithTabs()
+        googleJavaFormat().aosp()
+    }
 }
