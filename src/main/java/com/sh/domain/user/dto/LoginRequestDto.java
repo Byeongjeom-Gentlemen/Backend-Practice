@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserBasicRequestDto {
+public class LoginRequestDto {
     @Schema(defaultValue = "ehftozl")
     @NotBlank(message = "아이디를 입력해주세요.")
     private String id;

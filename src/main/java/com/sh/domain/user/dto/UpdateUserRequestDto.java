@@ -12,7 +12,6 @@ import javax.validation.constraints.Pattern;
 @Getter
 @Setter
 public class UpdateUserRequestDto {
-    private String userId;
 
     @Pattern(regexp = "^[a-zA-Z]{4,10}$", message = "아이디는 4~10자 이내의 영문이여야 합니다.")
     private String afterId;
@@ -23,7 +22,4 @@ public class UpdateUserRequestDto {
     @Pattern(regexp = "^[가-힣]{2,4}$", message = "닉네임은 2~4자 이내의 한글이여야 합니다.")
     private String afterNickname;
 
-    public void encryptPassword(String BCryptpassword) {
-        this.afterPw = BCryptpassword;
-    }
 }
