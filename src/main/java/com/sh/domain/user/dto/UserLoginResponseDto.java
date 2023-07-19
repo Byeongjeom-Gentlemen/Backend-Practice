@@ -22,12 +22,9 @@ public class UserLoginResponseDto {
     private String nickname;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-    private List<Authority> roles = new ArrayList<>();
     // JWT
     //private TokenDto token;
-
-    // 세션
-    private SessionDto session;
+    private String result;
 
     // JWT
     /*public static UserLoginResponseDto from(User user, TokenDto token) {
@@ -43,15 +40,14 @@ public class UserLoginResponseDto {
     }*/
 
     // Session
-    public static UserLoginResponseDto from(User user, SessionDto session) {
+    public static UserLoginResponseDto from(User user, String result) {
         return UserLoginResponseDto.builder()
                 .id(user.getId())
                 .userId(user.getUserId())
                 .nickname(user.getNickname())
                 .createdDate(user.getCreatedDate())
                 .modifiedDate(user.getModifiedDate())
-                .roles(user.getRoles())
-                .session(session)
+                .result(result)
                 .build();
     }
 }
