@@ -1,8 +1,14 @@
 package com.sh.global.exception.customexcpetion.user;
 
+import com.sh.global.exception.UserErrorCode;
+import lombok.Getter;
+
+@Getter
 public class AlreadyUsedUserIdException extends RuntimeException {
 
-    public AlreadyUsedUserIdException(String message) {
-        super(message);
+    private UserErrorCode errorCode;
+
+    public AlreadyUsedUserIdException(UserErrorCode errorCode) {
+        this.errorCode = errorCode;
     }
 }
