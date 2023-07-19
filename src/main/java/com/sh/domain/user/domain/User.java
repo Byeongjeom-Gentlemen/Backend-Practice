@@ -4,10 +4,7 @@ import com.sh.domain.user.dto.UpdateUserRequestDto;
 import com.sh.global.common.BaseTimeEntity;
 import com.sh.global.util.UserStatus;
 import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 // 논리 삭제(실제 DB에서 삭제하지 않고 필드 값을 추가하여 삭제 여부를 판단
 // @Where을 사용해 해당 값만 select하도록 설정(삭제된 회원은 조회 시 조회안됨)
 //@Where(clause = "not user_status = 'WITHDRAWN'")
@@ -36,26 +31,32 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, length = 4, unique = true)
     private String nickname;
 
-    @OneToMany(mappedBy = "users", orphanRemoval = true)
-    @Builder.Default
-    private List<Authority> roles = new ArrayList<>();
-
     // 회원 상태
     @Column(name = "user_status")
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
-    // 권한 설정
-    public void setRoles(List<Authority> role) {
-        this.roles = role;
-        role.forEach(o -> o.setUser(this));
+    @Builder
+    private User(String userId, String pw, String nickname, UserStatus status) {
+        this.userId = userId;
+        this.pw = pw;
+        this.nickname = nickname;
+        this.status = status;
     }
 
-    // 회원 수정
-    public void updateUser (UpdateUserRequestDto user) {
-        this.userId = user.getAfterId();
-        this.pw = user.getAfterPw();
-        this.nickname = user.getAfterNickname();
+    // 회원 아이디 수정
+    public void updateUserId(String userId) {
+        this.userId = userId;
+    }
+
+    // 회원 닉네임 수정
+    public void updateUserNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    // 회원 비밀번호 수정
+    public void updateUserPassword(String password) {
+        this.pw = password;
     }
 
 }
