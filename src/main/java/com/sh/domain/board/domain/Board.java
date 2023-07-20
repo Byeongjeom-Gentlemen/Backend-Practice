@@ -3,10 +3,7 @@ package com.sh.domain.board.domain;
 import com.sh.domain.board.dto.UpdateBoardRequestDto;
 import com.sh.domain.user.domain.User;
 import com.sh.global.common.BaseTimeEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -16,9 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE board SET delete_at = CURRENT_TIMESTAMP where board_id = ?")
 public class Board extends BaseTimeEntity {
 
@@ -39,12 +34,19 @@ public class Board extends BaseTimeEntity {
     private User user;
 
     @Column
-    @Builder.Default
-    private LocalDateTime delete_at = null;
+    private LocalDateTime delete_at;
+
+    @Builder
+    private Board(String title, String content, User user) {
+        this.title = title;
+        this.content = content;
+        this.user = user;
+        this.delete_at = null;
+    }
 
     // 게시글 수정
-    public void update(UpdateBoardRequestDto afterBoard) {
-        this.title = afterBoard.getTitle();
-        this.content = afterBoard.getContent();
+    public void update(UpdateBoardRequestDto updateRequest) {
+        this.title = updateRequest.getTitle();
+        this.content = updateRequest.getContent();
     }
 }
