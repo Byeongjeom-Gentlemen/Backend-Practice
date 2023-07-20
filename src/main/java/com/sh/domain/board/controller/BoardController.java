@@ -2,12 +2,14 @@ package com.sh.domain.board.controller;
 
 import com.sh.domain.board.dto.BoardBasicResponseDto;
 import com.sh.domain.board.dto.CreateBoardRequestDto;
+import com.sh.domain.board.dto.PagingBoardsResponseDto;
 import com.sh.domain.board.dto.UpdateBoardRequestDto;
 import com.sh.domain.board.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,5 +53,14 @@ public class BoardController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long boardId) {
         boardService.deleteBoard(boardId);
+    }
+
+    // 게시글 전체 조회
+    @Operation(summary = "게시글 전체 조회 API", description = "게시글 전체를 조회하는 API 입니다. 페이지 넘버와 보여질 데이터 수를 필요로 합니다.")
+    @GetMapping("/api/v1/board")
+    public ResponseEntity<PagingBoardsResponseDto> allBoards(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                             @RequestParam(name = "count", required = false, defaultValue = "5") Integer count) {
+        PageRequest pageable = PageRequest.of(page, count);
+        return ResponseEntity.ok().body(boardService.allBoards(pageable));
     }
 }

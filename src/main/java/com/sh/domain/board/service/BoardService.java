@@ -2,7 +2,9 @@ package com.sh.domain.board.service;
 
 import com.sh.domain.board.dto.BoardBasicResponseDto;
 import com.sh.domain.board.dto.CreateBoardRequestDto;
+import com.sh.domain.board.dto.PagingBoardsResponseDto;
 import com.sh.domain.board.dto.UpdateBoardRequestDto;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface BoardService {
@@ -22,4 +24,7 @@ public interface BoardService {
     @Transactional
     // 게시글 삭제
     void deleteBoard(Long boardId);
+
+    @Transactional(readOnly = true)
+    PagingBoardsResponseDto allBoards(PageRequest pageable);
 }
