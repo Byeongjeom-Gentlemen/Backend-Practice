@@ -1,7 +1,7 @@
 package com.sh.domain.board.dto;
 
 import com.sh.domain.board.domain.Board;
-import com.sh.domain.user.dto.BoardWriterDto;
+import com.sh.domain.user.dto.WriterResponseDto;
 import java.time.LocalDateTime;
 import lombok.*;
 
@@ -14,7 +14,7 @@ public class BoardBasicResponseDto {
     private Long boardId;
     private String title;
     private String content;
-    private BoardWriterDto user;
+    private WriterResponseDto user;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
@@ -23,7 +23,7 @@ public class BoardBasicResponseDto {
                 .boardId(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .user(new BoardWriterDto(board.getUser()))
+                .user(new WriterResponseDto(board.getUser()))
                 .createdDate(board.getCreatedDate())
                 .modifiedDate(board.getModifiedDate())
                 .build();
