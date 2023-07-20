@@ -1,9 +1,7 @@
 package com.sh.domain.board.service;
 
 import com.sh.domain.board.domain.Board;
-import com.sh.domain.board.dto.BoardBasicResponseDto;
-import com.sh.domain.board.dto.CreateBoardRequestDto;
-import com.sh.domain.board.dto.UpdateBoardRequestDto;
+import com.sh.domain.board.dto.*;
 import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
@@ -14,7 +12,15 @@ import com.sh.global.exception.customexcpetion.board.NotMatchesWriterException;
 import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
 import com.sh.global.util.SessionUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -105,5 +111,16 @@ public class BoardServiceImpl implements BoardService {
         }
 
         boardRepository.delete(board);
+    }
+    
+    // 게시글 전체 조회
+    public PagingBoardsResponseDto allBoards(PageRequest pageable) {
+        Page<Board> data = boardRepository.findAll(pageable);
+        List<SimpleBoardResponseDto> boardList = data.getContent().stream()
+                                    .filter(board -> board.getDelete_at() == null)
+                                    .map(board -> SimpleBoardResponseDto.from(board))
+                                    .collect(Collectors.toList());
+
+        return PagingBoardsResponseDto.of(data, boardList);
     }
 }
