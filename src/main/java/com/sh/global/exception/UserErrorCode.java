@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum UserErrorCode {
+public enum UserErrorCode implements ErrorCode{
     /* USER */
     // 데이터 누락 및 잘못된 데이터 형식(아이디, 비밀번호, 닉네임)
     INVALID_VALUE(HttpStatus.BAD_REQUEST, "U_001", "잘못된 형식의 데이터입니다."),
@@ -41,5 +41,20 @@ public enum UserErrorCode {
         this.status = status;
         this.message = message;
         this.code = code;
+    }
+
+    @Override
+    public String getCode() {
+        return this.code;
+    }
+
+    @Override
+    public String getMessage() {
+        return this.message;
+    }
+
+    @Override
+    public HttpStatus getStatus() {
+        return this.status;
     }
 }

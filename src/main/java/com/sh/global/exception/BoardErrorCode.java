@@ -1,8 +1,10 @@
 package com.sh.global.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-public enum BoardErrorCode{
+@Getter
+public enum BoardErrorCode implements ErrorCode {
 
     /* BOARD */
     NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, "B_001", "해당 게시글이 존재하지 않습니다"),
@@ -16,5 +18,20 @@ public enum BoardErrorCode{
         this.status = status;
         this.message = message;
         this.code = code;
+    }
+
+    @Override
+    public String getCode() {
+        return this.code;
+    }
+
+    @Override
+    public String getMessage() {
+        return this.message;
+    }
+
+    @Override
+    public HttpStatus getStatus() {
+        return this.status;
     }
 }

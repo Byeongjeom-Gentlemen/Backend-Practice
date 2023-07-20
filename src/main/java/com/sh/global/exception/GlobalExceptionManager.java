@@ -82,7 +82,7 @@ public class GlobalExceptionManager {
     // 해당 게시글을 찾을 수 없을 때 예외
     @ExceptionHandler(NotFoundBoardException.class)
     public ResponseEntity<ErrorResponse> notFoundBoardError(NotFoundBoardException e) {
-        final ErrorResponse response = ErrorResponse.from(UserErrorCode.NOT_FOUND_BOARD);
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(response);
     }
@@ -90,7 +90,7 @@ public class GlobalExceptionManager {
     // 게시글의 작성자 정보가 틀릴 경우 예외
     @ExceptionHandler(NotMatchesWriterException.class)
     public ResponseEntity<ErrorResponse> notMatchesWriterError(NotMatchesWriterException e) {
-        final ErrorResponse response = ErrorResponse.from(UserErrorCode.BOARD_NOT_AUTHORITY);
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(response);
     }

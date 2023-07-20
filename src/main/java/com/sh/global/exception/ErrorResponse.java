@@ -31,32 +31,32 @@ public class ErrorResponse {
         }
     }
 
-    private void setErrorCode(UserErrorCode userErrorCode) {
-        this.code = userErrorCode.getCode();
-        this.message = userErrorCode.getMessage();
-        this.status = userErrorCode.getStatus();
+    private void setErrorCode(ErrorCode errorCode) {
+        this.code = errorCode.getCode();
+        this.message = errorCode.getMessage();
+        this.status = errorCode.getStatus();
     }
 
-    private ErrorResponse(UserErrorCode userErrorCode, List<FieldError> errors) {
-        setErrorCode(userErrorCode);
+    private ErrorResponse(ErrorCode errorCode, List<FieldError> errors) {
+        setErrorCode(errorCode);
         this.errors = errors.stream().map(CustomFieldError::new).collect(Collectors.toList());
     }
 
-    private ErrorResponse(UserErrorCode userErrorCode, String exceptionMessage) {
-        setErrorCode(userErrorCode);
+    private ErrorResponse(ErrorCode errorCode, String exceptionMessage) {
+        setErrorCode(errorCode);
         this.errors = List.of(new CustomFieldError("", "", exceptionMessage));
     }
 
     // 정적 팩토리
-    public static ErrorResponse from(UserErrorCode userErrorCode) {
-        return new ErrorResponse(userErrorCode, Collections.emptyList());
+    public static ErrorResponse from(ErrorCode errorCode) {
+        return new ErrorResponse(errorCode, Collections.emptyList());
     }
 
-    public static ErrorResponse of(UserErrorCode userErrorCode, BindingResult bindingResult) {
-        return new ErrorResponse(userErrorCode, bindingResult.getFieldErrors());
+    public static ErrorResponse of(ErrorCode errorCode, BindingResult bindingResult) {
+        return new ErrorResponse(errorCode, bindingResult.getFieldErrors());
     }
 
-    public static ErrorResponse of(UserErrorCode userErrorCode, String exceptionMessage){
-        return new ErrorResponse(userErrorCode, exceptionMessage);
+    public static ErrorResponse of(ErrorCode errorCode, String exceptionMessage){
+        return new ErrorResponse(errorCode, exceptionMessage);
     }
 }
