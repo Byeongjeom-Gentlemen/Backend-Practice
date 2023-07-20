@@ -7,13 +7,13 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BoardWriterDto {
+public class WriterResponseDto {
 
     private Long id;
     private String userId;
     private String nickname;
 
-    public BoardWriterDto(User user) {
+    public WriterResponseDto(User user) {
         this.id = user.getId();
         this.userId = user.getUserId();
         this.nickname = user.getNickname();
