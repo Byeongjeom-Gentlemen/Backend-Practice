@@ -8,8 +8,13 @@ import com.sh.global.exception.customexcpetion.user.*;
 import com.sh.global.util.SessionUtil;
 import com.sh.global.util.UserStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -89,6 +94,10 @@ public class UserServiceImpl implements UserService {
             throw new NotMatchesUserException(UserErrorCode.INVALID_AUTHENTICATION);
         }
 
+        if(user.getStatus() == UserStatus.WITHDRAWN) {
+            throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
+        }
+
         sessionUtil.setAttribute(user.getId());
 
         return UserLoginResponseDto.from(user, "success");
@@ -127,6 +136,15 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.delete(user);
+        logout();
+    }
+
+    public void logout() {
+        Long id = sessionUtil.getAttribute();
+
+        userRepository.findById(id)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+
         sessionUtil.invalidate();
     }
 

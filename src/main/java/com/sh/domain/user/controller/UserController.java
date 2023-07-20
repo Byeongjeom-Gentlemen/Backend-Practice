@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -70,5 +71,13 @@ public class UserController {
     @GetMapping("/api/v1/users/{id}")
     public ResponseEntity<UserBasicResponseDto> selectByOtherUser(@PathVariable Long id) {
         return ResponseEntity.ok().body(userService.selectOtherUser(id));
+    }
+
+    // 로그아웃
+    @Operation(summary = "로그아웃 API", description = "회원 로그아웃하는 API 입니다. 로그인이 되어 있는 상태여야 합니다.")
+    @GetMapping("/api/v1/users/logout")
+    @ResponseStatus(HttpStatus.OK)
+    public void logout() {
+        userService.logout();
     }
 }
