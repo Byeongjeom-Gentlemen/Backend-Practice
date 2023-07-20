@@ -1,11 +1,9 @@
 package com.sh.domain.board.dto;
 
 import com.sh.domain.board.domain.Board;
-import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.BoardWriterDto;
-import lombok.*;
-
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Getter
 @Builder

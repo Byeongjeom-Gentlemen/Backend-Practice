@@ -1,11 +1,8 @@
 package com.sh.domain.user.repository;
 
 import com.sh.domain.user.domain.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -17,7 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 닉네임 중복 확인
     boolean existsByNickname(String nickname);
-    
+
     // 유저 번호로 회원 정보 찾기
     Optional<User> findById(Long id);
 

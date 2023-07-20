@@ -1,9 +1,14 @@
 package com.sh.global.exception.customexcpetion.user;
 
-import lombok.NoArgsConstructor;
+import com.sh.global.exception.UserErrorCode;
+import lombok.Getter;
 
-@NoArgsConstructor
-public class UserNotFoundException extends RuntimeException{
+@Getter
+public class UserNotFoundException extends RuntimeException {
 
+    private UserErrorCode errorCode;
 
+    public UserNotFoundException(UserErrorCode errorCode) {
+        this.errorCode = errorCode;
+    }
 }
