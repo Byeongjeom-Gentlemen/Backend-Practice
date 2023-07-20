@@ -2,11 +2,9 @@ package com.sh.global.util;
 
 import com.sh.global.exception.UserErrorCode;
 import com.sh.global.exception.customexcpetion.user.UserNonLoginException;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.query.criteria.internal.expression.function.AggregationFunction;
-import org.springframework.stereotype.Component;
-
 import javax.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +21,7 @@ public class SessionUtil {
     }
 
     public Long getAttribute() {
-        if(session.getAttribute(SESSION_ID) == null) {
+        if (session.getAttribute(SESSION_ID) == null) {
             throw new UserNonLoginException(UserErrorCode.NON_LOGIN);
         }
         return Long.parseLong(String.valueOf(session.getAttribute(SESSION_ID)));
@@ -32,5 +30,4 @@ public class SessionUtil {
     public void invalidate() {
         session.invalidate();
     }
-
 }

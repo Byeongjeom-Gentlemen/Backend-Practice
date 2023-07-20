@@ -3,13 +3,10 @@ package com.sh.domain.board.domain;
 import com.sh.domain.board.dto.UpdateBoardRequestDto;
 import com.sh.domain.user.domain.User;
 import com.sh.global.common.BaseTimeEntity;
+import java.time.LocalDateTime;
+import javax.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
-
-import javax.persistence.*;
-import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -25,16 +22,14 @@ public class Board extends BaseTimeEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column
-    private String content;
+    @Column private String content;
 
     // 단방향 매핑
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column
-    private LocalDateTime delete_at;
+    @Column private LocalDateTime delete_at;
 
     @Builder
     private Board(String title, String content, User user) {

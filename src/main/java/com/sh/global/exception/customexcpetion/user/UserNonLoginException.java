@@ -7,5 +7,8 @@ import lombok.Getter;
 public class UserNonLoginException extends RuntimeException {
 
     private UserErrorCode errorCode;
-    public UserNonLoginException(UserErrorCode errorCode){ this.errorCode = errorCode; }
+
+    public UserNonLoginException(UserErrorCode errorCode) {
+        this.errorCode = errorCode;
+    }
 }

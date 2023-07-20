@@ -7,6 +7,7 @@ import lombok.Getter;
 public class UnauthorizedException extends RuntimeException {
 
     private UserErrorCode errorCode;
+
     public UnauthorizedException(UserErrorCode errorCode) {
         this.errorCode = errorCode;
     }

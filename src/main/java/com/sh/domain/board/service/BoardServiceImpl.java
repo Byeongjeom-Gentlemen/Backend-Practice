@@ -29,14 +29,17 @@ public class BoardServiceImpl implements BoardService {
     public Long createBoard(CreateBoardRequestDto createRequest) {
         Long id = sessionUtil.getAttribute();
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
-        Board newBoard = Board.builder()
-                .title(createRequest.getTitle())
-                .content(createRequest.getContent())
-                .user(user)
-                .build();
+        Board newBoard =
+                Board.builder()
+                        .title(createRequest.getTitle())
+                        .content(createRequest.getContent())
+                        .user(user)
+                        .build();
 
         return boardRepository.save(newBoard).getId();
     }
@@ -45,10 +48,13 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardBasicResponseDto selectBoard(Long boardId) {
 
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+        Board board =
+                boardRepository
+                        .findById(boardId)
+                        .orElseThrow(
+                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
-        if(board.getDelete_at() != null) {
+        if (board.getDelete_at() != null) {
             throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD);
         }
 
@@ -61,15 +67,18 @@ public class BoardServiceImpl implements BoardService {
         Long id = sessionUtil.getAttribute();
 
         // 해당 게시글이 존재하지 않을 경우
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+        Board board =
+                boardRepository
+                        .findById(boardId)
+                        .orElseThrow(
+                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
-        if(board.getDelete_at() != null) {
+        if (board.getDelete_at() != null) {
             throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD);
         }
 
         // 해당 게시글의 작성자가 다른 경우
-        if(board.getUser().getId() != id) {
+        if (board.getUser().getId() != id) {
             throw new NotMatchesWriterException(BoardErrorCode.BOARD_NOT_AUTHORITY);
         }
 
@@ -81,14 +90,17 @@ public class BoardServiceImpl implements BoardService {
     public void deleteBoard(Long boardId) {
         Long id = sessionUtil.getAttribute();
 
-        Board board = boardRepository.findById(boardId)
-                        .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+        Board board =
+                boardRepository
+                        .findById(boardId)
+                        .orElseThrow(
+                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
-        if(board.getDelete_at() != null) {
+        if (board.getDelete_at() != null) {
             throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD);
         }
 
-        if(board.getUser().getId() != id) {
+        if (board.getUser().getId() != id) {
             throw new NotMatchesWriterException(BoardErrorCode.BOARD_NOT_AUTHORITY);
         }
 

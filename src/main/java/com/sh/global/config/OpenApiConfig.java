@@ -11,13 +11,12 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI openAPI() {
-        Info info = new Info()
-                .title("Board Project API Document")
-                .version("v0.0.1")
-                .description("Board Project의 API 명세서입니다.");
+        Info info =
+                new Info()
+                        .title("Board Project API Document")
+                        .version("v0.0.1")
+                        .description("Board Project의 API 명세서입니다.");
 
-        return new OpenAPI()
-                .components(new Components())
-                .info(info);
+        return new OpenAPI().components(new Components()).info(info);
     }
 }

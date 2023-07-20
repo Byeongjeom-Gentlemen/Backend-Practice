@@ -2,13 +2,11 @@ package com.sh.domain.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sh.global.util.UserRole;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.List;
 
 // 사용자의 권한 목록 엔티티
 @Entity
@@ -34,5 +32,4 @@ public class Authority {
     public void setUser(User user) {
         this.users = user;
     }
-
 }

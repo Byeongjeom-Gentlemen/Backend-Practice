@@ -1,15 +1,11 @@
 package com.sh.domain.user.dto;
 
-import com.sh.domain.user.domain.Authority;
 import com.sh.domain.user.domain.User;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Builder
@@ -21,7 +17,6 @@ public class UserBasicResponseDto {
     private String nickname;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
-
 
     public static UserBasicResponseDto from(User user) {
         return UserBasicResponseDto.builder()

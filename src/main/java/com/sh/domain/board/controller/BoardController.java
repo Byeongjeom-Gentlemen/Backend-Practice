@@ -6,12 +6,11 @@ import com.sh.domain.board.dto.UpdateBoardRequestDto;
 import com.sh.domain.board.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,16 +31,18 @@ public class BoardController {
     @Operation(summary = "게시글 조회 API", description = "게시글을 조회하는 API 입니다. 게시글의 ID(PK) 값을 필요로 합니다.")
     @GetMapping("/api/v1/board/{boardId}")
     public ResponseEntity<BoardBasicResponseDto> selectBoard(@PathVariable Long boardId) {
-        return ResponseEntity.ok()
-                .body(boardService.selectBoard(boardId));
+        return ResponseEntity.ok().body(boardService.selectBoard(boardId));
     }
 
     // 게시글 수정
-    @Operation(summary = "게시글 수정 API", description = "게시글을 수정하는 API 입니다. 로그인 여부와 Title, Content 값을 필요로 합니다.")
+    @Operation(
+            summary = "게시글 수정 API",
+            description = "게시글을 수정하는 API 입니다. 로그인 여부와 Title, Content 값을 필요로 합니다.")
     @PutMapping("/api/v1/board/{boardId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void modify(@PathVariable Long boardId, @RequestBody @Valid UpdateBoardRequestDto updateRequest) {
-        boardService.modifyBoard(boardId,updateRequest);
+    public void modify(
+            @PathVariable Long boardId, @RequestBody @Valid UpdateBoardRequestDto updateRequest) {
+        boardService.modifyBoard(boardId, updateRequest);
     }
 
     // 게시글 삭제

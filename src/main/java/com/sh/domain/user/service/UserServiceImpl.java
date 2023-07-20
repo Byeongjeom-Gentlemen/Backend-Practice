@@ -34,26 +34,27 @@ public class UserServiceImpl implements UserService {
         // 비밀번호 암호화
         signupRequest.encryptPassword(passwordEncoder.encode(signupRequest.getPw()));
 
-        User user = User.builder()
-                .userId(signupRequest.getId())
-                .pw(signupRequest.getPw())
-                .nickname(signupRequest.getNickname())
-                .status(UserStatus.ALIVE)
-                .build();
+        User user =
+                User.builder()
+                        .userId(signupRequest.getId())
+                        .pw(signupRequest.getPw())
+                        .nickname(signupRequest.getNickname())
+                        .status(UserStatus.ALIVE)
+                        .build();
 
         return userRepository.save(user).getId();
     }
 
     // 아이디 중복 확인
     private void existsByUserId(String userId) {
-        if(userRepository.existsByUserId(userId)) {
+        if (userRepository.existsByUserId(userId)) {
             throw new AlreadyUsedUserIdException(UserErrorCode.ALREADY_EXISTS_ID);
         }
     }
 
     // 닉네임 중복 확인
     private void existsByNickname(String nickname) {
-        if(userRepository.existsByNickname(nickname)) {
+        if (userRepository.existsByNickname(nickname)) {
             throw new AlreadyUsedUserNicknameException(UserErrorCode.ALREADY_EXISTS_NICKNAME);
         }
     }
@@ -74,15 +75,17 @@ public class UserServiceImpl implements UserService {
         TokenDto token = jwtProvider.generateToken(authentication);
 
         User user = userRepository.findByUserId(userBasicRequestDto.getId())
-                .orElseThrow(() -> new UserNotFoundException());
+        		.orElseThrow(() -> new UserNotFoundException());
 
         return UserLoginResponseDto.from(user, token); */
 
         // Session
-        User user = userRepository.findByUserId(loginRequest.getId())
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user =
+                userRepository
+                        .findByUserId(loginRequest.getId())
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
-        if(!passwordEncoder.matches(loginRequest.getPw(), user.getPw())) {
+        if (!passwordEncoder.matches(loginRequest.getPw(), user.getPw())) {
             throw new NotMatchesUserException(UserErrorCode.INVALID_AUTHENTICATION);
         }
 
@@ -96,10 +99,12 @@ public class UserServiceImpl implements UserService {
     public UserBasicResponseDto selectMe() {
         Long id = sessionUtil.getAttribute();
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
-        if(user.getStatus() == UserStatus.WITHDRAWN) {
+        if (user.getStatus() == UserStatus.WITHDRAWN) {
             throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
         }
 
@@ -112,10 +117,12 @@ public class UserServiceImpl implements UserService {
     public void deleteUser() {
         Long id = sessionUtil.getAttribute();
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
-        if(user.getStatus() == UserStatus.WITHDRAWN) {
+        if (user.getStatus() == UserStatus.WITHDRAWN) {
             throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
         }
 
@@ -128,28 +135,30 @@ public class UserServiceImpl implements UserService {
     public void modifyMe(UpdateUserRequestDto updateRequest) {
         Long id = sessionUtil.getAttribute();
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
         // 이미 탈퇴한 회원인 경우
-        if(user.getStatus() == UserStatus.WITHDRAWN) {
+        if (user.getStatus() == UserStatus.WITHDRAWN) {
             throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
         }
 
         // 아이디 수정 시
-        if(updateRequest.getAfterId() != null) {
+        if (updateRequest.getAfterId() != null) {
             existsByUserId(updateRequest.getAfterId());
             user.updateUserId(updateRequest.getAfterId());
         }
 
         // 닉네임 수정 시
-        if(updateRequest.getAfterNickname() != null) {
+        if (updateRequest.getAfterNickname() != null) {
             existsByNickname(updateRequest.getAfterNickname());
             user.updateUserNickname(updateRequest.getAfterNickname());
         }
 
         // 비밀번호 수정 시
-        if(updateRequest.getAfterPw() != null) {
+        if (updateRequest.getAfterPw() != null) {
             String newPassword = passwordEncoder.encode(updateRequest.getAfterPw());
             user.updateUserPassword(newPassword);
         }
@@ -158,14 +167,15 @@ public class UserServiceImpl implements UserService {
     // 다른 회원 조회
     @Override
     public UserBasicResponseDto selectOtherUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
-        if(user.getStatus() == UserStatus.WITHDRAWN) {
+        if (user.getStatus() == UserStatus.WITHDRAWN) {
             throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
         }
 
         return UserBasicResponseDto.from(user);
     }
-
 }

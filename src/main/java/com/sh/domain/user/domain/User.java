@@ -1,13 +1,10 @@
 package com.sh.domain.user.domain;
 
-import com.sh.domain.user.dto.UpdateUserRequestDto;
 import com.sh.global.common.BaseTimeEntity;
 import com.sh.global.util.UserStatus;
+import javax.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -15,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 // 논리 삭제(실제 DB에서 삭제하지 않고 필드 값을 추가하여 삭제 여부를 판단
 // @Where을 사용해 해당 값만 select하도록 설정(삭제된 회원은 조회 시 조회안됨)
-//@Where(clause = "not user_status = 'WITHDRAWN'")
+// @Where(clause = "not user_status = 'WITHDRAWN'")
 @SQLDelete(sql = "UPDATE users SET user_status = 'WITHDRAWN' where id = ?")
 public class User extends BaseTimeEntity {
     @Id
@@ -58,5 +55,4 @@ public class User extends BaseTimeEntity {
     public void updateUserPassword(String password) {
         this.pw = password;
     }
-
 }

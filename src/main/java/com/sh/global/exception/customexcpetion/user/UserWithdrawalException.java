@@ -7,5 +7,8 @@ import lombok.Getter;
 public class UserWithdrawalException extends RuntimeException {
 
     private UserErrorCode errorCode;
-    public UserWithdrawalException(UserErrorCode errorCode) { this.errorCode = errorCode; }
+
+    public UserWithdrawalException(UserErrorCode errorCode) {
+        this.errorCode = errorCode;
+    }
 }
