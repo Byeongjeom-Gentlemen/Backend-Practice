@@ -1,7 +1,6 @@
 package com.sh.domain.board.repository;
 
 import com.sh.domain.board.domain.Board;
-import com.sh.domain.board.dto.BoardCreateRequestDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
