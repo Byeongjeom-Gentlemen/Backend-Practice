@@ -1,14 +1,13 @@
 package com.sh.global.exception.customexcpetion.user;
 
 import com.sh.global.exception.UserErrorCode;
+import com.sh.global.exception.customexcpetion.CustomException;
 import lombok.Getter;
+import org.apache.catalina.webresources.ClasspathURLStreamHandler;
 
-@Getter
-public class AlreadyUsedUserNicknameException extends RuntimeException {
-
-    private UserErrorCode errorCode;
+public class AlreadyUsedUserNicknameException extends CustomException {
 
     public AlreadyUsedUserNicknameException(UserErrorCode errorCode) {
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 }

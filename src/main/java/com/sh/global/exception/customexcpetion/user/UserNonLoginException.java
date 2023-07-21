@@ -1,14 +1,12 @@
 package com.sh.global.exception.customexcpetion.user;
 
 import com.sh.global.exception.UserErrorCode;
+import com.sh.global.exception.customexcpetion.CustomException;
 import lombok.Getter;
 
-@Getter
-public class UserNonLoginException extends RuntimeException {
-
-    private UserErrorCode errorCode;
+public class UserNonLoginException extends CustomException {
 
     public UserNonLoginException(UserErrorCode errorCode) {
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 }

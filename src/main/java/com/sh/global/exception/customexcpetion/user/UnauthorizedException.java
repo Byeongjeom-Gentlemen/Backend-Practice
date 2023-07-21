@@ -1,14 +1,12 @@
 package com.sh.global.exception.customexcpetion.user;
 
 import com.sh.global.exception.UserErrorCode;
+import com.sh.global.exception.customexcpetion.CustomException;
 import lombok.Getter;
 
-@Getter
-public class UnauthorizedException extends RuntimeException {
-
-    private UserErrorCode errorCode;
+public class UnauthorizedException extends CustomException {
 
     public UnauthorizedException(UserErrorCode errorCode) {
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 }

@@ -3,10 +3,12 @@ package com.sh.global.exception.customexcpetion.board;
 import com.sh.global.exception.BoardErrorCode;
 import com.sh.global.exception.customexcpetion.CustomException;
 import lombok.Getter;
+import lombok.Setter;
 
-public class NotMatchesWriterException extends CustomException {
+@Setter
+public class UnsupportedSearchTypeException extends CustomException {
 
-    public NotMatchesWriterException(BoardErrorCode errorCode) {
+    public UnsupportedSearchTypeException(BoardErrorCode errorCode) {
         super(errorCode);
     }
 }
