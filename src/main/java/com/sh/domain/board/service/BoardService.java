@@ -1,30 +1,33 @@
 package com.sh.domain.board.service;
 
-import com.sh.domain.board.dto.BoardBasicResponseDto;
-import com.sh.domain.board.dto.CreateBoardRequestDto;
-import com.sh.domain.board.dto.PagingBoardsResponseDto;
-import com.sh.domain.board.dto.UpdateBoardRequestDto;
+import com.sh.domain.board.dto.*;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface BoardService {
 
-    @Transactional
     // 게시글 생성
+    @Transactional
     Long createBoard(CreateBoardRequestDto createRequest);
 
-    @Transactional(readOnly = true)
     // 게시글 조회
+    @Transactional(readOnly = true)
     BoardBasicResponseDto selectBoard(Long boardId);
 
-    @Transactional
     // 게시글 수정
+    @Transactional
     void modifyBoard(Long boardId, UpdateBoardRequestDto updateRequest);
 
-    @Transactional
     // 게시글 삭제
+    @Transactional
     void deleteBoard(Long boardId);
 
+    // 전체 게시글 조회
     @Transactional(readOnly = true)
     PagingBoardsResponseDto allBoards(PageRequest pageable);
+
+    // 검색을 통한 게시글 조회
+    @Transactional(readOnly = true)
+    PagingBoardsResponseDto searchBoard(Pageable pageable, SearchRequestDto request);
 }

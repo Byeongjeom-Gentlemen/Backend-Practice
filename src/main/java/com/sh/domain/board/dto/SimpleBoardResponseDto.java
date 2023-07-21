@@ -1,28 +1,29 @@
 package com.sh.domain.board.dto;
 
 import com.sh.domain.board.domain.Board;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
 @Builder
 public class SimpleBoardResponseDto {
 
-    private Long boardId;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
+    private Long id;
     private String title;
     private String writer;
-    private LocalDateTime createDate;
 
     public static SimpleBoardResponseDto from(Board board) {
         return SimpleBoardResponseDto.builder()
-                .boardId(board.getId())
+                .createdDate(board.getCreatedDate())
+                .updatedDate(board.getModifiedDate())
+                .id(board.getId())
                 .title(board.getTitle())
                 .writer(board.getUser().getNickname())
-                .createDate(board.getCreatedDate())
                 .build();
     }
 }

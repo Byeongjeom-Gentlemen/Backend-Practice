@@ -9,18 +9,17 @@ import com.sh.global.exception.BoardErrorCode;
 import com.sh.global.exception.UserErrorCode;
 import com.sh.global.exception.customexcpetion.board.NotFoundBoardException;
 import com.sh.global.exception.customexcpetion.board.NotMatchesWriterException;
+import com.sh.global.exception.customexcpetion.board.UnsupportedSearchTypeException;
 import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
+import com.sh.global.util.SearchType;
 import com.sh.global.util.SessionUtil;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -112,14 +111,59 @@ public class BoardServiceImpl implements BoardService {
 
         boardRepository.delete(board);
     }
-    
+
     // 게시글 전체 조회
+    @Override
     public PagingBoardsResponseDto allBoards(PageRequest pageable) {
         Page<Board> data = boardRepository.findAll(pageable);
-        List<SimpleBoardResponseDto> boardList = data.getContent().stream()
-                                    .filter(board -> board.getDelete_at() == null)
-                                    .map(board -> SimpleBoardResponseDto.from(board))
-                                    .collect(Collectors.toList());
+        List<SimpleBoardResponseDto> boardList =
+                data.getContent().stream()
+                        .filter(board -> board.getDelete_at() == null)
+                        .map(board -> SimpleBoardResponseDto.from(board))
+                        .collect(Collectors.toList());
+
+        return PagingBoardsResponseDto.of(data, boardList);
+    }
+
+    // 검색을 통한 게시글 조회
+    @Override
+    public PagingBoardsResponseDto searchBoard(Pageable pageable, SearchRequestDto request) {
+        System.out.println("ㅎㅇ");
+        SearchType searchType = SearchType.convertToType(request.getSearchType());
+
+        if (searchType == null) {
+            throw new UnsupportedSearchTypeException(BoardErrorCode.UNSUPPORTED_SEARCH_TYPE);
+        }
+
+        Page<Board> data = null;
+
+        if (searchType == SearchType.WRITER) {
+            User user =
+                    userRepository
+                            .findByNickname(request.getKeyword())
+                            .orElseThrow(
+                                    () -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+
+            data = boardRepository.findByUserId(user.getId(), pageable);
+
+            if (data.getContent().isEmpty()) {
+                throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_SEARCH_WRITER);
+            }
+        }
+
+        if (searchType == SearchType.TITLE) {
+            data = boardRepository.findByTitleContaining(request.getKeyword(), pageable);
+
+            if (data.getContent().isEmpty()) {
+                throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_SEARCH_TITLE);
+            }
+        }
+
+        List<SimpleBoardResponseDto> boardList =
+                data.getContent().stream()
+                        .filter(board -> board.getDelete_at() == null)
+                        .map(board -> SimpleBoardResponseDto.from(board))
+                        .collect(Collectors.toList());
 
         return PagingBoardsResponseDto.of(data, boardList);
     }

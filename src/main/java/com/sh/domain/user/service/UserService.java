@@ -1,7 +1,6 @@
 package com.sh.domain.user.service;
 
 import com.sh.domain.user.dto.*;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface UserService {
