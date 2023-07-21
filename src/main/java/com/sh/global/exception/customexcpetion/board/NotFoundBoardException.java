@@ -1,14 +1,12 @@
 package com.sh.global.exception.customexcpetion.board;
 
 import com.sh.global.exception.BoardErrorCode;
+import com.sh.global.exception.customexcpetion.CustomException;
 import lombok.Getter;
 
-@Getter
-public class NotFoundBoardException extends RuntimeException {
-
-    private BoardErrorCode errorCode;
+public class NotFoundBoardException extends CustomException {
 
     public NotFoundBoardException(BoardErrorCode errorCode) {
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 }
