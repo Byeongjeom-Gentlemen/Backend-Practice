@@ -1,6 +1,5 @@
 package com.sh.global.exception.customexcpetion;
 
-import com.sh.global.exception.BoardErrorCode;
 import com.sh.global.exception.ErrorCode;
 import lombok.Getter;
 

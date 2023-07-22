@@ -1,15 +1,15 @@
 package com.sh.domain.board.controller;
 
-import com.sh.domain.board.dto.BoardBasicResponseDto;
-import com.sh.domain.board.dto.CreateBoardRequestDto;
-import com.sh.domain.board.dto.PagingBoardsResponseDto;
-import com.sh.domain.board.dto.UpdateBoardRequestDto;
+import com.sh.domain.board.dto.*;
 import com.sh.domain.board.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,11 +56,26 @@ public class BoardController {
     }
 
     // 게시글 전체 조회
-    @Operation(summary = "게시글 전체 조회 API", description = "게시글 전체를 조회하는 API 입니다. 페이지 넘버와 보여질 데이터 수를 필요로 합니다.")
+    @Operation(
+            summary = "게시글 전체 조회 API",
+            description = "게시글 전체를 조회하는 API 입니다. 페이지 넘버와 보여질 데이터 수를 필요로 합니다.")
     @GetMapping("/api/v1/board")
-    public ResponseEntity<PagingBoardsResponseDto> allBoards(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-                                                             @RequestParam(name = "count", required = false, defaultValue = "5") Integer count) {
+    public ResponseEntity<PagingBoardsResponseDto> allBoards(
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(name = "count", required = false, defaultValue = "5") Integer count) {
         PageRequest pageable = PageRequest.of(page, count);
         return ResponseEntity.ok().body(boardService.allBoards(pageable));
+    }
+
+    // 검색을 통한 게시글 조회
+    @Operation(
+            summary = "검색을 통한 게시글 조회 API",
+            description = "검색을 통해 해당 게시글을 조회하는 API 입니다. Keyword를 통해 검색을 진행합니다.")
+    @GetMapping("/api/v1/board/search")
+    public ResponseEntity<PagingBoardsResponseDto> searchBoard(
+            @PageableDefault(page = 0, size = 5, sort = "id", direction = Sort.Direction.DESC)
+                    Pageable pageable,
+            @RequestBody @Valid SearchRequestDto request) {
+        return ResponseEntity.ok().body(boardService.searchBoard(pageable, request));
     }
 }
