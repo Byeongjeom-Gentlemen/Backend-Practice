@@ -11,7 +11,7 @@ public interface BoardService {
     @Transactional
     Long createBoard(CreateBoardRequestDto createRequest);
 
-    // 게시글 조회
+    // 게시글 상세 조회
     @Transactional(readOnly = true)
     BoardBasicResponseDto selectBoard(Long boardId);
 
@@ -23,11 +23,8 @@ public interface BoardService {
     @Transactional
     void deleteBoard(Long boardId);
 
-    // 전체 게시글 조회
+    // 게시글 조회(전체 조회, 검색을 통한 조회)
     @Transactional(readOnly = true)
-    PagingBoardsResponseDto allBoards(PageRequest pageable);
+    PagingBoardsResponseDto searchBoards(Pageable pageable, String searchType, String keyword);
 
-    // 검색을 통한 게시글 조회
-    @Transactional(readOnly = true)
-    PagingBoardsResponseDto searchBoard(Pageable pageable, SearchRequestDto request);
 }

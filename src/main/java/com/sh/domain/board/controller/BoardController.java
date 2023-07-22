@@ -29,8 +29,8 @@ public class BoardController {
         return boardService.createBoard(createRequest);
     }
 
-    // 게시글 조회
-    @Operation(summary = "게시글 조회 API", description = "게시글을 조회하는 API 입니다. 게시글의 ID(PK) 값을 필요로 합니다.")
+    // 게시글 상세 조회
+    @Operation(summary = "게시글 상세 조회 API", description = "게시글을 상세 조회하는 API 입니다. 게시글의 ID(PK) 값을 필요로 합니다.")
     @GetMapping("/api/v1/board/{boardId}")
     public ResponseEntity<BoardBasicResponseDto> selectBoard(@PathVariable Long boardId) {
         return ResponseEntity.ok().body(boardService.selectBoard(boardId));
@@ -55,27 +55,14 @@ public class BoardController {
         boardService.deleteBoard(boardId);
     }
 
-    // 게시글 전체 조회
+    // 게시글 조회(전체 조회, 검색어를 통한 조회)
     @Operation(
-            summary = "게시글 전체 조회 API",
-            description = "게시글 전체를 조회하는 API 입니다. 페이지 넘버와 보여질 데이터 수를 필요로 합니다.")
+            summary = "게시글 조회 API(전체 조회, 검색을 통한 조회)",
+            description = "게시글을 조회하는 API 입니다. searchType 값이 null이면 전체 조회, 아니면 searchType과 keyword를 통한 조회입니다.")
     @GetMapping("/api/v1/board")
-    public ResponseEntity<PagingBoardsResponseDto> allBoards(
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "count", required = false, defaultValue = "5") Integer count) {
-        PageRequest pageable = PageRequest.of(page, count);
-        return ResponseEntity.ok().body(boardService.allBoards(pageable));
-    }
-
-    // 검색을 통한 게시글 조회
-    @Operation(
-            summary = "검색을 통한 게시글 조회 API",
-            description = "검색을 통해 해당 게시글을 조회하는 API 입니다. Keyword를 통해 검색을 진행합니다.")
-    @GetMapping("/api/v1/board/search")
-    public ResponseEntity<PagingBoardsResponseDto> searchBoard(
-            @PageableDefault(page = 0, size = 5, sort = "id", direction = Sort.Direction.DESC)
-                    Pageable pageable,
-            @RequestBody @Valid SearchRequestDto request) {
-        return ResponseEntity.ok().body(boardService.searchBoard(pageable, request));
+    public ResponseEntity<PagingBoardsResponseDto> searchBoard(@PageableDefault(page = 0, size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                                               @RequestParam(required = false, defaultValue = "all") String searchType,
+                                                               @RequestParam(required = false) String keyword ) {
+        return ResponseEntity.ok().body(boardService.searchBoards(pageable, searchType, keyword));
     }
 }
