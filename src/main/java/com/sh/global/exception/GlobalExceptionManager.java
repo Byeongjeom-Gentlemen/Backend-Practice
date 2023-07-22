@@ -85,7 +85,8 @@ public class GlobalExceptionManager {
 
     // 지원하지 않는 검색종류일 경우(title, writer 외)
     @ExceptionHandler(UnsupportedSearchTypeException.class)
-    public ResponseEntity<ErrorResponse> unsupportedSearchTypeError(UnsupportedSearchTypeException e) {
+    public ResponseEntity<ErrorResponse> unsupportedSearchTypeError(
+            UnsupportedSearchTypeException e) {
         final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

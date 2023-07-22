@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -30,7 +29,9 @@ public class BoardController {
     }
 
     // 게시글 상세 조회
-    @Operation(summary = "게시글 상세 조회 API", description = "게시글을 상세 조회하는 API 입니다. 게시글의 ID(PK) 값을 필요로 합니다.")
+    @Operation(
+            summary = "게시글 상세 조회 API",
+            description = "게시글을 상세 조회하는 API 입니다. 게시글의 ID(PK) 값을 필요로 합니다.")
     @GetMapping("/api/v1/board/{boardId}")
     public ResponseEntity<BoardBasicResponseDto> selectBoard(@PathVariable Long boardId) {
         return ResponseEntity.ok().body(boardService.selectBoard(boardId));
@@ -58,11 +59,14 @@ public class BoardController {
     // 게시글 조회(전체 조회, 검색어를 통한 조회)
     @Operation(
             summary = "게시글 조회 API(전체 조회, 검색을 통한 조회)",
-            description = "게시글을 조회하는 API 입니다. searchType 값이 null이면 전체 조회, 아니면 searchType과 keyword를 통한 조회입니다.")
+            description =
+                    "게시글을 조회하는 API 입니다. searchType 값이 null이면 전체 조회, 아니면 searchType과 keyword를 통한 조회입니다.")
     @GetMapping("/api/v1/board")
-    public ResponseEntity<PagingBoardsResponseDto> searchBoard(@PageableDefault(page = 0, size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-                                                               @RequestParam(required = false, defaultValue = "all") String searchType,
-                                                               @RequestParam(required = false) String keyword ) {
+    public ResponseEntity<PagingBoardsResponseDto> searchBoard(
+            @PageableDefault(page = 0, size = 5, sort = "id", direction = Sort.Direction.DESC)
+                    Pageable pageable,
+            @RequestParam(required = false, defaultValue = "all") String searchType,
+            @RequestParam(required = false) String keyword) {
         return ResponseEntity.ok().body(boardService.searchBoards(pageable, searchType, keyword));
     }
 }
