@@ -11,14 +11,10 @@ import com.sh.global.exception.customexcpetion.board.*;
 import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
 import com.sh.global.util.SearchType;
 import com.sh.global.util.SessionUtil;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.build.Plugin;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -115,13 +111,14 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 조회(전체 조회, 검색어를 통한 조회)
     @Override
-    public PagingBoardsResponseDto searchBoards(Pageable pageable, String searchType, String keyword) {
+    public PagingBoardsResponseDto searchBoards(
+            Pageable pageable, String searchType, String keyword) {
         // searchType 구분(ALL, title, writer, null)
         SearchType type = SearchType.convertToType(searchType);
 
         System.out.println(type);
 
-        if(type == null) {
+        if (type == null) {
             throw new UnsupportedSearchTypeException(BoardErrorCode.UNSUPPORTED_SEARCH_TYPE);
         }
 
@@ -129,17 +126,17 @@ public class BoardServiceImpl implements BoardService {
         Page<Board> pages = null;
 
         // 전체 조회
-        if(type == SearchType.ALL) {
+        if (type == SearchType.ALL) {
             pages = boardRepository.findAll(pageable);
 
-            if(pages.getContent().isEmpty()) {
+            if (pages.getContent().isEmpty()) {
                 throw new BoardListIsEmptyException(BoardErrorCode.EMPTY_BOARD_LIST);
             }
         }
 
         // 제목으로 게시글 조회
-        if(type == SearchType.TITLE) {
-            if(keyword == null || keyword.equals("")) {
+        if (type == SearchType.TITLE) {
+            if (keyword == null || keyword.equals("")) {
                 throw new SearchKeywordIsEmptyException(BoardErrorCode.KEYWORD_EMPTY);
             }
 
@@ -147,36 +144,38 @@ public class BoardServiceImpl implements BoardService {
             pages = boardRepository.findByTitleContaining(keyword, pageable);
 
             // 설정한 page에 데이터가 없을 경우
-            if(pages.getContent().isEmpty()) {
+            if (pages.getContent().isEmpty()) {
                 throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_SEARCH_TITLE);
             }
         }
 
         // 작성자로 게시글 조회
-        if(type == SearchType.WRITER) {
-            if(keyword == null || keyword.equals("")) {
+        if (type == SearchType.WRITER) {
+            if (keyword == null || keyword.equals("")) {
                 throw new SearchKeywordIsEmptyException(BoardErrorCode.KEYWORD_EMPTY);
             }
 
             // 해당 닉네임을 가진 유저가 있는지 확인, 없으면 예외처리
-            User user = userRepository.findByNickname(keyword)
-                    .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
-
+            User user =
+                    userRepository
+                            .findByNickname(keyword)
+                            .orElseThrow(
+                                    () -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
             // 해당 유저가 작성한 게시글이 있다면 pageable 값에 따라 데이터 저장
             pages = boardRepository.findByUserId(user.getId(), pageable);
 
             // 설정한 page에 데이터가 없을 경우
-            if(pages.getContent().isEmpty()) {
+            if (pages.getContent().isEmpty()) {
                 throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_SEARCH_WRITER);
             }
-
         }
 
-        List<SimpleBoardResponseDto> boardList = pages.getContent().stream()
-                                                    .filter(board -> board.getDelete_at() == null)
-                                                    .map(board -> SimpleBoardResponseDto.from(board))
-                                                    .collect(Collectors.toList());
+        List<SimpleBoardResponseDto> boardList =
+                pages.getContent().stream()
+                        .filter(board -> board.getDelete_at() == null)
+                        .map(board -> SimpleBoardResponseDto.from(board))
+                        .collect(Collectors.toList());
 
         return PagingBoardsResponseDto.of(pages, boardList);
     }

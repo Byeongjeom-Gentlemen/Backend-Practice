@@ -12,7 +12,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-
 @Component
 public class PageableVerificationArgumentResolver extends PageableHandlerMethodArgumentResolver {
 
@@ -22,23 +21,26 @@ public class PageableVerificationArgumentResolver extends PageableHandlerMethodA
     }
 
     @Override
-    public Pageable resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                     NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+    public Pageable resolveArgument(
+            MethodParameter parameter,
+            ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest,
+            WebDataBinderFactory binderFactory) {
         final String pageText = webRequest.getParameter("page");
         final String sizeText = webRequest.getParameter("size");
 
         // 숫자가 아니라면
-        if(!isInteger(pageText) || !isInteger(sizeText)) {
+        if (!isInteger(pageText) || !isInteger(sizeText)) {
             throw new ValueIsNotIntegerException(PageErrorCode.IS_NOT_INTEGER);
         }
 
         // page가 음수라면
-        if(Integer.parseInt(pageText) < 0) {
+        if (Integer.parseInt(pageText) < 0) {
             throw new PageRangeOverException(PageErrorCode.PAGE_VALUE_OVER_RANGE);
         }
 
         // size가 1보다 작거나 10보다 크면
-        if(Integer.parseInt(sizeText) < 1 || Integer.parseInt(sizeText) > 10) {
+        if (Integer.parseInt(sizeText) < 1 || Integer.parseInt(sizeText) > 10) {
             throw new SizeRangeOverException(PageErrorCode.SIZE_VALUE_OVER_RANGE);
         }
 
