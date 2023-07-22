@@ -1,7 +1,6 @@
 package com.sh.global.exception;
 
-import com.sh.global.exception.customexcpetion.board.NotFoundBoardException;
-import com.sh.global.exception.customexcpetion.board.NotMatchesWriterException;
+import com.sh.global.exception.customexcpetion.board.*;
 import com.sh.global.exception.customexcpetion.user.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,5 +81,26 @@ public class GlobalExceptionManager {
     public ResponseEntity<ErrorResponse> notMatchesWriterError(NotMatchesWriterException e) {
         final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    // 지원하지 않는 검색종류일 경우(title, writer 외)
+    @ExceptionHandler(UnsupportedSearchTypeException.class)
+    public ResponseEntity<ErrorResponse> unsupportedSearchTypeError(UnsupportedSearchTypeException e) {
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    // 등록된 게시글이 없을 경우
+    @ExceptionHandler(BoardListIsEmptyException.class)
+    public ResponseEntity<ErrorResponse> boardListEmptyError(BoardListIsEmptyException e) {
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    // 검색 keyword 값이 null 또는 빈값일 경우
+    @ExceptionHandler(SearchKeywordIsEmptyException.class)
+    public ResponseEntity<ErrorResponse> keywordEmptyError(SearchKeywordIsEmptyException e) {
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }
