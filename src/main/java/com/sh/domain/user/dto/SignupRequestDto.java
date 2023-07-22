@@ -1,9 +1,8 @@
 package com.sh.domain.user.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 @AllArgsConstructor // 모든 필드 값을 파라미터로 받는 생성자 생성
