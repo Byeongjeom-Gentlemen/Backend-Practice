@@ -8,16 +8,21 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableArgumentResolver;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolverSupport;
 import org.springframework.data.web.SortArgumentResolver;
+import org.springframework.data.web.SortHandlerMethodArgumentResolver;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-@RequiredArgsConstructor
 public class PageableHandlerMethodArgumentResolver
         extends PageableHandlerMethodArgumentResolverSupport implements PageableArgumentResolver {
 
-    private final SortArgumentResolver sortResolver;
+    private SortArgumentResolver sortResolver;
+
+    @Override
+    public boolean supportsParameter(MethodParameter parameter) {
+        return Pageable.class.equals(parameter.getParameterType());
+    }
 
     @Override
     public Pageable resolveArgument(

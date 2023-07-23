@@ -29,18 +29,26 @@ public class PageableVerificationArgumentResolver extends PageableHandlerMethodA
         final String pageText = webRequest.getParameter("page");
         final String sizeText = webRequest.getParameter("size");
 
-        // 숫자가 아니라면
-        if (!isInteger(pageText) || !isInteger(sizeText)) {
+        System.out.println(pageText);
+        System.out.println(sizeText);
+
+        // page값이 숫자가 아니라면
+        if (pageText != null && !isInteger(pageText) ) {
+            throw new ValueIsNotIntegerException(PageErrorCode.IS_NOT_INTEGER);
+        }
+
+        // size값이 숫자가 아니라면
+        if (sizeText != null && !isInteger(sizeText) ) {
             throw new ValueIsNotIntegerException(PageErrorCode.IS_NOT_INTEGER);
         }
 
         // page가 음수라면
-        if (Integer.parseInt(pageText) < 0) {
+        if (pageText != null && Integer.parseInt(pageText) < 0) {
             throw new PageRangeOverException(PageErrorCode.PAGE_VALUE_OVER_RANGE);
         }
 
         // size가 1보다 작거나 10보다 크면
-        if (Integer.parseInt(sizeText) < 1 || Integer.parseInt(sizeText) > 10) {
+        if (sizeText != null && (Integer.parseInt(sizeText) < 1 || Integer.parseInt(sizeText) > 10)) {
             throw new SizeRangeOverException(PageErrorCode.SIZE_VALUE_OVER_RANGE);
         }
 
