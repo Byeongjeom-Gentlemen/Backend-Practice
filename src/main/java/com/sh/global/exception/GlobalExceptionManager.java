@@ -1,6 +1,9 @@
 package com.sh.global.exception;
 
 import com.sh.global.exception.customexcpetion.board.*;
+import com.sh.global.exception.customexcpetion.page.PageRangeOverException;
+import com.sh.global.exception.customexcpetion.page.SizeRangeOverException;
+import com.sh.global.exception.customexcpetion.page.ValueIsNotIntegerException;
 import com.sh.global.exception.customexcpetion.user.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -101,6 +104,24 @@ public class GlobalExceptionManager {
     // 검색 keyword 값이 null 또는 빈값일 경우
     @ExceptionHandler(SearchKeywordIsEmptyException.class)
     public ResponseEntity<ErrorResponse> keywordEmptyError(SearchKeywordIsEmptyException e) {
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(PageRangeOverException.class)
+    public ResponseEntity<ErrorResponse> pageRangeOverError(PageRangeOverException e) {
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(SizeRangeOverException.class)
+    public ResponseEntity<ErrorResponse> sizeRangeOverError(SizeRangeOverException e) {
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(ValueIsNotIntegerException.class)
+    public ResponseEntity<ErrorResponse> valueError(ValueIsNotIntegerException e) {
         final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
