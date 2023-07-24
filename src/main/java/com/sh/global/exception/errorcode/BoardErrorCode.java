@@ -13,7 +13,8 @@ public enum BoardErrorCode implements ErrorCode {
     UNSUPPORTED_SEARCH_TYPE(HttpStatus.BAD_REQUEST, "B_004", "해당 타입의 검색은 지원하지 않습니다."),
     NOT_FOUND_SEARCH_TITLE(HttpStatus.NOT_FOUND, "B_005", "해당 제목을 포함한 게시글이 존재하지 않습니다."),
     NOT_FOUND_SEARCH_WRITER(HttpStatus.NOT_FOUND, "B_006", "해당 작성자의 게시글이 존재하지 않습니다."),
-    KEYWORD_EMPTY(HttpStatus.BAD_REQUEST, "B_007", "검색어를 입력해주세요.");
+    KEYWORD_EMPTY(HttpStatus.BAD_REQUEST, "B_007", "검색어를 입력해주세요."),
+    DELETED_BOARD(HttpStatus.UNAUTHORIZED, "b_008", "삭제된 게시글입니다.");
 
     private final HttpStatus status;
     private final String code;

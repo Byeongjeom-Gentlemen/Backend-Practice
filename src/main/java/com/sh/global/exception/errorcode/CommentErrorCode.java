@@ -7,7 +7,8 @@ import org.springframework.http.HttpStatus;
 public enum CommentErrorCode implements ErrorCode {
 
     NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "C_001", "해당 댓글이 존재하지 않습니다."),
-    NOT_AUTHORITY_COMMENT(HttpStatus.UNAUTHORIZED, "C_002", "해당 댓글에 대한 작업권한이 존재하지 않습니다.");
+    NOT_AUTHORITY_COMMENT(HttpStatus.UNAUTHORIZED, "C_002", "해당 댓글에 대한 작업 권한이 존재하지 않습니다."),
+    DELETED_COMMENT(HttpStatus.UNAUTHORIZED, "C_003", "삭제된 댓글입니다.");
 
     private final HttpStatus status;
     private final String code;
