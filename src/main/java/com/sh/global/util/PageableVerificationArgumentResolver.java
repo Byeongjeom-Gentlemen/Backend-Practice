@@ -1,6 +1,6 @@
 package com.sh.global.util;
 
-import com.sh.global.exception.PageErrorCode;
+import com.sh.global.exception.errorcode.PageErrorCode;
 import com.sh.global.exception.customexcpetion.page.PageRangeOverException;
 import com.sh.global.exception.customexcpetion.page.SizeRangeOverException;
 import com.sh.global.exception.customexcpetion.page.ValueIsNotIntegerException;

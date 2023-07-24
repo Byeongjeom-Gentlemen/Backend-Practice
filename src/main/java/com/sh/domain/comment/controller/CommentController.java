@@ -49,4 +49,23 @@ public class CommentController {
             @RequestParam("boardId") Long boardId) {
         return ResponseEntity.ok().body(commentService.selectCommentList(pageable, boardId));
     }
+
+    // 댓글 수정
+    @Operation(summary = "댓글 수정 API", description = "content 값으로 댓글을 수정합니다.")
+    @PatchMapping("/api/v1/board/{boardId}/comment/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateComment(@PathVariable Long boardId,
+                              @PathVariable Long commentId,
+                              @RequestParam("content") @NotBlank(message = "내용은 필수 입력 값입니다.") String updateRequest) {
+        commentService.updateComment(boardId, commentId, updateRequest);
+    }
+
+    // 댓글 삭제
+    @Operation(summary = "댓글 삭제 API", description = "commentId 값으로 댓글을 삭제합니다.")
+    @DeleteMapping("/api/v1/board/{boardId}/comment/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteComment(@PathVariable Long boardId,
+                              @PathVariable Long commentId) {
+        commentService.deleteComment(boardId, commentId);
+    }
 }

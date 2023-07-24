@@ -1,10 +1,13 @@
 package com.sh.global.exception;
 
 import com.sh.global.exception.customexcpetion.board.*;
+import com.sh.global.exception.customexcpetion.comment.NotAuthorityException;
+import com.sh.global.exception.customexcpetion.comment.NotFoundCommentException;
 import com.sh.global.exception.customexcpetion.page.PageRangeOverException;
 import com.sh.global.exception.customexcpetion.page.SizeRangeOverException;
 import com.sh.global.exception.customexcpetion.page.ValueIsNotIntegerException;
 import com.sh.global.exception.customexcpetion.user.*;
+import com.sh.global.exception.errorcode.UserErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -108,21 +111,38 @@ public class GlobalExceptionManager {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    // 페이지 범위 에러
     @ExceptionHandler(PageRangeOverException.class)
     public ResponseEntity<ErrorResponse> pageRangeOverError(PageRangeOverException e) {
         final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    // 사이즈 범위 에러
     @ExceptionHandler(SizeRangeOverException.class)
     public ResponseEntity<ErrorResponse> sizeRangeOverError(SizeRangeOverException e) {
         final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
+    // 페이지, 사이즈 값이 정수가 아닐 경우
     @ExceptionHandler(ValueIsNotIntegerException.class)
     public ResponseEntity<ErrorResponse> valueError(ValueIsNotIntegerException e) {
         final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    // 댓글을 찾을 수 없을 경우
+    @ExceptionHandler(NotFoundCommentException.class)
+    public ResponseEntity<ErrorResponse> notFoundCommentError(NotFoundCommentException e) {
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    // 댓글의 작성자가 로그인한 정보와 다를 경우
+    @ExceptionHandler(NotAuthorityException.class)
+    public ResponseEntity<ErrorResponse> notAuthorityError(NotAuthorityException e) {
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }

@@ -9,10 +9,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "update comment set delete_at = CURRENT_TIMESTAMP where comment_id = ?")
 public class Comment extends BaseTimeEntity {
 
     @Id
@@ -39,5 +41,10 @@ public class Comment extends BaseTimeEntity {
         this.board = board;
         this.user = user;
         this.delete_at = null;
+    }
+
+    // 댓글 수정
+    public void update(String content) {
+        this.content = content;
     }
 }

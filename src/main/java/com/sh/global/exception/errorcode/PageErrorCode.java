@@ -1,5 +1,6 @@
-package com.sh.global.exception;
+package com.sh.global.exception.errorcode;
 
+import com.sh.global.exception.errorcode.ErrorCode;
 import org.springframework.http.HttpStatus;
 
 public enum PageErrorCode implements ErrorCode {

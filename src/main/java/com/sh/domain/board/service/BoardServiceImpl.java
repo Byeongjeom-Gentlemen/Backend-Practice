@@ -5,8 +5,8 @@ import com.sh.domain.board.dto.*;
 import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
-import com.sh.global.exception.BoardErrorCode;
-import com.sh.global.exception.UserErrorCode;
+import com.sh.global.exception.errorcode.BoardErrorCode;
+import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.exception.customexcpetion.board.*;
 import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
 import com.sh.global.util.SearchType;
@@ -66,6 +66,21 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 수정
     @Override
     public void modifyBoard(Long boardId, UpdateBoardRequestDto updateRequest) {
+        Board board = verification(boardId);
+
+        board.update(updateRequest);
+    }
+
+    // 게시글 삭제
+    @Override
+    public void deleteBoard(Long boardId) {
+        Board board = verification(boardId);
+
+        boardRepository.delete(board);
+    }
+
+    // 공통 검증 로직
+    private Board verification(Long boardId) {
         Long userId = sessionUtil.getAttribute();
 
         // 해당 게시글이 존재하지 않을 경우
@@ -75,6 +90,7 @@ public class BoardServiceImpl implements BoardService {
                         .orElseThrow(
                                 () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
+        // 삭제된 게시글일 경우
         if (board.getDelete_at() != null) {
             throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD);
         }
@@ -84,29 +100,7 @@ public class BoardServiceImpl implements BoardService {
             throw new NotMatchesWriterException(BoardErrorCode.BOARD_NOT_AUTHORITY);
         }
 
-        board.update(updateRequest);
-    }
-
-    // 게시글 삭제
-    @Override
-    public void deleteBoard(Long boardId) {
-        Long userId = sessionUtil.getAttribute();
-
-        Board board =
-                boardRepository
-                        .findById(boardId)
-                        .orElseThrow(
-                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
-
-        if (board.getDelete_at() != null) {
-            throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD);
-        }
-
-        if (board.getUser().getUserId() != userId) {
-            throw new NotMatchesWriterException(BoardErrorCode.BOARD_NOT_AUTHORITY);
-        }
-
-        boardRepository.delete(board);
+        return board;
     }
 
     // 게시글 조회(전체 조회, 검색어를 통한 조회)

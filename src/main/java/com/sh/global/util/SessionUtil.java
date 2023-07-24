@@ -1,6 +1,6 @@
 package com.sh.global.util;
 
-import com.sh.global.exception.UserErrorCode;
+import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.exception.customexcpetion.user.UserNonLoginException;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
