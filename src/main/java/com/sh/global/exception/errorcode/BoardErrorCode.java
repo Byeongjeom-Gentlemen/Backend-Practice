@@ -9,7 +9,7 @@ public enum BoardErrorCode implements ErrorCode {
     /* BOARD */
     NOT_FOUND_BOARD(HttpStatus.NOT_FOUND, "B_001", "해당 게시글이 존재하지 않습니다"),
     EMPTY_BOARD_LIST(HttpStatus.NOT_FOUND, "B_002", "등록된 게시글이 없습니다."),
-    BOARD_NOT_AUTHORITY(HttpStatus.UNAUTHORIZED, "B_003", "해당 게시글에 대한 권한이 존재하지 않습니다."),
+    BOARD_NOT_AUTHORITY(HttpStatus.UNAUTHORIZED, "B_003", "해당 게시글에 대한 작업 권한이 존재하지 않습니다."),
     UNSUPPORTED_SEARCH_TYPE(HttpStatus.BAD_REQUEST, "B_004", "해당 타입의 검색은 지원하지 않습니다."),
     NOT_FOUND_SEARCH_TITLE(HttpStatus.NOT_FOUND, "B_005", "해당 제목을 포함한 게시글이 존재하지 않습니다."),
     NOT_FOUND_SEARCH_WRITER(HttpStatus.NOT_FOUND, "B_006", "해당 작성자의 게시글이 존재하지 않습니다."),

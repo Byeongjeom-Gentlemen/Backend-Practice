@@ -40,4 +40,9 @@ public class Comment extends BaseTimeEntity {
         this.user = user;
         this.delete_at = null;
     }
+
+    // 댓글 수정
+    public void update(String content) {
+        this.content = content;
+    }
 }
