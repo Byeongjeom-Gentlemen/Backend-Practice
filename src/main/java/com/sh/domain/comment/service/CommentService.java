@@ -1,3 +1,11 @@
 package com.sh.domain.comment.service;
 
-public interface CommentService {}
+import com.sh.domain.comment.domain.Comment;
+import org.springframework.transaction.annotation.Transactional;
+
+public interface CommentService {
+
+    // 댓글 등록
+    @Transactional
+    Long createComment(Long boardId, String content);
+}
