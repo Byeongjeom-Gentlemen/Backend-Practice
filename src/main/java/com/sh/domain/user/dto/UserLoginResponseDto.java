@@ -10,8 +10,8 @@ import lombok.*;
 @AllArgsConstructor
 public class UserLoginResponseDto {
 
-    private Long id;
-    private String userId;
+    private Long userId;
+    private String id;
     private String nickname;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
@@ -35,8 +35,8 @@ public class UserLoginResponseDto {
     // Session
     public static UserLoginResponseDto from(User user, String result) {
         return UserLoginResponseDto.builder()
-                .id(user.getId())
                 .userId(user.getUserId())
+                .id(user.getId())
                 .nickname(user.getNickname())
                 .createdDate(user.getCreatedDate())
                 .modifiedDate(user.getModifiedDate())
