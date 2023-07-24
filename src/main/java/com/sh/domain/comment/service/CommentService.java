@@ -1,4 +1,3 @@
 package com.sh.domain.comment.service;
 
-public interface CommentService {
-}
+public interface CommentService {}
