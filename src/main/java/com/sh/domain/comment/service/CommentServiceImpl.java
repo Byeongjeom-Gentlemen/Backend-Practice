@@ -12,13 +12,11 @@ import com.sh.global.exception.UserErrorCode;
 import com.sh.global.exception.customexcpetion.board.NotFoundBoardException;
 import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
 import com.sh.global.util.SessionUtil;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -53,13 +51,17 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<SimpleCommentResponseDto> selectCommentList(Pageable pageable, Long boardId) {
 
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+        Board board =
+                boardRepository
+                        .findById(boardId)
+                        .orElseThrow(
+                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
-        List<SimpleCommentResponseDto> commentList = commentRepository.findByBoardId(boardId, pageable).getContent().stream()
-                .filter(comment -> comment.getDelete_at() == null)
-                .map(comment -> SimpleCommentResponseDto.of(comment, comment.getUser()))
-                .collect(Collectors.toList());
+        List<SimpleCommentResponseDto> commentList =
+                commentRepository.findByBoardId(boardId, pageable).getContent().stream()
+                        .filter(comment -> comment.getDelete_at() == null)
+                        .map(comment -> SimpleCommentResponseDto.of(comment, comment.getUser()))
+                        .collect(Collectors.toList());
 
         return commentList;
     }
