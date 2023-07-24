@@ -27,17 +27,18 @@ public class CommentServiceImpl implements CommentService {
     public Long createComment(Long boardId, String content) {
         Long userId = sessionUtil.getAttribute();
 
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user =
+                userRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+        Board board =
+                boardRepository
+                        .findById(boardId)
+                        .orElseThrow(
+                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
-        Comment comment = Comment.builder()
-                .content(content)
-                .board(board)
-                .user(user)
-                .build();
+        Comment comment = Comment.builder().content(content).board(board).user(user).build();
 
         return commentRepository.save(comment).getCommentId();
     }
