@@ -1,4 +1,4 @@
-package com.sh.global.exception;
+package com.sh.global.exception.errorcode;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

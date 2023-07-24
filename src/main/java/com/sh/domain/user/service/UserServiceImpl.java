@@ -3,7 +3,7 @@ package com.sh.domain.user.service;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
 import com.sh.domain.user.repository.UserRepository;
-import com.sh.global.exception.UserErrorCode;
+import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.exception.customexcpetion.user.*;
 import com.sh.global.util.SessionUtil;
 import com.sh.global.util.UserStatus;
