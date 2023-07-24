@@ -49,7 +49,8 @@ public class PageableVerificationArgumentResolver extends PageableHandlerMethodA
 
         // size가 1보다 작거나 10보다 크면
         if (sizeText != null
-                && !sizeText.equals("") && (Integer.parseInt(sizeText) < 1 || Integer.parseInt(sizeText) > 10)) {
+                && !sizeText.equals("")
+                && (Integer.parseInt(sizeText) < 1 || Integer.parseInt(sizeText) > 10)) {
             throw new SizeRangeOverException(PageErrorCode.SIZE_VALUE_OVER_RANGE);
         }
 

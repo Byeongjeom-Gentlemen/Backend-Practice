@@ -3,12 +3,10 @@ package com.sh.domain.comment.dto;
 import com.sh.domain.comment.domain.Comment;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.WriterResponseDto;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
