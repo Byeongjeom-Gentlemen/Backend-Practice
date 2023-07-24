@@ -3,13 +3,12 @@ package com.sh.domain.comment.domain;
 import com.sh.domain.board.domain.Board;
 import com.sh.domain.user.domain.User;
 import com.sh.global.common.BaseTimeEntity;
+import java.time.LocalDateTime;
+import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -32,8 +31,7 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column
-    private LocalDateTime delete_at;
+    @Column private LocalDateTime delete_at;
 
     @Builder
     private Comment(String content, Board board, User user) {

@@ -1,6 +1,5 @@
 package com.sh.global.util;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,7 +7,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableArgumentResolver;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolverSupport;
 import org.springframework.data.web.SortArgumentResolver;
-import org.springframework.data.web.SortHandlerMethodArgumentResolver;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
