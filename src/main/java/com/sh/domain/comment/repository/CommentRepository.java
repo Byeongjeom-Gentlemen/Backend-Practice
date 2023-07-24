@@ -17,4 +17,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     // 댓글 번호로 댓글 조회
     Optional<Comment> findByCommentId(Long commentId);
+
+    // 댓글 삭제
+    void delete(Comment comment);
 }

@@ -72,21 +72,44 @@ public class CommentServiceImpl implements CommentService {
     // 댓글 수정
     @Override
     public void updateComment(Long boardId, Long commentId, String updateRequest) {
+        Comment comment = verification(boardId, commentId);
+
+        comment.update(updateRequest);
+    }
+
+    // 댓글 삭제
+    @Override
+    public void deleteComment(Long boardId, Long commentId) {
+        Comment comment = verification(boardId, commentId);
+
+        commentRepository.delete(comment);
+    }
+    
+    // 검증 로직(댓글 수정, 댓글 삭제)
+    private Comment verification(Long boardId, Long commentId) {
         Long userId = sessionUtil.getAttribute();
 
         userRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
-        boardRepository.findById(boardId)
+        Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+
+        if(board.getDelete_at() != null) {
+            throw new NotFoundBoardException(BoardErrorCode.DELETED_BOARD);
+        }
 
         Comment comment = commentRepository.findByCommentId(commentId)
                 .orElseThrow(() -> new NotFoundCommentException(CommentErrorCode.NOT_FOUND_COMMENT));
+
+        if(comment.getDelete_at() != null) {
+            throw new NotFoundCommentException(CommentErrorCode.DELETED_COMMENT);
+        }
 
         if(userId != comment.getUser().getUserId()) {
             throw new NotAuthorityException(CommentErrorCode.NOT_AUTHORITY_COMMENT);
         }
 
-        comment.update(updateRequest);
+        return comment;
     }
 }
