@@ -1,6 +1,5 @@
 package com.sh.domain.comment.service;
 
-import com.sh.domain.comment.domain.Comment;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface CommentService {
