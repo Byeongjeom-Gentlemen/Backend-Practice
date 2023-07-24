@@ -29,11 +29,11 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 등록
     @Override
     public Long createBoard(CreateBoardRequestDto createRequest) {
-        Long id = sessionUtil.getAttribute();
+        Long userId = sessionUtil.getAttribute();
 
         User user =
                 userRepository
-                        .findById(id)
+                        .findByUserId(userId)
                         .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
         Board newBoard =
@@ -66,7 +66,7 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 수정
     @Override
     public void modifyBoard(Long boardId, UpdateBoardRequestDto updateRequest) {
-        Long id = sessionUtil.getAttribute();
+        Long userId = sessionUtil.getAttribute();
 
         // 해당 게시글이 존재하지 않을 경우
         Board board =
@@ -80,7 +80,7 @@ public class BoardServiceImpl implements BoardService {
         }
 
         // 해당 게시글의 작성자가 다른 경우
-        if (board.getUser().getId() != id) {
+        if (board.getUser().getUserId() != userId) {
             throw new NotMatchesWriterException(BoardErrorCode.BOARD_NOT_AUTHORITY);
         }
 
@@ -90,7 +90,7 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 삭제
     @Override
     public void deleteBoard(Long boardId) {
-        Long id = sessionUtil.getAttribute();
+        Long userId = sessionUtil.getAttribute();
 
         Board board =
                 boardRepository
@@ -102,7 +102,7 @@ public class BoardServiceImpl implements BoardService {
             throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD);
         }
 
-        if (board.getUser().getId() != id) {
+        if (board.getUser().getUserId() != userId) {
             throw new NotMatchesWriterException(BoardErrorCode.BOARD_NOT_AUTHORITY);
         }
 
@@ -113,10 +113,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public PagingBoardsResponseDto searchBoards(
             Pageable pageable, String searchType, String keyword) {
-        // searchType 구분(ALL, title, writer, null)
         SearchType type = SearchType.convertToType(searchType);
-
-        System.out.println(type);
 
         if (type == null) {
             throw new UnsupportedSearchTypeException(BoardErrorCode.UNSUPPORTED_SEARCH_TYPE);
@@ -163,7 +160,7 @@ public class BoardServiceImpl implements BoardService {
                                     () -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
             // 해당 유저가 작성한 게시글이 있다면 pageable 값에 따라 데이터 저장
-            pages = boardRepository.findByUserId(user.getId(), pageable);
+            pages = boardRepository.findByUserId(user.getUserId(), pageable);
 
             // 설정한 page에 데이터가 없을 경우
             if (pages.getContent().isEmpty()) {

@@ -67,9 +67,9 @@ public class UserController {
     @Operation(
             summary = "다른회원 조회 API",
             description = "다른 회원정보를 조회하는 API 입니다. 회원의 ID(PK)값을 필요로 합니다.")
-    @GetMapping("/api/v1/users/{id}")
-    public ResponseEntity<UserBasicResponseDto> selectByOtherUser(@PathVariable Long id) {
-        return ResponseEntity.ok().body(userService.selectOtherUser(id));
+    @GetMapping("/api/v1/users/{userId}")
+    public ResponseEntity<UserBasicResponseDto> selectByOtherUser(@PathVariable Long userId) {
+        return ResponseEntity.ok().body(userService.selectOtherUser(userId));
     }
 
     // 로그아웃

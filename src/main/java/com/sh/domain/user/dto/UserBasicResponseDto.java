@@ -12,16 +12,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserBasicResponseDto {
-    private Long id;
-    private String userId;
+    private Long userId;
+    private String id;
     private String nickname;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     public static UserBasicResponseDto from(User user) {
         return UserBasicResponseDto.builder()
-                .id(user.getId())
                 .userId(user.getUserId())
+                .id(user.getId())
                 .nickname(user.getNickname())
                 .createdDate(user.getCreatedDate())
                 .modifiedDate(user.getModifiedDate())

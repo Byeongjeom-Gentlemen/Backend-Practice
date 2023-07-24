@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long join(SignupRequestDto signupRequest) {
         // 아이디 중복확인
-        existsByUserId(signupRequest.getId());
+        existsById(signupRequest.getId());
 
         // 닉네임 중복확인
         existsByNickname(signupRequest.getNickname());
@@ -36,18 +36,18 @@ public class UserServiceImpl implements UserService {
 
         User user =
                 User.builder()
-                        .userId(signupRequest.getId())
+                        .id(signupRequest.getId())
                         .pw(signupRequest.getPw())
                         .nickname(signupRequest.getNickname())
                         .status(UserStatus.ALIVE)
                         .build();
 
-        return userRepository.save(user).getId();
+        return userRepository.save(user).getUserId();
     }
 
     // 아이디 중복 확인
-    private void existsByUserId(String userId) {
-        if (userRepository.existsByUserId(userId)) {
+    private void existsById(String id) {
+        if (userRepository.existsById(id)) {
             throw new AlreadyUsedUserIdException(UserErrorCode.ALREADY_EXISTS_ID);
         }
     }
@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
         // Session
         User user =
                 userRepository
-                        .findByUserId(loginRequest.getId())
+                        .findById(loginRequest.getId())
                         .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
         if (!passwordEncoder.matches(loginRequest.getPw(), user.getPw())) {
@@ -93,7 +93,8 @@ public class UserServiceImpl implements UserService {
             throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
         }
 
-        sessionUtil.setAttribute(user.getId());
+        // user_id(pk)값으로 세션생성
+        sessionUtil.setAttribute(user.getUserId());
 
         return UserLoginResponseDto.from(user, "success");
     }
@@ -101,11 +102,11 @@ public class UserServiceImpl implements UserService {
     // 내 정보 조회
     @Override
     public UserBasicResponseDto selectMe() {
-        Long id = sessionUtil.getAttribute();
+        Long userId = sessionUtil.getAttribute();
 
         User user =
                 userRepository
-                        .findById(id)
+                        .findByUserId(userId)
                         .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
         if (user.getStatus() == UserStatus.WITHDRAWN) {
@@ -119,11 +120,11 @@ public class UserServiceImpl implements UserService {
     // CASCADE 옵션은 되도록 사용하지 않는다.
     @Override
     public void deleteUser() {
-        Long id = sessionUtil.getAttribute();
+        Long userId = sessionUtil.getAttribute();
 
         User user =
                 userRepository
-                        .findById(id)
+                        .findByUserId(userId)
                         .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
         if (user.getStatus() == UserStatus.WITHDRAWN) {
@@ -135,10 +136,10 @@ public class UserServiceImpl implements UserService {
     }
 
     public void logout() {
-        Long id = sessionUtil.getAttribute();
+        Long userId = sessionUtil.getAttribute();
 
         userRepository
-                .findById(id)
+                .findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
         sessionUtil.invalidate();
@@ -147,11 +148,11 @@ public class UserServiceImpl implements UserService {
     // 회원 수정(PATCH)
     @Override
     public void modifyMe(UpdateUserRequestDto updateRequest) {
-        Long id = sessionUtil.getAttribute();
+        Long userId = sessionUtil.getAttribute();
 
         User user =
                 userRepository
-                        .findById(id)
+                        .findByUserId(userId)
                         .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
         // 이미 탈퇴한 회원인 경우
@@ -161,7 +162,7 @@ public class UserServiceImpl implements UserService {
 
         // 아이디 수정 시
         if (updateRequest.getAfterId() != null) {
-            existsByUserId(updateRequest.getAfterId());
+            existsById(updateRequest.getAfterId());
             user.updateUserId(updateRequest.getAfterId());
         }
 
@@ -180,10 +181,10 @@ public class UserServiceImpl implements UserService {
 
     // 다른 회원 조회
     @Override
-    public UserBasicResponseDto selectOtherUser(Long id) {
+    public UserBasicResponseDto selectOtherUser(Long userId) {
         User user =
                 userRepository
-                        .findById(id)
+                        .findByUserId(userId)
                         .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
         if (user.getStatus() == UserStatus.WITHDRAWN) {

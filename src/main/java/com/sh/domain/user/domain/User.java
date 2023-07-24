@@ -13,14 +13,15 @@ import org.hibernate.annotations.SQLDelete;
 // 논리 삭제(실제 DB에서 삭제하지 않고 필드 값을 추가하여 삭제 여부를 판단
 // @Where을 사용해 해당 값만 select하도록 설정(삭제된 회원은 조회 시 조회안됨)
 // @Where(clause = "not user_status = 'WITHDRAWN'")
-@SQLDelete(sql = "UPDATE users SET user_status = 'WITHDRAWN' where id = ?")
+@SQLDelete(sql = "UPDATE users SET user_status = 'WITHDRAWN' where user_id = ?")
 public class User extends BaseTimeEntity {
     @Id
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
-    @Column(nullable = false, length = 10, unique = true, name = "user_id")
-    private String userId;
+    @Column(nullable = false, length = 10, unique = true)
+    private String id;
 
     @Column(nullable = false, length = 200)
     private String pw;
@@ -34,16 +35,16 @@ public class User extends BaseTimeEntity {
     private UserStatus status;
 
     @Builder
-    private User(String userId, String pw, String nickname, UserStatus status) {
-        this.userId = userId;
+    private User(String id, String pw, String nickname, UserStatus status) {
+        this.id = id;
         this.pw = pw;
         this.nickname = nickname;
         this.status = status;
     }
 
     // 회원 아이디 수정
-    public void updateUserId(String userId) {
-        this.userId = userId;
+    public void updateUserId(String id) {
+        this.id = id;
     }
 
     // 회원 닉네임 수정

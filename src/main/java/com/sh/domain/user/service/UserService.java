@@ -27,7 +27,7 @@ public interface UserService {
 
     // 다른 회원 조회
     @Transactional(readOnly = true)
-    UserBasicResponseDto selectOtherUser(Long id);
+    UserBasicResponseDto selectOtherUser(Long userId);
 
     // 로그아웃
     void logout();
