@@ -69,4 +69,20 @@ public class BoardController {
             @RequestParam(required = false) String keyword) {
         return ResponseEntity.ok().body(boardService.searchBoards(pageable, searchType, keyword));
     }
+
+    // 게시글 좋아요
+    @Operation(summary = "좋아요 API", description = "boardId 값으로 해당 게시글의 좋아요 값을 count 합니다.")
+    @PostMapping("/api/v1/board/{boardId}/like")
+    @ResponseStatus(HttpStatus.OK)
+    public Long createLike(@PathVariable Long boardId) {
+        return boardService.createLike(boardId);
+    }
+    
+    // 게시글 좋아요 취소
+    @Operation(summary = "좋아요 취소 API", description = "boardId 값으로 해당 게시글의 좋아요 값을 minus 합니다.")
+    @DeleteMapping("/api/v1/board/{boardId}/like")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLike(@PathVariable Long boardId) {
+        boardService.deleteLike(boardId);
+    }
 }
