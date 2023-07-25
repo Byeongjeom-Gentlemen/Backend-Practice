@@ -6,6 +6,7 @@ import com.sh.global.common.BaseTimeEntity;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 
 @Entity
@@ -26,8 +27,12 @@ public class Board extends BaseTimeEntity {
 
     // 단방향 매핑
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private User user;
+
+    @ColumnDefault("0")
+    @Column(name = "like_count")
+    private Integer likeCount;
 
     @Column private LocalDateTime delete_at;
 
@@ -43,5 +48,15 @@ public class Board extends BaseTimeEntity {
     public void update(UpdateBoardRequestDto updateRequest) {
         this.title = updateRequest.getTitle();
         this.content = updateRequest.getContent();
+    }
+
+    // 좋아요 카운트 plus
+    public void plusLike() {
+        this.likeCount += 1;
+    }
+
+    // 좋아요 카운트 minus
+    public void minusLike() {
+        this.likeCount -= 1;
     }
 }

@@ -1,7 +1,9 @@
 package com.sh.domain.board.service;
 
+import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.dto.*;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface BoardService {
@@ -25,4 +27,14 @@ public interface BoardService {
     // 게시글 조회(전체 조회, 검색을 통한 조회)
     @Transactional(readOnly = true)
     PagingBoardsResponseDto searchBoards(Pageable pageable, String searchType, String keyword);
+
+    // 게시글 좋아요
+    @Transactional(timeout = 5)
+    Long createLike(Long boardId);
+    
+    // 게시글 좋아요 취소
+    @Transactional(timeout = 5)
+    void deleteLike(Long boardId);
+
+
 }
