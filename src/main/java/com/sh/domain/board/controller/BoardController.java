@@ -77,7 +77,7 @@ public class BoardController {
     public Long createLike(@PathVariable Long boardId) {
         return boardService.createLike(boardId);
     }
-    
+
     // 게시글 좋아요 취소
     @Operation(summary = "좋아요 취소 API", description = "boardId 값으로 해당 게시글의 좋아요 값을 minus 합니다.")
     @DeleteMapping("/api/v1/board/{boardId}/like")

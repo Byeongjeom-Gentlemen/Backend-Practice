@@ -1,9 +1,9 @@
 package com.sh.global.util;
 
-import com.sh.global.exception.errorcode.PageErrorCode;
 import com.sh.global.exception.customexcpetion.page.PageRangeOverException;
 import com.sh.global.exception.customexcpetion.page.SizeRangeOverException;
 import com.sh.global.exception.customexcpetion.page.ValueIsNotIntegerException;
+import com.sh.global.exception.errorcode.PageErrorCode;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
