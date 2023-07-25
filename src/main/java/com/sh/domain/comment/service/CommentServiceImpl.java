@@ -7,13 +7,13 @@ import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import com.sh.domain.comment.repository.CommentRepository;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
-import com.sh.global.exception.errorcode.BoardErrorCode;
-import com.sh.global.exception.errorcode.CommentErrorCode;
-import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.exception.customexcpetion.board.NotFoundBoardException;
 import com.sh.global.exception.customexcpetion.comment.NotAuthorityException;
 import com.sh.global.exception.customexcpetion.comment.NotFoundCommentException;
 import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
+import com.sh.global.exception.errorcode.BoardErrorCode;
+import com.sh.global.exception.errorcode.CommentErrorCode;
+import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.util.SessionUtil;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -84,29 +84,38 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.delete(comment);
     }
-    
+
     // 검증 로직(댓글 수정, 댓글 삭제)
     private Comment verification(Long boardId, Long commentId) {
         Long userId = sessionUtil.getAttribute();
 
-        userRepository.findByUserId(userId)
+        userRepository
+                .findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+        Board board =
+                boardRepository
+                        .findById(boardId)
+                        .orElseThrow(
+                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
-        if(board.getDelete_at() != null) {
+        if (board.getDelete_at() != null) {
             throw new NotFoundBoardException(BoardErrorCode.DELETED_BOARD);
         }
 
-        Comment comment = commentRepository.findByCommentId(commentId)
-                .orElseThrow(() -> new NotFoundCommentException(CommentErrorCode.NOT_FOUND_COMMENT));
+        Comment comment =
+                commentRepository
+                        .findByCommentId(commentId)
+                        .orElseThrow(
+                                () ->
+                                        new NotFoundCommentException(
+                                                CommentErrorCode.NOT_FOUND_COMMENT));
 
-        if(comment.getDelete_at() != null) {
+        if (comment.getDelete_at() != null) {
             throw new NotFoundCommentException(CommentErrorCode.DELETED_COMMENT);
         }
 
-        if(userId != comment.getUser().getUserId()) {
+        if (userId != comment.getUser().getUserId()) {
             throw new NotAuthorityException(CommentErrorCode.NOT_AUTHORITY_COMMENT);
         }
 

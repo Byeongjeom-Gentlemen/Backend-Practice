@@ -5,8 +5,6 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Temporal;
-
 public interface CommentService {
 
     // 댓글 등록

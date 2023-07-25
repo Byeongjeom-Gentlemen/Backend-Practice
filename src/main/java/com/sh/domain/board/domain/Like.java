@@ -1,13 +1,12 @@
 package com.sh.domain.board.domain;
 
 import com.sh.domain.user.domain.User;
+import java.time.LocalDateTime;
+import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -36,5 +35,4 @@ public class Like {
         this.board = board;
         this.likeTime = LocalDateTime.now();
     }
-
 }

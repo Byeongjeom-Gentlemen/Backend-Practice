@@ -2,13 +2,12 @@ package com.sh.domain.board.repository;
 
 import com.sh.domain.board.domain.Board;
 import java.util.Optional;
+import javax.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
-
-import javax.persistence.LockModeType;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 

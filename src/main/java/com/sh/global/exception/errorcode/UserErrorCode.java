@@ -1,6 +1,5 @@
 package com.sh.global.exception.errorcode;
 
-import com.sh.global.exception.errorcode.ErrorCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

@@ -7,21 +7,17 @@ import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.repository.LikeRepository;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
-import com.sh.global.exception.errorcode.BoardErrorCode;
-import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.exception.customexcpetion.board.*;
 import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
+import com.sh.global.exception.errorcode.BoardErrorCode;
+import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.util.SearchType;
 import com.sh.global.util.SessionUtil;
-
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -185,16 +181,18 @@ public class BoardServiceImpl implements BoardService {
     public Long createLike(Long boardId) {
         Long userId = sessionUtil.getAttribute();
 
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user =
+                userRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
-        Board board = boardRepository.findByIdForUpdate(boardId)
-                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+        Board board =
+                boardRepository
+                        .findByIdForUpdate(boardId)
+                        .orElseThrow(
+                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
-        Like like = Like.builder()
-                .user(user)
-                .board(board)
-                .build();
+        Like like = Like.builder().user(user).board(board).build();
 
         board.plusLike();
         return likeRepository.save(like).getLikeId();
@@ -205,14 +203,22 @@ public class BoardServiceImpl implements BoardService {
     public void deleteLike(Long boardId) {
         Long userId = sessionUtil.getAttribute();
 
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user =
+                userRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
-        Board board = boardRepository.findByIdForUpdate(boardId)
-                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+        Board board =
+                boardRepository
+                        .findByIdForUpdate(boardId)
+                        .orElseThrow(
+                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
-        Like like = likeRepository.findByUserAndBoard(userId, boardId)
-                .orElseThrow(() -> new NotFoundLikeException(BoardErrorCode.NOT_FOUND_LIKE));
+        Like like =
+                likeRepository
+                        .findByUserAndBoard(userId, boardId)
+                        .orElseThrow(
+                                () -> new NotFoundLikeException(BoardErrorCode.NOT_FOUND_LIKE));
 
         board.minusLike();
         likeRepository.deleteByLikeId(like.getLikeId());
