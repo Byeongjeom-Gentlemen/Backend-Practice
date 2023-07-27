@@ -5,6 +5,9 @@ import com.sh.domain.board.domain.Like;
 import com.sh.domain.board.dto.*;
 import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.repository.LikeRepository;
+import com.sh.domain.comment.domain.Comment;
+import com.sh.domain.comment.dto.SimpleCommentResponseDto;
+import com.sh.domain.comment.service.CommentService;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.exception.customexcpetion.board.*;
@@ -14,13 +17,13 @@ import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.util.SearchType;
 import com.sh.global.util.SessionUtil;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
+    private final CommentService commentService;
     private final SessionUtil sessionUtil;
 
     // 게시글 등록
@@ -65,7 +69,12 @@ public class BoardServiceImpl implements BoardService {
             throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD);
         }
 
-        return BoardBasicResponseDto.from(board);
+        // 게시글을 조회함과 동시에 해당 게시글의 댓글 정보도 조회
+        // default 값으로 첫 페이지, 사이즈는 10개, 최신순으로 정렬되도록 설정
+        PageRequest pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdDate");
+        List<SimpleCommentResponseDto> commentList = commentService.selectCommentList(pageable, boardId).getCommentList();
+
+        return BoardBasicResponseDto.from(board, commentList);
     }
 
     // 게시글 수정
