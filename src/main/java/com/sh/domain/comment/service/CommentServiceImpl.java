@@ -3,6 +3,7 @@ package com.sh.domain.comment.service;
 import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.comment.domain.Comment;
+import com.sh.domain.comment.dto.CommentListResponseDto;
 import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import com.sh.domain.comment.repository.CommentRepository;
 import com.sh.domain.user.domain.User;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -50,9 +52,9 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.save(comment).getCommentId();
     }
 
-    // 댓글 조회
+    // 댓글 조회(댓글 더보기)
     @Override
-    public List<SimpleCommentResponseDto> selectCommentList(Pageable pageable, Long boardId) {
+    public CommentListResponseDto selectCommentList(Pageable pageable, Long boardId) {
 
         Board board =
                 boardRepository
@@ -60,13 +62,21 @@ public class CommentServiceImpl implements CommentService {
                         .orElseThrow(
                                 () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
+        Slice<Comment> pageComment = commentRepository.findByBoardId(boardId, pageable);
+
+        boolean hasNext = true;
+        // 현재 페이지, 다음 페이지에 데이터가 없으면 프론트 영역에서 더보기 버튼이 사라진다고 가정
+        if(pageComment.isLast() || !pageComment.hasNext() || !pageComment.hasContent()) {
+            hasNext = false;
+        }
+
         List<SimpleCommentResponseDto> commentList =
-                commentRepository.findByBoardId(boardId, pageable).getContent().stream()
+                pageComment.getContent().stream()
                         .filter(comment -> comment.getDelete_at() == null)
                         .map(comment -> SimpleCommentResponseDto.of(comment, comment.getUser()))
                         .collect(Collectors.toList());
 
-        return commentList;
+        return CommentListResponseDto.of(hasNext, commentList);
     }
 
     // 댓글 수정

@@ -1,5 +1,6 @@
 package com.sh.domain.comment.controller;
 
+import com.sh.domain.comment.dto.CommentListResponseDto;
 import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import com.sh.domain.comment.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +24,7 @@ public class CommentController {
 
     // 댓글 등록
     @Operation(
-            summary = "댓글을 등록하는 API",
+            summary = "댓글 등록 API",
             description =
                     "session에 저장되어 있는 id 값과 boardId 값으로 댓글을 등록할 수 있는지 검사하고 content 값으로 댓글을 등록합니다.")
     @PostMapping("/api/v1/board/{boardId}/comment")
@@ -34,19 +35,14 @@ public class CommentController {
         return commentService.createComment(boardId, content);
     }
 
-    // 댓글 조회
+    // 댓글 조회(댓글 더보기)
     @Operation(
-            summary = "댓글을 조회하는 API",
-            description = "boardId와 page, size 값에 따라 최신 등록순으로 댓글을 조회합니다.")
+            summary = "댓글 조회 API",
+            description = "boardId 값과 pageable 값으로 해당 게시글의 댓글을 조회합니다.(댓글 더보기)")
     @GetMapping("/api/v1/board/{boardId}/comment")
-    public ResponseEntity<List<SimpleCommentResponseDto>> selectComment(
-            @PageableDefault(
-                            page = 0,
-                            size = 10,
-                            sort = "commentId",
-                            direction = Sort.Direction.DESC)
-                    Pageable pageable,
-            @RequestParam("boardId") Long boardId) {
+    public ResponseEntity<CommentListResponseDto> selectComment(
+            @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+            @PathVariable Long boardId) {
         return ResponseEntity.ok().body(commentService.selectCommentList(pageable, boardId));
     }
 

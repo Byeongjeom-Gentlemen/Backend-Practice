@@ -40,7 +40,6 @@ public class Comment extends BaseTimeEntity {
         this.content = content;
         this.board = board;
         this.user = user;
-        this.delete_at = null;
     }
 
     // 댓글 수정

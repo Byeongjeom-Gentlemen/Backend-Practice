@@ -1,5 +1,6 @@
 package com.sh.domain.comment.service;
 
+import com.sh.domain.comment.dto.CommentListResponseDto;
 import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,7 @@ public interface CommentService {
 
     // 댓글 조회
     @Transactional(readOnly = true)
-    List<SimpleCommentResponseDto> selectCommentList(Pageable pageable, Long boardId);
+    CommentListResponseDto selectCommentList(Pageable pageable, Long boardId);
 
     // 댓글 수정
     @Transactional
