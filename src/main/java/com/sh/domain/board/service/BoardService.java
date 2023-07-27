@@ -26,11 +26,15 @@ public interface BoardService {
     @Transactional(readOnly = true)
     PagingBoardsResponseDto searchBoards(Pageable pageable, String searchType, String keyword);
 
-    // 게시글 좋아요
+    /*// 게시글 좋아요
     @Transactional(timeout = 5)
     Long createLike(Long boardId);
 
     // 게시글 좋아요 취소
     @Transactional(timeout = 5)
-    void deleteLike(Long boardId);
+    void deleteLike(Long boardId);*/
+
+    // 게시글 좋아요
+    @Transactional(timeout = 3)
+    LikeResponseDto likeBoard(Long boardId);
 }

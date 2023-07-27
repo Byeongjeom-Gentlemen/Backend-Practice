@@ -1,5 +1,6 @@
 package com.sh.domain.board.controller;
 
+import com.sh.domain.board.domain.Like;
 import com.sh.domain.board.dto.*;
 import com.sh.domain.board.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -70,7 +71,7 @@ public class BoardController {
         return ResponseEntity.ok().body(boardService.searchBoards(pageable, searchType, keyword));
     }
 
-    // 게시글 좋아요
+    /*// 게시글 좋아요
     @Operation(summary = "좋아요 API", description = "boardId 값으로 해당 게시글의 좋아요 값을 count 합니다.")
     @PostMapping("/api/v1/board/{boardId}/like")
     @ResponseStatus(HttpStatus.OK)
@@ -84,5 +85,12 @@ public class BoardController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLike(@PathVariable Long boardId) {
         boardService.deleteLike(boardId);
+    }*/
+
+    // 게시글 좋아요
+    @Operation(summary = "게시글 좋아요 API", description = "boardId 값을 통해 해당 게시글을 좋아요 할 수 있습니다. 이미 해당 게시글의 좋아요를 누른 상태면 좋아요가 취소됩니다.")
+    @PostMapping("/ap1/v1/board/{boardId}/like")
+    public ResponseEntity<LikeResponseDto> likeBoard(@PathVariable Long boardId) {
+        return ResponseEntity.ok(boardService.likeBoard(boardId));
     }
 }

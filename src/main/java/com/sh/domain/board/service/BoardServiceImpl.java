@@ -14,6 +14,7 @@ import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.util.SearchType;
 import com.sh.global.util.SessionUtil;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -178,7 +179,7 @@ public class BoardServiceImpl implements BoardService {
 
     // 좋아요
     @Override
-    public Long createLike(Long boardId) {
+    public LikeResponseDto likeBoard(Long boardId) {
         Long userId = sessionUtil.getAttribute();
 
         User user =
@@ -192,35 +193,23 @@ public class BoardServiceImpl implements BoardService {
                         .orElseThrow(
                                 () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
-        Like like = Like.builder().user(user).board(board).build();
+        Like like = likeRepository.findByUserAndBoard(user, board);
+        String status = "";
 
-        board.plusLike();
-        return likeRepository.save(like).getLikeId();
-    }
+        // 이미 해당 게시글의 좋아요를 누른 경우
+        if(like != null) {
+            board.minusLike();
+            likeRepository.deleteByLikeId(like.getLikeId());
+            status = "Cancel";
+        }
 
-    // 좋아요 취소
-    @Override
-    public void deleteLike(Long boardId) {
-        Long userId = sessionUtil.getAttribute();
+        // 해당 게시글의 좋아요를 누르지 않은 경우
+        if(like == null) {
+            board.plusLike();
+            like = likeRepository.save(Like.builder().user(user).board(board).build());
+            status = "Press";
+        }
 
-        User user =
-                userRepository
-                        .findByUserId(userId)
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
-
-        Board board =
-                boardRepository
-                        .findByIdForUpdate(boardId)
-                        .orElseThrow(
-                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
-
-        Like like =
-                likeRepository
-                        .findByUserAndBoard(userId, boardId)
-                        .orElseThrow(
-                                () -> new NotFoundLikeException(BoardErrorCode.NOT_FOUND_LIKE));
-
-        board.minusLike();
-        likeRepository.deleteByLikeId(like.getLikeId());
+        return LikeResponseDto.of(like.getLikeId(), status);
     }
 }
