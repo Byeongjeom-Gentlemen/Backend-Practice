@@ -30,7 +30,6 @@ public class BoardServiceImpl implements BoardService {
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
     private final SessionUtil sessionUtil;
-    private final TransactionTemplate transactionTemplate;
 
     // 게시글 등록
     @Override
