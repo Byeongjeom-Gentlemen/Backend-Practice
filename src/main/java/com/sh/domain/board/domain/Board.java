@@ -29,11 +29,11 @@ public class Board extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(
             name = "user_id",
+            referencedColumnName = "user_id",
             nullable = false,
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private User user;
 
-    @ColumnDefault("0")
     @Column(name = "like_count")
     private Integer likeCount;
 
@@ -44,7 +44,12 @@ public class Board extends BaseTimeEntity {
         this.title = title;
         this.content = content;
         this.user = user;
-        this.delete_at = null;
+    }
+
+    // likeCount Default 값 설정
+    @PrePersist
+    public void prePersist() {
+        this.likeCount = this.likeCount == null ? 0 : this.likeCount;
     }
 
     // 게시글 수정
