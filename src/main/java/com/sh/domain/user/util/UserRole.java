@@ -1,4 +1,4 @@
-package com.sh.global.util;
+package com.sh.domain.user.util;
 
 import lombok.Getter;
 

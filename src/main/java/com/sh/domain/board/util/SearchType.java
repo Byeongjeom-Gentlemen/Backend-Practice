@@ -1,4 +1,4 @@
-package com.sh.global.util;
+package com.sh.domain.board.util;
 
 import java.util.Arrays;
 import lombok.AllArgsConstructor;
