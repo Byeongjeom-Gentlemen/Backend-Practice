@@ -5,6 +5,7 @@ import com.sh.domain.board.domain.Like;
 import com.sh.domain.board.dto.*;
 import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.repository.LikeRepository;
+import com.sh.domain.board.util.SearchType;
 import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import com.sh.domain.comment.service.CommentService;
 import com.sh.domain.user.domain.User;
@@ -13,7 +14,6 @@ import com.sh.global.exception.customexcpetion.board.*;
 import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
 import com.sh.global.exception.errorcode.BoardErrorCode;
 import com.sh.global.exception.errorcode.UserErrorCode;
-import com.sh.domain.board.util.SearchType;
 import com.sh.global.util.SessionUtil;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,7 +71,8 @@ public class BoardServiceImpl implements BoardService {
         // 게시글을 조회함과 동시에 해당 게시글의 댓글 정보도 조회
         // default 값으로 첫 페이지, 사이즈는 10개, 최신순으로 정렬되도록 설정
         PageRequest pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdDate");
-        List<SimpleCommentResponseDto> commentList = commentService.selectCommentList(pageable, boardId).getCommentList();
+        List<SimpleCommentResponseDto> commentList =
+                commentService.selectCommentList(pageable, boardId).getCommentList();
 
         return BoardBasicResponseDto.from(board, commentList);
     }
@@ -204,14 +205,14 @@ public class BoardServiceImpl implements BoardService {
         String status = "";
 
         // 이미 해당 게시글의 좋아요를 누른 경우
-        if(like != null) {
+        if (like != null) {
             board.minusLike();
             likeRepository.deleteByLikeId(like.getLikeId());
             status = "Cancel";
         }
 
         // 해당 게시글의 좋아요를 누르지 않은 경우
-        if(like == null) {
+        if (like == null) {
             board.plusLike();
             like = likeRepository.save(Like.builder().user(user).board(board).build());
             status = "Press";

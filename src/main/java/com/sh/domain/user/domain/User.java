@@ -1,7 +1,7 @@
 package com.sh.domain.user.domain;
 
-import com.sh.global.common.BaseTimeEntity;
 import com.sh.domain.user.util.UserStatus;
+import com.sh.global.common.BaseTimeEntity;
 import javax.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;

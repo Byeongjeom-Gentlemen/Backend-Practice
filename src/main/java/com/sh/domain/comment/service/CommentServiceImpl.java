@@ -66,7 +66,7 @@ public class CommentServiceImpl implements CommentService {
 
         boolean hasNext = true;
         // 현재 페이지, 다음 페이지에 데이터가 없으면 프론트 영역에서 더보기 버튼이 사라진다고 가정
-        if(pageComment.isLast() || !pageComment.hasNext() || !pageComment.hasContent()) {
+        if (pageComment.isLast() || !pageComment.hasNext() || !pageComment.hasContent()) {
             hasNext = false;
         }
 

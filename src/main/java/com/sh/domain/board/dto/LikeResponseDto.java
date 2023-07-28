@@ -13,9 +13,6 @@ public class LikeResponseDto {
     private String status;
 
     public static LikeResponseDto of(Long likeId, String status) {
-        return LikeResponseDto.builder()
-                .likeId(likeId)
-                .status(status)
-                .build();
+        return LikeResponseDto.builder().likeId(likeId).status(status).build();
     }
 }

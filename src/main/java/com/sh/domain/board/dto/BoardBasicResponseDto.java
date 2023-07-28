@@ -5,7 +5,6 @@ import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import com.sh.domain.user.dto.WriterResponseDto;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import lombok.*;
 
 @Getter
@@ -22,7 +21,8 @@ public class BoardBasicResponseDto {
     private LocalDateTime modifiedDate;
     private List<SimpleCommentResponseDto> commentList;
 
-    public static BoardBasicResponseDto from(Board board, List<SimpleCommentResponseDto> commentList) {
+    public static BoardBasicResponseDto from(
+            Board board, List<SimpleCommentResponseDto> commentList) {
         return BoardBasicResponseDto.builder()
                 .boardId(board.getId())
                 .title(board.getTitle())
