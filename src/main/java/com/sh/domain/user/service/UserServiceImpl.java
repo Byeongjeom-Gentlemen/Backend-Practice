@@ -6,7 +6,7 @@ import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.exception.customexcpetion.user.*;
 import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.util.SessionUtil;
-import com.sh.global.util.UserStatus;
+import com.sh.domain.user.util.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -135,6 +135,7 @@ public class UserServiceImpl implements UserService {
         logout();
     }
 
+    @Override
     public void logout() {
         Long userId = sessionUtil.getAttribute();
 

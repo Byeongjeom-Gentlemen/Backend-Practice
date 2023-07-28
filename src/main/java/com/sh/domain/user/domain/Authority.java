@@ -1,7 +1,7 @@
 package com.sh.domain.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sh.global.util.UserRole;
+import com.sh.domain.user.util.UserRole;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

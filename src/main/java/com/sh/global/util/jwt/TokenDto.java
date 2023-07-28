@@ -1,4 +1,4 @@
-package com.sh.global.common.jwt;
+package com.sh.global.util.jwt;
 
 /*
 @Builder
