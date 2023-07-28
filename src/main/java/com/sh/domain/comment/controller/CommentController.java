@@ -1,11 +1,9 @@
 package com.sh.domain.comment.controller;
 
 import com.sh.domain.comment.dto.CommentListResponseDto;
-import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import com.sh.domain.comment.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +39,12 @@ public class CommentController {
             description = "boardId 값과 pageable 값으로 해당 게시글의 댓글을 조회합니다.(댓글 더보기)")
     @GetMapping("/api/v1/board/{boardId}/comment")
     public ResponseEntity<CommentListResponseDto> selectComment(
-            @PageableDefault(page = 0, size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+            @PageableDefault(
+                            page = 0,
+                            size = 10,
+                            sort = "createdDate",
+                            direction = Sort.Direction.DESC)
+                    Pageable pageable,
             @PathVariable Long boardId) {
         return ResponseEntity.ok().body(commentService.selectCommentList(pageable, boardId));
     }
