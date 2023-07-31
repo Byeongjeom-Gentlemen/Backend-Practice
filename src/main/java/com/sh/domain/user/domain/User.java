@@ -1,5 +1,6 @@
 package com.sh.domain.user.domain;
 
+import com.sh.domain.user.util.Role;
 import com.sh.domain.user.util.UserStatus;
 import com.sh.global.common.BaseTimeEntity;
 import javax.persistence.*;
@@ -29,16 +30,20 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, length = 4, unique = true)
     private String nickname;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     // 회원 상태
     @Column(name = "user_status")
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
     @Builder
-    private User(String id, String pw, String nickname, UserStatus status) {
+    private User(String id, String pw, String nickname, Role role, UserStatus status) {
         this.id = id;
         this.pw = pw;
         this.nickname = nickname;
+        this.role = role;
         this.status = status;
     }
 

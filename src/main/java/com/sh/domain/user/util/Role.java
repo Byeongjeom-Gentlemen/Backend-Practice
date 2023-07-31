@@ -1,9 +1,14 @@
 package com.sh.domain.user.util;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-public enum UserRole {
-    ROLE_USER,
-    ROLE_ADMIN;
+@RequiredArgsConstructor
+public enum Role {
+    ADMIN("ROLE_ADMIN", "관리자"),
+    USER("ROLE_USER", "일반 사용자");
+
+    private final String name;
+    private final String description;
 }
