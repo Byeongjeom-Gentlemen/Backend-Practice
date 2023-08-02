@@ -3,11 +3,21 @@ package com.sh.domain.user.service;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
 import com.sh.domain.user.repository.UserRepository;
+import com.sh.domain.user.util.Role;
 import com.sh.domain.user.util.UserStatus;
+import com.sh.global.exception.customexcpetion.token.NonTokenException;
 import com.sh.global.exception.customexcpetion.user.*;
+import com.sh.global.exception.errorcode.TokenErrorCode;
 import com.sh.global.exception.errorcode.UserErrorCode;
-import com.sh.global.util.SessionUtil;
+import com.sh.global.util.CustomUserDetails;
+import com.sh.global.util.SecurityUtils;
+import com.sh.global.util.jwt.JwtProvider;
+import com.sh.global.util.jwt.TokenDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +27,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final SessionUtil sessionUtil;
-
-    /*
+    private final SecurityUtils securityUtils;
     private final JwtProvider jwtProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder; */
+    private final AuthenticationManager authenticationManager;
+    private final RefreshTokenService refreshTokenService;
+    private final BlackListTokenService blackListTokenService;
 
     @Override
     public Long join(SignupRequestDto signupRequest) {
@@ -39,6 +49,7 @@ public class UserServiceImpl implements UserService {
                         .id(signupRequest.getId())
                         .pw(signupRequest.getPw())
                         .nickname(signupRequest.getNickname())
+                        .role(Role.USER)
                         .status(UserStatus.ALIVE)
                         .build();
 
@@ -62,56 +73,34 @@ public class UserServiceImpl implements UserService {
     // 로그인
     @Override
     public UserLoginResponseDto login(LoginRequestDto loginRequest) {
-        /* // JWT
-        // 1. id / pw를 기반으로 Authentication 객체 생성
-        // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userBasicRequestDto.getId(), userBasicRequestDto.getPw());
+        try {
+            // id / pw를 기반으로 Authentication 객체 생성 및 실제 검증 (아이디 존재 여부, 사용자 비밀번호 체크)
+            // 아이디가 존재하지 않거나 id와 비밀번호가 맞지 않으면 예외처리
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getId(), loginRequest.getPw())
+            );
 
-        // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
-        // authenticate 메서드가 실행될 때 CustomUserDetailsService의 loadUserByUsername 실행
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            // 인증정보를 기반으로 토큰 생성
+            TokenDto token = jwtProvider.createToken(authentication);
 
-        // 3. 인증 정보를 기반으로 JWT 생성
-        TokenDto token = jwtProvider.generateToken(authentication);
+            // Refresh Token 생성 및 저장
+            refreshTokenService.saveRefreshToken(loginRequest.getId(), token.getRefreshToken());
 
-        User user = userRepository.findByUserId(userBasicRequestDto.getId())
-        		.orElseThrow(() -> new UserNotFoundException());
+            // 유저정보
+            CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
-        return UserLoginResponseDto.from(user, token); */
-
-        // Session
-        User user =
-                userRepository
-                        .findById(loginRequest.getId())
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
-
-        if (!passwordEncoder.matches(loginRequest.getPw(), user.getPw())) {
+            return UserLoginResponseDto.from(user, token);
+        }
+        catch (BadCredentialsException e) {
             throw new NotMatchesUserException(UserErrorCode.INVALID_AUTHENTICATION);
         }
-
-        if (user.getStatus() == UserStatus.WITHDRAWN) {
-            throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
-        }
-
-        // user_id(pk)값으로 세션생성
-        sessionUtil.setAttribute(user.getUserId());
-
-        return UserLoginResponseDto.from(user, "success");
     }
 
     // 내 정보 조회
     @Override
     public UserBasicResponseDto selectMe() {
-        Long userId = sessionUtil.getAttribute();
-
-        User user =
-                userRepository
-                        .findByUserId(userId)
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
-
-        if (user.getStatus() == UserStatus.WITHDRAWN) {
-            throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
-        }
+        Long userId = securityUtils.getCurrentUserId();
+        User user = getUser(userId);
 
         return UserBasicResponseDto.from(user);
     }
@@ -120,46 +109,34 @@ public class UserServiceImpl implements UserService {
     // CASCADE 옵션은 되도록 사용하지 않는다.
     @Override
     public void deleteUser() {
-        Long userId = sessionUtil.getAttribute();
-
-        User user =
-                userRepository
-                        .findByUserId(userId)
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
-
-        if (user.getStatus() == UserStatus.WITHDRAWN) {
-            throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
-        }
+        Long userId = securityUtils.getCurrentUserId();
+        User user = getUser(userId);
 
         userRepository.delete(user);
-        logout();
     }
 
     @Override
-    public void logout() {
-        Long userId = sessionUtil.getAttribute();
+    public void logout(String accessToken, String refreshToken) {
+        if(accessToken == null) {
+            throw new NonTokenException(TokenErrorCode.NON_ACCESS_TOKEN_REQUEST_HEADER);
+        }
 
-        userRepository
-                .findByUserId(userId)
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        if(refreshToken == null) {
+            throw new NonTokenException(TokenErrorCode.NON_REFRESH_TOKEN_REQUEST_HEADER);
+        }
 
-        sessionUtil.invalidate();
+        // Refresh Token 삭제
+        refreshTokenService.deleteRefreshToken(refreshToken);
+        
+        // BlackList Token에 해당 Access Token 저장(검증할 때마다 Security에서 처리)
+        blackListTokenService.createBlackListToken(accessToken);
     }
 
     // 회원 수정(PATCH)
     @Override
     public void modifyMe(UpdateUserRequestDto updateRequest) {
-        Long userId = sessionUtil.getAttribute();
-
-        User user =
-                userRepository
-                        .findByUserId(userId)
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
-
-        // 이미 탈퇴한 회원인 경우
-        if (user.getStatus() == UserStatus.WITHDRAWN) {
-            throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
-        }
+        Long userId = securityUtils.getCurrentUserId();
+        User user = getUser(userId);
 
         // 아이디 수정 시
         if (updateRequest.getAfterId() != null) {
@@ -183,6 +160,13 @@ public class UserServiceImpl implements UserService {
     // 다른 회원 조회
     @Override
     public UserBasicResponseDto selectOtherUser(Long userId) {
+        User user = getUser(userId);
+
+        return UserBasicResponseDto.from(user);
+    }
+
+    // 회원 ID(PK)로 유저정보 가져오기
+    private User getUser(Long userId) {
         User user =
                 userRepository
                         .findByUserId(userId)
@@ -192,6 +176,6 @@ public class UserServiceImpl implements UserService {
             throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
         }
 
-        return UserBasicResponseDto.from(user);
+        return user;
     }
 }

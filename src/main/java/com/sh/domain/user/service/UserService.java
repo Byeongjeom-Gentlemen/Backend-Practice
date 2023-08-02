@@ -30,5 +30,5 @@ public interface UserService {
     UserBasicResponseDto selectOtherUser(Long userId);
 
     // 로그아웃
-    void logout();
+    void logout(String accessToken, String RefreshToken);
 }
