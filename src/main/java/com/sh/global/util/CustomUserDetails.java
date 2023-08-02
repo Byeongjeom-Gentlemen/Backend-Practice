@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -19,13 +20,19 @@ public class CustomUserDetails implements UserDetails {
     private Long userId;
     private String id;
     private String pw;
+    private String nickname;
     private String role;
+    private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
 
     public CustomUserDetails(User user) {
         this.userId = user.getUserId();
         this.id = user.getId();
         this.pw = user.getPw();
+        this.nickname = user.getNickname();
         this.role = user.getRole().name();
+        this.createdDate = user.getCreatedDate();
+        this.modifiedDate = user.getModifiedDate();
     }
 
     public CustomUserDetails(String id, String role) {
