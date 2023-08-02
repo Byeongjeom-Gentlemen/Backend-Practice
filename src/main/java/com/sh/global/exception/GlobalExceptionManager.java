@@ -6,6 +6,7 @@ import com.sh.global.exception.customexcpetion.comment.NotFoundCommentException;
 import com.sh.global.exception.customexcpetion.page.PageRangeOverException;
 import com.sh.global.exception.customexcpetion.page.SizeRangeOverException;
 import com.sh.global.exception.customexcpetion.page.ValueIsNotIntegerException;
+import com.sh.global.exception.customexcpetion.token.NonTokenException;
 import com.sh.global.exception.customexcpetion.user.*;
 import com.sh.global.exception.errorcode.UserErrorCode;
 import org.springframework.http.HttpStatus;
@@ -71,6 +72,27 @@ public class GlobalExceptionManager {
     // 탈퇴한 회원인 경우
     @ExceptionHandler(UserWithdrawalException.class)
     public ResponseEntity<ErrorResponse> userWithdrawError(UserWithdrawalException e) {
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    // 토큰을 발급받지 않아 authentication이 없는 경우
+    @ExceptionHandler(UnauthorizedUserException.class)
+    public ResponseEntity<ErrorResponse> unAuthorizedUserError(UnauthorizedUserException e) {
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    // Request Header에 필요 Token이 없는 경우
+    @ExceptionHandler(NonTokenException.class)
+    public ResponseEntity<ErrorResponse> nonTokenError(NonTokenException e) {
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    // 로그아웃을 하지 않고 이미 로그인되어 있는 상태로 재로그인을 요청할 경우
+    @ExceptionHandler(AlreadyLoginException.class)
+    public ResponseEntity<ErrorResponse> alreadyLoginError(AlreadyLoginException e) {
         final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
