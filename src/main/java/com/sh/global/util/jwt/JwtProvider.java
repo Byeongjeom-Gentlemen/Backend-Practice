@@ -1,6 +1,7 @@
 package com.sh.global.util.jwt;
 
-import com.sh.global.exception.customexcpetion.user.UnauthorizedException;
+import com.sh.global.exception.customexcpetion.token.UnauthorizedTokenException;
+import com.sh.global.exception.errorcode.TokenErrorCode;
 import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.util.CustomUserDetails;
 import com.sh.global.util.CustomUserDetailsService;
@@ -15,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -25,8 +25,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Component
@@ -76,17 +74,21 @@ public class JwtProvider {
         Date refreshTokenExpiresIn = getTokenExpiration(refreshTokenExpirationMillis);
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        Map<String, Object> claims = new HashMap<>();
+        /*Map<String, Object> claims = new HashMap<>();
+        claims.put("role", customUserDetails.getAuthorities());*/
+        Claims claims = Jwts.claims().setSubject(customUserDetails.getUsername());
         claims.put("role", customUserDetails.getAuthorities());
 
+        // Access Token -> claims(id, role), 만료시간 정보 설정
         String accessToken = Jwts.builder()
                 .setClaims(claims)
-                .setSubject(customUserDetails.getUsername())
+                //.setSubject(customUserDetails.getUsername())
                 .setIssuedAt(Calendar.getInstance().getTime())
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
 
+        // Refresh Token -> id, 만료시간 정보만 설정 
         String refreshToken = Jwts.builder()
                 .setSubject(customUserDetails.getUsername())
                 .setIssuedAt(Calendar.getInstance().getTime())
@@ -132,15 +134,15 @@ public class JwtProvider {
             parseClaims(token);
             return true;
         } catch (MalformedJwtException e) {
-            throw new UnauthorizedException(UserErrorCode.MALFORMED_ACCESS_TOKEN.getMessage());
+            throw new UnauthorizedTokenException(TokenErrorCode.MALFORMED_ACCESS_TOKEN);
         } catch (UnsupportedJwtException e) {
-            throw new UnauthorizedException(UserErrorCode.WRONG_TYPE_TOKEN.getMessage());
+            throw new UnauthorizedTokenException(TokenErrorCode.WRONG_TYPE_TOKEN);
         } catch (SignatureException e) {
-            throw new UnauthorizedException(UserErrorCode.WRONG_TYPE_SIGNATURE.getMessage());
+            throw new UnauthorizedTokenException(TokenErrorCode.WRONG_TYPE_SIGNATURE);
         } catch (ExpiredJwtException e) {
-            throw new UnauthorizedException(UserErrorCode.EXPIRED_ACCESS_TOKEN.getMessage());
+            throw new UnauthorizedTokenException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
         } catch (IllegalArgumentException e) {
-            throw new UnauthorizedException(UserErrorCode.NON_TOKEN.getMessage());
+            throw new UnauthorizedTokenException(TokenErrorCode.NON_TOKEN);
         }
     }
 

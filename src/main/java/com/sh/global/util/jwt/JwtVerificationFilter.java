@@ -1,11 +1,11 @@
 package com.sh.global.util.jwt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sh.global.exception.ErrorResponse;
-import com.sh.global.exception.customexcpetion.user.UnauthorizedException;
-import com.sh.global.exception.errorcode.ErrorCode;
+import com.sh.domain.user.service.BlackListTokenService;
+import com.sh.global.exception.customexcpetion.token.UnauthorizedTokenException;
+import com.sh.global.exception.errorcode.TokenErrorCode;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -21,9 +21,12 @@ import java.io.IOException;
 public class JwtVerificationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final BlackListTokenService blackListTokenService;
 
-    public JwtVerificationFilter(JwtProvider jwtProvider) {
+
+    public JwtVerificationFilter(JwtProvider jwtProvider, BlackListTokenService blackListTokenService) {
         this.jwtProvider = jwtProvider;
+        this.blackListTokenService = blackListTokenService;
     }
 
     @Override
@@ -31,17 +34,22 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        try {
-            String accessToken = jwtProvider.resolveAccessToken(request);
+        String accessToken = jwtProvider.resolveAccessToken(request);
 
-            if(accessToken != null && jwtProvider.validateToken(accessToken)) {
-                Authentication authentication = jwtProvider.getAuthentication(accessToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        } catch (UnauthorizedException e) {
-            request.setAttribute("exception", e.getMessage());
+        if(accessToken != null && jwtProvider.validateToken(accessToken)
+                && !doLogout(accessToken)) {
+            Authentication authentication = jwtProvider.getAuthentication(accessToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);
     }
+
+    private boolean doLogout(String accessToken) {
+        if(blackListTokenService.checkBlackListToken(accessToken)) {
+            throw new UnauthorizedTokenException(TokenErrorCode.UNAVAILABLE_TOKENS);
+        }
+        return false;
+    }
+
 }
