@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -68,27 +69,29 @@ public class JwtProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Access Token && Refresh Token 발급
-    public TokenDto createToken(Authentication authentication) {
+    // Access Token 발급
+    public String generateAccessToken(CustomUserDetails customUserDetails) {
         Date accessTokenExpiresIn = getTokenExpiration(accessTokenExpirationMillis);
-        Date refreshTokenExpiresIn = getTokenExpiration(refreshTokenExpirationMillis);
 
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        /*Map<String, Object> claims = new HashMap<>();
-        claims.put("role", customUserDetails.getAuthorities());*/
         Claims claims = Jwts.claims().setSubject(customUserDetails.getUsername());
         claims.put("role", customUserDetails.getAuthorities());
 
         // Access Token -> claims(id, role), 만료시간 정보 설정
         String accessToken = Jwts.builder()
                 .setClaims(claims)
-                //.setSubject(customUserDetails.getUsername())
                 .setIssuedAt(Calendar.getInstance().getTime())
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
 
-        // Refresh Token -> id, 만료시간 정보만 설정 
+        return accessToken;
+    }
+
+    // Refresh Token 발급
+    public String generateRefreshToken(CustomUserDetails customUserDetails) {
+        Date refreshTokenExpiresIn = getTokenExpiration(refreshTokenExpirationMillis);
+
+        // Refresh Token -> id, 만료시간 정보로만 설정
         String refreshToken = Jwts.builder()
                 .setSubject(customUserDetails.getUsername())
                 .setIssuedAt(Calendar.getInstance().getTime())
@@ -96,7 +99,7 @@ public class JwtProvider {
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
 
-        return TokenDto.of(accessToken, refreshToken);
+        return refreshToken;
     }
 
     // 만료 시간 설정
@@ -119,12 +122,26 @@ public class JwtProvider {
         return new UsernamePasswordAuthenticationToken(customUserDetails, "", customUserDetails.getAuthorities());
     }
 
+    /*
+    // 권한정보 획득
+    // Spring Security 인증과정에서 권한확인을 위한 기능
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getAccount(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    // 토큰에 담겨있는 유저 account 획득
+    public String getAccount(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJwt(token).getBody().getSubject();
+    }
+    */
+
     // Token 복호화
-    public Claims parseClaims(String accessToken) {
+    public Claims parseClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
-                .parseClaimsJws(accessToken)
+                .parseClaimsJws(token)
                 .getBody();
     }
 
