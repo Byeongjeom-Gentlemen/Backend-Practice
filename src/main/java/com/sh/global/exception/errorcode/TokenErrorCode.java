@@ -16,7 +16,8 @@ public enum TokenErrorCode implements ErrorCode {
     NON_ACCESS_TOKEN_REQUEST_HEADER(HttpStatus.UNAUTHORIZED, "T_006", "Request Header에 Access Token 정보가 존재하지 않습니다."),
     NON_REFRESH_TOKEN_REQUEST_HEADER(HttpStatus.UNAUTHORIZED, "T_007", "Request Header에 Refresh Token 정보가 존재하지 않습니다."),
     NOT_FOUND_TOKEN(HttpStatus.UNAUTHORIZED, "T_008", "해당 토큰 정보를 찾을 수 없습니다."),
-    UNAVAILABLE_TOKENS(HttpStatus.FORBIDDEN, "T_009", "사용할 수 없는 토큰입니다. 재로그인이 필요합니다.");
+    UNAVAILABLE_TOKENS(HttpStatus.FORBIDDEN, "T_009", "사용할 수 없는 토큰입니다. 재로그인이 필요합니다."),
+    EXPIRED_REFRESH_TOKEN(HttpStatus.FORBIDDEN, "T_010", "만료된 Refresh Token 입니다. 재로그인이 필요합니다.");
 
     private final HttpStatus status;
     private final String code;
