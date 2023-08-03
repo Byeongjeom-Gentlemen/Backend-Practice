@@ -56,9 +56,8 @@ public class UserController {
     public void deleteUser(HttpServletRequest request) {
         userService.deleteUser();
 
-        String accessToken = jwtProvider.resolveAccessToken(request);
-        String refreshToken = jwtProvider.resolveRefreshToken(request);
-        userService.logout(accessToken, refreshToken);
+        // 회원삭제 후 로그아웃 처리
+        logout(request);
     }
 
     // 회원 수정(PATCH)
@@ -67,7 +66,7 @@ public class UserController {
             description = "회원정보를 수정하는 API 입니다. 로그인 여부를 필요로 하며, 수정필드 값이 존재할 경우 수정됩니다.")
     @PatchMapping("/api/v1/users/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void modify(@RequestBody @Valid UpdateUserRequestDto updateRequest) {
+    public void modify(@RequestBody @Valid UpdateUserRequestDto updateRequest, HttpServletRequest request) {
         userService.modifyMe(updateRequest);
     }
 

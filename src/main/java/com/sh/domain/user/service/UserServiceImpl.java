@@ -1,5 +1,6 @@
 package com.sh.domain.user.service;
 
+import antlr.Token;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
 import com.sh.domain.user.repository.UserRepository;
@@ -13,11 +14,13 @@ import com.sh.global.util.CustomUserDetails;
 import com.sh.global.util.SecurityUtils;
 import com.sh.global.util.jwt.JwtProvider;
 import com.sh.global.util.jwt.TokenDto;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -80,14 +83,20 @@ public class UserServiceImpl implements UserService {
                     new UsernamePasswordAuthenticationToken(loginRequest.getId(), loginRequest.getPw())
             );
 
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
             // 인증정보를 기반으로 토큰 생성
-            TokenDto token = jwtProvider.createToken(authentication);
+            String accessToken = jwtProvider.generateAccessToken(customUserDetails);
+            String refreshToken = jwtProvider.generateRefreshToken(customUserDetails);
 
             // Refresh Token 생성 및 저장
-            refreshTokenService.saveRefreshToken(loginRequest.getId(), token.getRefreshToken());
+            refreshTokenService.saveRefreshToken(loginRequest.getId(), refreshToken);
 
             // 유저정보
             CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+            
+            // 토큰정보
+            TokenDto token = TokenDto.of(accessToken, refreshToken);
 
             return UserLoginResponseDto.from(user, token);
         }
@@ -99,8 +108,8 @@ public class UserServiceImpl implements UserService {
     // 내 정보 조회
     @Override
     public UserBasicResponseDto selectMe() {
-        Long userId = securityUtils.getCurrentUserId();
-        User user = getUser(userId);
+        String id = securityUtils.getCurrentUserId();
+        User user = getUser(id);
 
         return UserBasicResponseDto.from(user);
     }
@@ -109,8 +118,8 @@ public class UserServiceImpl implements UserService {
     // CASCADE 옵션은 되도록 사용하지 않는다.
     @Override
     public void deleteUser() {
-        Long userId = securityUtils.getCurrentUserId();
-        User user = getUser(userId);
+        String id = securityUtils.getCurrentUserId();
+        User user = getUser(id);
 
         userRepository.delete(user);
     }
@@ -125,8 +134,11 @@ public class UserServiceImpl implements UserService {
             throw new NonTokenException(TokenErrorCode.NON_REFRESH_TOKEN_REQUEST_HEADER);
         }
 
+        Claims claims = jwtProvider.parseClaims(refreshToken);
+        String userId = claims.getSubject();
+
         // Refresh Token 삭제
-        refreshTokenService.deleteRefreshToken(refreshToken);
+        refreshTokenService.deleteRefreshToken(userId);
         
         // BlackList Token에 해당 Access Token 저장(검증할 때마다 Security에서 처리)
         blackListTokenService.createBlackListToken(accessToken);
@@ -135,8 +147,8 @@ public class UserServiceImpl implements UserService {
     // 회원 수정(PATCH)
     @Override
     public void modifyMe(UpdateUserRequestDto updateRequest) {
-        Long userId = securityUtils.getCurrentUserId();
-        User user = getUser(userId);
+        String id = securityUtils.getCurrentUserId();
+        User user = getUser(id);
 
         // 아이디 수정 시
         if (updateRequest.getAfterId() != null) {
@@ -157,19 +169,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    // 다른 회원 조회
-    @Override
-    public UserBasicResponseDto selectOtherUser(Long userId) {
-        User user = getUser(userId);
-
-        return UserBasicResponseDto.from(user);
-    }
-
-    // 회원 ID(PK)로 유저정보 가져오기
-    private User getUser(Long userId) {
+    // 회원 ID로 유저정보 가져오기
+    private User getUser(String id) {
         User user =
                 userRepository
-                        .findByUserId(userId)
+                        .findById(id)
                         .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
         if (user.getStatus() == UserStatus.WITHDRAWN) {
@@ -177,5 +181,14 @@ public class UserServiceImpl implements UserService {
         }
 
         return user;
+    }
+
+    // 다른 회원 조회
+    @Override
+    public UserBasicResponseDto selectOtherUser(Long userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+
+        return UserBasicResponseDto.from(user);
     }
 }
