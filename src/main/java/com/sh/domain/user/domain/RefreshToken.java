@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,9 +24,13 @@ public class RefreshToken {
     @Column
     private String refreshTokenName;
 
+    @Column
+    private LocalDateTime createdDate;
+
     @Builder
     private RefreshToken(String userId, String refreshTokenName) {
         this.userId = userId;
         this.refreshTokenName = refreshTokenName;
+        this.createdDate = LocalDateTime.now();
     }
 }
