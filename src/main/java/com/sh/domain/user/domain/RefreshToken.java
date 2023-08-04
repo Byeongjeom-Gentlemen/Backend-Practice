@@ -1,13 +1,11 @@
 package com.sh.domain.user.domain;
 
+import java.time.LocalDateTime;
+import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,11 +19,9 @@ public class RefreshToken {
     @Column(name = "user_id")
     private String userId;
 
-    @Column
-    private String refreshTokenName;
+    @Column private String refreshTokenName;
 
-    @Column
-    private LocalDateTime createdDate;
+    @Column private LocalDateTime createdDate;
 
     @Builder
     private RefreshToken(String userId, String refreshTokenName) {

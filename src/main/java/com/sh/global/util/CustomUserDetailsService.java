@@ -22,10 +22,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
-        if(user.getStatus() == UserStatus.WITHDRAWN) {
+        if (user.getStatus() == UserStatus.WITHDRAWN) {
             throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
         }
 
@@ -34,5 +36,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private UserDetails createUserDetails(User user) {
         return CustomUserDetails.from(user);
-    };
+    }
+    ;
 }

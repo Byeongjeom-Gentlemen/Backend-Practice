@@ -2,7 +2,6 @@ package com.sh.global.util.jwt;
 
 import com.sh.global.exception.customexcpetion.token.UnauthorizedTokenException;
 import com.sh.global.exception.errorcode.TokenErrorCode;
-import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.util.CustomUserDetails;
 import com.sh.global.util.CustomUserDetailsService;
 import io.jsonwebtoken.*;
@@ -10,23 +9,20 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.Calendar;
+import java.util.Date;
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.Calendar;
-import java.util.Date;
-
 
 @Component
 @Slf4j
@@ -77,12 +73,13 @@ public class JwtProvider {
         claims.put("role", customUserDetails.getAuthorities());
 
         // Access Token -> claims(id, role), 만료시간 정보 설정
-        String accessToken = Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(Calendar.getInstance().getTime())
-                .setExpiration(accessTokenExpiresIn)
-                .signWith(SignatureAlgorithm.HS256, key)
-                .compact();
+        String accessToken =
+                Jwts.builder()
+                        .setClaims(claims)
+                        .setIssuedAt(Calendar.getInstance().getTime())
+                        .setExpiration(accessTokenExpiresIn)
+                        .signWith(SignatureAlgorithm.HS256, key)
+                        .compact();
 
         return accessToken;
     }
@@ -92,12 +89,13 @@ public class JwtProvider {
         Date refreshTokenExpiresIn = getTokenExpiration(refreshTokenExpirationMillis);
 
         // Refresh Token -> id, 만료시간 정보로만 설정
-        String refreshToken = Jwts.builder()
-                .setSubject(customUserDetails.getUsername())
-                .setIssuedAt(Calendar.getInstance().getTime())
-                .setExpiration(refreshTokenExpiresIn)
-                .signWith(SignatureAlgorithm.HS256, key)
-                .compact();
+        String refreshToken =
+                Jwts.builder()
+                        .setSubject(customUserDetails.getUsername())
+                        .setIssuedAt(Calendar.getInstance().getTime())
+                        .setExpiration(refreshTokenExpiresIn)
+                        .signWith(SignatureAlgorithm.HS256, key)
+                        .compact();
 
         return refreshToken;
     }
@@ -112,37 +110,34 @@ public class JwtProvider {
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
 
-        if(claims.get("role") == null) {
+        if (claims.get("role") == null) {
             throw new RuntimeException("NO_ACCESS_ROLE");
         }
 
         String authority = claims.get("role").toString();
         CustomUserDetails customUserDetails = CustomUserDetails.of(claims.getSubject(), authority);
 
-        return new UsernamePasswordAuthenticationToken(customUserDetails, "", customUserDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(
+                customUserDetails, "", customUserDetails.getAuthorities());
     }
 
     /*
     // 권한정보 획득
     // Spring Security 인증과정에서 권한확인을 위한 기능
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getAccount(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    	UserDetails userDetails = userDetailsService.loadUserByUsername(this.getAccount(token));
+    	return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     // 토큰에 담겨있는 유저 account 획득
     public String getAccount(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJwt(token).getBody().getSubject();
+    	return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJwt(token).getBody().getSubject();
     }
     */
 
     // Token 복호화
     public Claims parseClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
     // Access Token 검증
@@ -166,7 +161,7 @@ public class JwtProvider {
     // Request Header에서 Access Token 정보를 추출하는 메서드
     public String resolveAccessToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
         return null;
@@ -175,12 +170,9 @@ public class JwtProvider {
     // Request Header에서 Refresh Token 정보를 추출하는 메서드
     public String resolveRefreshToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(REFRESH_HEADER);
-        if(StringUtils.hasText(bearerToken)) {
+        if (StringUtils.hasText(bearerToken)) {
             return bearerToken;
         }
         return null;
     }
-
-
-
 }

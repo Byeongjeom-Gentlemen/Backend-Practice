@@ -1,11 +1,10 @@
 package com.sh.domain.user.domain;
 
+import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Entity
 @Getter
@@ -16,8 +15,7 @@ public class BlackListToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String accessToken;
+    @Column private String accessToken;
 
     @Builder
     private BlackListToken(String accessToken) {

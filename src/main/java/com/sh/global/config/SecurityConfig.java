@@ -3,8 +3,8 @@ package com.sh.global.config;
 import com.sh.domain.user.service.BlackListTokenService;
 import com.sh.global.util.jwt.CustomAuthenticationEntryPoint;
 import com.sh.global.util.jwt.JwtExceptionFilter;
-import com.sh.global.util.jwt.JwtVerificationFilter;
 import com.sh.global.util.jwt.JwtProvider;
+import com.sh.global.util.jwt.JwtVerificationFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -33,17 +33,16 @@ public class SecurityConfig {
     private final BlackListTokenService blackListTokenService;
 
     private static final String[] PERMIT_URL_ARRAY = {
-            "/h2-console/**",
-            "/swagger-ui/**",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/v3/api-docs/**"
+        "/h2-console/**",
+        "/swagger-ui/**",
+        "/swagger-resources",
+        "/swagger-resources/**",
+        "/v3/api-docs/**"
     };
 
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration
-    ) throws Exception {
+            AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -65,18 +64,25 @@ public class SecurityConfig {
                 .disable()
                 .csrf()
                 .disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(PERMIT_URL_ARRAY).permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
-                .antMatchers("/api/v1/auth/reissue").permitAll()
-                .anyRequest().authenticated()
+                .antMatchers(PERMIT_URL_ARRAY)
+                .permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/users/**")
+                .permitAll()
+                .antMatchers("/api/v1/auth/reissue")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
                 .and()
-                .addFilterBefore(new JwtVerificationFilter(jwtProvider, blackListTokenService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(
+                        new JwtVerificationFilter(jwtProvider, blackListTokenService),
+                        UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtVerificationFilter.class);
 
         return http.build();

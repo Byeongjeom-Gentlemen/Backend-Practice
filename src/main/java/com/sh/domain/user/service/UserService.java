@@ -1,6 +1,5 @@
 package com.sh.domain.user.service;
 
-import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,9 +1,8 @@
 package com.sh.domain.user.repository;
 
 import com.sh.domain.user.domain.RefreshToken;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
 

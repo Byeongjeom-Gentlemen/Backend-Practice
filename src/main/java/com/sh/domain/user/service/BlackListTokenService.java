@@ -9,5 +9,4 @@ public interface BlackListTokenService {
 
     @Transactional(readOnly = true)
     boolean checkBlackListToken(String accessToken);
-
 }
