@@ -1,5 +1,6 @@
 package com.sh.domain.user.service;
 
+import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,5 +31,5 @@ public interface UserService {
     UserBasicResponseDto selectOtherUser(Long userId);
 
     // 로그아웃
-    void logout(String accessToken, String RefreshToken);
+    void logout(String accessToken);
 }

@@ -1,5 +1,6 @@
 package com.sh.domain.user.controller;
 
+import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.util.jwt.JwtProvider;
@@ -11,6 +12,10 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +25,7 @@ public class UserController {
 
     private final UserService userService;
     private final JwtProvider jwtProvider;
+    private final AuthenticationManager authenticationManager;
 
     // @Valid : 자바에서 제공하는 유효성 검증 어노테이션, 유효성 검증과 관련된 어노테이션이 붙은 모든 필드를 검증, 유효성 검증에 실패하면
     // MethodArgumentNotValidException 발생
@@ -68,6 +74,9 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modify(@RequestBody @Valid UpdateUserRequestDto updateRequest, HttpServletRequest request) {
         userService.modifyMe(updateRequest);
+        
+        // 회원 수정 후 로그아웃 처리
+        logout(request);
     }
 
     // 다른 회원 조회
@@ -85,8 +94,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public void logout(HttpServletRequest request) {
         String accessToken = jwtProvider.resolveAccessToken(request);
-        String refreshToken = jwtProvider.resolveRefreshToken(request);
 
-        userService.logout(accessToken, refreshToken);
+        userService.logout(accessToken);
     }
 }
