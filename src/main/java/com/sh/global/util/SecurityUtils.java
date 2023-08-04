@@ -12,22 +12,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class SecurityUtils {
 
-    private final UserRepository userRepository;
-
     // 현재 시큐리티 홀더에 저장되어 있는 유저인증정보 가져오기
-    public Long getCurrentUserId() {
+    public String getCurrentUserId() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         
         if(authentication == null || authentication.getName() == null) {
             throw new UnauthorizedUserException(UserErrorCode.FORBIDDEN_REQUEST_USER);
         }
 
-        User user = userRepository.findById(authentication.getName())
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
-
-        return user.getUserId();
+        return authentication.getName();
     }
 }

@@ -1,15 +1,25 @@
 package com.sh.global.config;
 
+import com.sh.domain.user.service.BlackListTokenService;
+import com.sh.global.util.jwt.CustomAuthenticationEntryPoint;
+import com.sh.global.util.jwt.JwtExceptionFilter;
+import com.sh.global.util.jwt.JwtVerificationFilter;
+import com.sh.global.util.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j
 @Configuration
@@ -17,7 +27,25 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    // private final JwtProvider jwtProvider;
+    private final JwtProvider jwtProvider;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final JwtExceptionFilter jwtExceptionFilter;
+    private final BlackListTokenService blackListTokenService;
+
+    private static final String[] PERMIT_URL_ARRAY = {
+            "/h2-console/**",
+            "/swagger-ui/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/v3/api-docs/**"
+    };
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration
+    ) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -26,38 +54,30 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer configure() throws Exception {
-        return (web) -> web.ignoring().antMatchers("/h2-console/**");
+        return (web) -> web.ignoring().antMatchers(PERMIT_URL_ARRAY);
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.formLogin()
                 .disable()
-                // Id, Pw 문자열을 Base64로 인코딩하여 전달하는 구조
                 .httpBasic()
                 .disable()
-                // 쿠키 기반인 아닌 JWT 기반이므로 사용X
                 .csrf()
-                .disable();
-        // Spring Security 세션 정책 : 세션을 생성 및 사용하지 않음
-        /*
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-        // 조건 별 요청 허용/제한 설정
-        .authorizeRequests()
-        // 해당 요청 인증필요
-        .antMatchers(HttpMethod.GET, "/api/v1/users/me").authenticated()
-        .antMatchers(HttpMethod.PATCH, "/api/v1/users/me").authenticated()
-        .antMatchers(HttpMethod.DELETE, "/api/v1/users").authenticated()
-        .antMatchers("/api/v1/users/me").hasRole("USER")
-        // 이외의 요청은 허용
-        .anyRequest().permitAll()
-        .and()
-        .exceptionHandling()
-        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-        .and()
-        // JWT 인증 필터 적용
-        .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class); */
+                .disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers(PERMIT_URL_ARRAY).permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
+                .antMatchers("/api/v1/auth/reissue").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .and()
+                .addFilterBefore(new JwtVerificationFilter(jwtProvider, blackListTokenService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtVerificationFilter.class);
 
         return http.build();
     }
