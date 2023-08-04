@@ -125,16 +125,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void logout(String accessToken, String refreshToken) {
+    public void logout(String accessToken) {
         if(accessToken == null) {
             throw new NonTokenException(TokenErrorCode.NON_ACCESS_TOKEN_REQUEST_HEADER);
         }
 
-        if(refreshToken == null) {
-            throw new NonTokenException(TokenErrorCode.NON_REFRESH_TOKEN_REQUEST_HEADER);
-        }
-
-        Claims claims = jwtProvider.parseClaims(refreshToken);
+        Claims claims = jwtProvider.parseClaims(accessToken);
         String userId = claims.getSubject();
 
         // Refresh Token 삭제

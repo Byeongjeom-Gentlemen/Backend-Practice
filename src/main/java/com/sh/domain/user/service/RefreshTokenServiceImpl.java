@@ -49,18 +49,16 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     // Refresh Token 삭제
     @Override
     public void deleteRefreshToken(String userId) {
-        RefreshToken rt = refreshTokenRepository.findByUserId(userId)
-                .orElseThrow(() -> new NonTokenException(TokenErrorCode.NOT_FOUND_TOKEN));
+        RefreshToken refreshToken = getRefreshToken(userId);
 
-        refreshTokenRepository.delete(rt);
+        refreshTokenRepository.delete(refreshToken);
     }
 
 
     // Access Token 재발급 요청 시 Refresh Token이 만료되었는지 확인
     @Override
     public void checkExpiredRefreshToken(String userId) {
-        RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
-                .orElseThrow(() -> new NonTokenException(TokenErrorCode.NOT_FOUND_TOKEN));
+        RefreshToken refreshToken = getRefreshToken(userId);
 
         // Refresh Token이 생성된 시간
         LocalDateTime startTime = refreshToken.getCreatedDate();
@@ -69,14 +67,19 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
         // Refresh Token이 생성된 시간과 현재 시간 간 차이 구하기
         Duration diff = Duration.between(startTime.toLocalTime(), curTime.toLocalTime());
-
-        System.out.println(diff.toMillis());
         
         // 두 시간의 차이가 Refresh Token Expiration Millis보다 같거나 크다면 만료날짜가 지난 것
         // Refresh Token을 삭제하고 예외처리
         if(diff.toMillis() >= refreshTokenExpirationMillis) {
-            deleteRefreshToken(userId);
+            refreshTokenRepository.delete(refreshToken);
             throw new ExpiredTokenException(TokenErrorCode.EXPIRED_REFRESH_TOKEN);
         }
+    }
+
+    private RefreshToken getRefreshToken(String userId) {
+        RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
+                .orElseThrow(() -> new NonTokenException(TokenErrorCode.NON_TOKEN));
+
+        return refreshToken;
     }
 }
