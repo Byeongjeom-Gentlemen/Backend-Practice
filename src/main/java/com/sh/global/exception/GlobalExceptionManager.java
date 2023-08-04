@@ -6,9 +6,11 @@ import com.sh.global.exception.customexcpetion.comment.NotFoundCommentException;
 import com.sh.global.exception.customexcpetion.page.PageRangeOverException;
 import com.sh.global.exception.customexcpetion.page.SizeRangeOverException;
 import com.sh.global.exception.customexcpetion.page.ValueIsNotIntegerException;
+import com.sh.global.exception.customexcpetion.token.ExpiredTokenException;
 import com.sh.global.exception.customexcpetion.token.NonTokenException;
 import com.sh.global.exception.customexcpetion.user.*;
 import com.sh.global.exception.errorcode.UserErrorCode;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -87,7 +89,14 @@ public class GlobalExceptionManager {
     @ExceptionHandler(NonTokenException.class)
     public ResponseEntity<ErrorResponse> nonTokenError(NonTokenException e) {
         final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+    
+    // 만료된 토큰일 경우
+    @ExceptionHandler(ExpiredTokenException.class)
+    public ResponseEntity<ErrorResponse> expiredTokenError(ExpiredTokenException e) {
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     // 로그아웃을 하지 않고 이미 로그인되어 있는 상태로 재로그인을 요청할 경우
