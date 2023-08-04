@@ -1,17 +1,12 @@
 package com.sh.global.util;
 
 import com.sh.domain.user.domain.User;
-import com.sh.domain.user.util.Role;
+import java.time.LocalDateTime;
+import java.util.Collection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
 
 @Getter
 @NoArgsConstructor

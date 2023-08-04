@@ -1,10 +1,8 @@
 package com.sh.global.util;
 
-import com.sh.domain.user.util.Role;
+import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import java.util.List;
 
 public class CustomAuthorityUtils {
 
@@ -16,11 +14,11 @@ public class CustomAuthorityUtils {
 
     // 입력된 role 값이 유효한 권한인지 검증한다.
     public static void verifiedRole(String role) {
-        if(role == null) {
+        if (role == null) {
             throw new RuntimeException("USER_ROLE_DOES_NOT_EXIST");
         }
 
-        if(!role.equals("ROLE_USER") && !role.equals("ROLE_ADMIN")) {
+        if (!role.equals("ROLE_USER") && !role.equals("ROLE_ADMIN")) {
             throw new RuntimeException("USER_ROLE_INVALID");
         }
     }

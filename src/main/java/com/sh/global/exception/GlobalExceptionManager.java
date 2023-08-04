@@ -10,7 +10,6 @@ import com.sh.global.exception.customexcpetion.token.ExpiredTokenException;
 import com.sh.global.exception.customexcpetion.token.NonTokenException;
 import com.sh.global.exception.customexcpetion.user.*;
 import com.sh.global.exception.errorcode.UserErrorCode;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -91,7 +90,7 @@ public class GlobalExceptionManager {
         final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
-    
+
     // 만료된 토큰일 경우
     @ExceptionHandler(ExpiredTokenException.class)
     public ResponseEntity<ErrorResponse> expiredTokenError(ExpiredTokenException e) {

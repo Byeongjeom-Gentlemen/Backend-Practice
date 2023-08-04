@@ -47,15 +47,17 @@ public class AuthServiceImpl implements AuthService {
 
     // Refresh Token 값 확인
     private void verifiedRefreshToken(String refreshToken) {
-        if(refreshToken == null) {
+        if (refreshToken == null) {
             throw new NonTokenException(TokenErrorCode.NON_REFRESH_TOKEN_REQUEST_HEADER);
         }
     }
 
     // Refresh Token을 복호화하여 subject로 회원 정보를 반환
     private User findUserById(String id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user =
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
         return user;
     }

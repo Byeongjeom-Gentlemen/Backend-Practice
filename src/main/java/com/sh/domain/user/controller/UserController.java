@@ -1,21 +1,16 @@
 package com.sh.domain.user.controller;
 
-import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.util.jwt.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -72,9 +67,10 @@ public class UserController {
             description = "회원정보를 수정하는 API 입니다. 로그인 여부를 필요로 하며, 수정필드 값이 존재할 경우 수정됩니다.")
     @PatchMapping("/api/v1/users/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void modify(@RequestBody @Valid UpdateUserRequestDto updateRequest, HttpServletRequest request) {
+    public void modify(
+            @RequestBody @Valid UpdateUserRequestDto updateRequest, HttpServletRequest request) {
         userService.modifyMe(updateRequest);
-        
+
         // 회원 수정 후 로그아웃 처리
         logout(request);
     }

@@ -1,6 +1,5 @@
 package com.sh.domain.user.service;
 
-import antlr.Token;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
 import com.sh.domain.user.repository.UserRepository;
@@ -20,7 +19,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -79,9 +77,10 @@ public class UserServiceImpl implements UserService {
         try {
             // id / pw를 기반으로 Authentication 객체 생성 및 실제 검증 (아이디 존재 여부, 사용자 비밀번호 체크)
             // 아이디가 존재하지 않거나 id와 비밀번호가 맞지 않으면 예외처리
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getId(), loginRequest.getPw())
-            );
+            Authentication authentication =
+                    authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    loginRequest.getId(), loginRequest.getPw()));
 
             CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -94,13 +93,12 @@ public class UserServiceImpl implements UserService {
 
             // 유저정보
             CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-            
+
             // 토큰정보
             TokenDto token = TokenDto.of(accessToken, refreshToken);
 
             return UserLoginResponseDto.from(user, token);
-        }
-        catch (BadCredentialsException e) {
+        } catch (BadCredentialsException e) {
             throw new NotMatchesUserException(UserErrorCode.INVALID_AUTHENTICATION);
         }
     }
@@ -126,7 +124,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void logout(String accessToken) {
-        if(accessToken == null) {
+        if (accessToken == null) {
             throw new NonTokenException(TokenErrorCode.NON_ACCESS_TOKEN_REQUEST_HEADER);
         }
 
@@ -135,7 +133,7 @@ public class UserServiceImpl implements UserService {
 
         // Refresh Token 삭제
         refreshTokenService.deleteRefreshToken(userId);
-        
+
         // BlackList Token에 해당 Access Token 저장(검증할 때마다 Security에서 처리)
         blackListTokenService.createBlackListToken(accessToken);
     }
@@ -182,8 +180,10 @@ public class UserServiceImpl implements UserService {
     // 다른 회원 조회
     @Override
     public UserBasicResponseDto selectOtherUser(Long userId) {
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user =
+                userRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
 
         return UserBasicResponseDto.from(user);
     }

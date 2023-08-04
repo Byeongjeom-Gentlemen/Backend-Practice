@@ -1,10 +1,8 @@
 package com.sh.domain.user.dto;
 
-import com.sh.domain.user.domain.User;
-import java.time.LocalDateTime;
-
 import com.sh.global.util.CustomUserDetails;
 import com.sh.global.util.jwt.TokenDto;
+import java.time.LocalDateTime;
 import lombok.*;
 
 @Getter
