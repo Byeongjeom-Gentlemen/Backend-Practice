@@ -1,32 +1,32 @@
 package com.sh.domain.user.domain;
 
-import java.time.LocalDateTime;
-import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+import java.util.concurrent.TimeUnit;
+
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@RedisHash(value = "refreshToken")
 public class RefreshToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "user_id")
     private String userId;
 
-    @Column private String refreshTokenName;
+    private String refreshToken;
 
-    @Column private LocalDateTime createdDate;
+    @TimeToLive(unit = TimeUnit.MILLISECONDS)
+    private long expiredTime;
 
     @Builder
-    private RefreshToken(String userId, String refreshTokenName) {
+    private RefreshToken(String userId, String refreshToken, long expiredTime) {
         this.userId = userId;
-        this.refreshTokenName = refreshTokenName;
-        this.createdDate = LocalDateTime.now();
+        this.refreshToken = refreshToken;
+        this.expiredTime = expiredTime;
     }
 }
