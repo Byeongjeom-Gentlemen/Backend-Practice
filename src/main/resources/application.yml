@@ -24,6 +24,10 @@ spring:
           show_sql: true
           format_sql: true
 
+  redis:
+    host: localhost
+    port: 6379
+
 logging:
   level:
     # hibernate 가 남기는 모든 로그가 debug모드로 설정
@@ -38,5 +42,5 @@ jwt:
   secret:
     key : ${JWT_SECRET_KEY}
   token:
-    access-token-expiration-millis: 900000      # 15분
-    refresh-token-expiration-millis: 604800000  # 7일
+    access-token-expiration-millis: 60000      # 1분 900000(15분)
+    refresh-token-expiration-millis: 120000  # 7일 604800000(7일)
