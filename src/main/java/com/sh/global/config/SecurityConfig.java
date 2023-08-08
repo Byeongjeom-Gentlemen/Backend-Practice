@@ -1,6 +1,6 @@
 package com.sh.global.config;
 
-import com.sh.domain.user.service.BlackListTokenService;
+import com.sh.domain.user.service.UserRedisService;
 import com.sh.global.util.jwt.CustomAuthenticationEntryPoint;
 import com.sh.global.util.jwt.JwtExceptionFilter;
 import com.sh.global.util.jwt.JwtProvider;
@@ -30,7 +30,7 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final JwtExceptionFilter jwtExceptionFilter;
-    private final BlackListTokenService blackListTokenService;
+    private final UserRedisService userRedisService;
 
     private static final String[] PERMIT_URL_ARRAY = {
         "/h2-console/**",
@@ -72,7 +72,7 @@ public class SecurityConfig {
                 .permitAll()
                 .antMatchers(HttpMethod.POST, "/api/v1/users/**")
                 .permitAll()
-                .antMatchers("/api/v1/auth/reissue")
+                .antMatchers("/api/v1/auth/reissue", "/api/v1/users/logout")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -81,7 +81,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
                 .and()
                 .addFilterBefore(
-                        new JwtVerificationFilter(jwtProvider, blackListTokenService),
+                        new JwtVerificationFilter(jwtProvider, userRedisService),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtVerificationFilter.class);
 
