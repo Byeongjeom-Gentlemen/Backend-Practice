@@ -1,5 +1,6 @@
 package com.sh.domain.user.service;
 
+import com.sh.domain.user.domain.RefreshToken;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
 import com.sh.domain.user.repository.UserRepository;
@@ -31,8 +32,7 @@ public class UserServiceImpl implements UserService {
     private final SecurityUtils securityUtils;
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
-    private final RefreshTokenService refreshTokenService;
-    private final BlackListTokenService blackListTokenService;
+    private final UserRedisService userRedisService;
 
     @Override
     public Long join(SignupRequestDto signupRequest) {
@@ -86,18 +86,16 @@ public class UserServiceImpl implements UserService {
 
             // 인증정보를 기반으로 토큰 생성
             String accessToken = jwtProvider.generateAccessToken(customUserDetails);
-            String refreshToken = jwtProvider.generateRefreshToken(customUserDetails);
-
-            // Refresh Token 생성 및 저장
-            refreshTokenService.saveRefreshToken(loginRequest.getId(), refreshToken);
-
-            // 유저정보
-            CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+            String refreshToken = jwtProvider.generateRefreshToken();
+            
+            // Redis에 저장 (access token과 refresh token 값을 유저와 1대1로 저장)
+            userRedisService.saveRefreshToken(customUserDetails.getUsername(), refreshToken, accessToken);
 
             // 토큰정보
             TokenDto token = TokenDto.of(accessToken, refreshToken);
 
-            return UserLoginResponseDto.from(user, token);
+            return UserLoginResponseDto.from(customUserDetails, token);
+
         } catch (BadCredentialsException e) {
             throw new NotMatchesUserException(UserErrorCode.INVALID_AUTHENTICATION);
         }
@@ -122,20 +120,21 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
+    // 로그아웃
     @Override
     public void logout(String accessToken) {
         if (accessToken == null) {
             throw new NonTokenException(TokenErrorCode.NON_ACCESS_TOKEN_REQUEST_HEADER);
         }
 
-        Claims claims = jwtProvider.parseClaims(accessToken);
-        String userId = claims.getSubject();
+        // Refresh Token 조회
+        RefreshToken refreshToken = userRedisService.selectRefreshToken(accessToken);
 
         // Refresh Token 삭제
-        refreshTokenService.deleteRefreshToken(userId);
+        userRedisService.deleteRefreshToken(refreshToken);
 
-        // BlackList Token에 해당 Access Token 저장(검증할 때마다 Security에서 처리)
-        blackListTokenService.createBlackListToken(accessToken);
+        // BlackList Token에 해당 Access Token 저장
+        userRedisService.saveBlackListToken(accessToken);
     }
 
     // 회원 수정(PATCH)
