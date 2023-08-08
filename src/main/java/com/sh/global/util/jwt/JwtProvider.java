@@ -1,5 +1,6 @@
 package com.sh.global.util.jwt;
 
+import com.sh.domain.user.service.UserRedisService;
 import com.sh.global.exception.customexcpetion.token.UnauthorizedTokenException;
 import com.sh.global.exception.errorcode.TokenErrorCode;
 import com.sh.global.util.CustomUserDetails;
@@ -72,7 +73,7 @@ public class JwtProvider {
         Claims claims = Jwts.claims().setSubject(customUserDetails.getUsername());
         claims.put("role", customUserDetails.getAuthorities());
 
-        // Access Token -> claims(id, role), 만료시간 정보 설정
+        // Access Token -> claims(id, role) 사용자 정보, 만료시간 정보 설정
         String accessToken =
                 Jwts.builder()
                         .setClaims(claims)
@@ -85,13 +86,12 @@ public class JwtProvider {
     }
 
     // Refresh Token 발급
-    public String generateRefreshToken(CustomUserDetails customUserDetails) {
+    public String generateRefreshToken() {
         Date refreshTokenExpiresIn = getTokenExpiration(refreshTokenExpirationMillis);
 
-        // Refresh Token -> id, 만료시간 정보로만 설정
+        // Refresh Token -> 만료시간 정보만 설정, 사용자 정보를 담을 필요X
         String refreshToken =
                 Jwts.builder()
-                        .setSubject(customUserDetails.getUsername())
                         .setIssuedAt(Calendar.getInstance().getTime())
                         .setExpiration(refreshTokenExpiresIn)
                         .signWith(SignatureAlgorithm.HS256, key)
