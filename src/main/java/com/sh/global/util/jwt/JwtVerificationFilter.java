@@ -1,6 +1,6 @@
 package com.sh.global.util.jwt;
 
-import com.sh.domain.user.service.BlackListTokenService;
+import com.sh.domain.user.service.UserRedisService;
 import com.sh.global.exception.customexcpetion.token.UnauthorizedTokenException;
 import com.sh.global.exception.errorcode.TokenErrorCode;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,12 +18,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtVerificationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-    private final BlackListTokenService blackListTokenService;
+    private final UserRedisService userRedisService;
 
     public JwtVerificationFilter(
-            JwtProvider jwtProvider, BlackListTokenService blackListTokenService) {
+            JwtProvider jwtProvider, UserRedisService userRedisService) {
         this.jwtProvider = jwtProvider;
-        this.blackListTokenService = blackListTokenService;
+        this.userRedisService = userRedisService;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
     }
 
     private boolean doLogout(String accessToken) {
-        if (blackListTokenService.checkBlackListToken(accessToken)) {
+        if (userRedisService.checkBlackListToken(accessToken)) {
             throw new UnauthorizedTokenException(TokenErrorCode.UNAVAILABLE_TOKENS);
         }
         return false;
