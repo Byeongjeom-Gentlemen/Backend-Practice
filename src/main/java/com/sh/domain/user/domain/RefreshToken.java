@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
+import org.springframework.data.redis.core.index.Indexed;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,17 +17,23 @@ import java.util.concurrent.TimeUnit;
 public class RefreshToken {
 
     @Id
-    private String userId;
+    private String id;
 
     private String refreshToken;
+
+    // @Indexed 어노테이션이 있으면 해당 필드 값으로 데이터를 찾아올 수 있음.
+    @Indexed
+    private String accessToken;
 
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private long expiredTime;
 
+
     @Builder
-    private RefreshToken(String userId, String refreshToken, long expiredTime) {
-        this.userId = userId;
+    private RefreshToken(String id, String refreshToken, String accessToken, long expiredTime) {
+        this.id = id;
         this.refreshToken = refreshToken;
+        this.accessToken = accessToken;
         this.expiredTime = expiredTime;
     }
 }
