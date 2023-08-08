@@ -8,6 +8,7 @@ import com.sh.global.exception.customexcpetion.page.SizeRangeOverException;
 import com.sh.global.exception.customexcpetion.page.ValueIsNotIntegerException;
 import com.sh.global.exception.customexcpetion.token.ExpiredTokenException;
 import com.sh.global.exception.customexcpetion.token.NonTokenException;
+import com.sh.global.exception.customexcpetion.token.UnauthorizedTokenException;
 import com.sh.global.exception.customexcpetion.user.*;
 import com.sh.global.exception.errorcode.UserErrorCode;
 import org.springframework.http.HttpStatus;
@@ -103,6 +104,13 @@ public class GlobalExceptionManager {
     public ResponseEntity<ErrorResponse> alreadyLoginError(AlreadyLoginException e) {
         final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    // Refresh Token Validate
+    @ExceptionHandler(UnauthorizedTokenException.class)
+    public ResponseEntity<ErrorResponse> unAuthorizedTokenError(UnauthorizedTokenException e) {
+        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     // 해당 게시글을 찾을 수 없을 때 예외
