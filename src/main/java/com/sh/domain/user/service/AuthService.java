@@ -6,5 +6,5 @@ import org.springframework.transaction.annotation.Transactional;
 public interface AuthService {
 
     @Transactional
-    TokenDto accessTokenReIssue(String refreshToken);
+    TokenDto accessTokenReIssue(TokenDto tokens);
 }
