@@ -2,7 +2,9 @@ package com.sh.domain.user.service;
 
 import com.sh.domain.user.domain.RefreshToken;
 import com.sh.domain.user.domain.User;
-import com.sh.domain.user.dto.*;
+import com.sh.domain.user.dto.request.SignupRequestDto;
+import com.sh.domain.user.dto.request.UpdateUserRequestDto;
+import com.sh.domain.user.dto.response.UserBasicResponseDto;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.util.Role;
 import com.sh.domain.user.util.UserStatus;

@@ -1,6 +1,10 @@
 package com.sh.domain.board.controller;
 
-import com.sh.domain.board.dto.*;
+import com.sh.domain.board.dto.request.CreateBoardRequestDto;
+import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
+import com.sh.domain.board.dto.response.BoardBasicResponseDto;
+import com.sh.domain.board.dto.response.LikeResponseDto;
+import com.sh.domain.board.dto.response.PagingBoardsResponseDto;
 import com.sh.domain.board.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

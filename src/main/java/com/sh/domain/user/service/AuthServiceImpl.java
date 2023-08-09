@@ -2,8 +2,8 @@ package com.sh.domain.user.service;
 
 import com.sh.domain.user.domain.RefreshToken;
 import com.sh.domain.user.domain.User;
-import com.sh.domain.user.dto.LoginRequestDto;
-import com.sh.domain.user.dto.UserLoginResponseDto;
+import com.sh.domain.user.dto.request.LoginRequestDto;
+import com.sh.domain.user.dto.response.UserLoginResponseDto;
 import com.sh.domain.user.repository.RefreshTokenRedisRepository;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.exception.customexcpetion.token.NonTokenException;
@@ -55,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
             // 토큰정보
             TokenDto token = TokenDto.of(accessToken, refreshToken);
 
-            return UserLoginResponseDto.from(customUserDetails, token);
+            return UserLoginResponseDto.of(customUserDetails, token);
 
         } catch (BadCredentialsException e) {
             throw new NotMatchesUserException(UserErrorCode.INVALID_AUTHENTICATION);

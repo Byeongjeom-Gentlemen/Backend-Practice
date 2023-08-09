@@ -2,7 +2,7 @@ package com.sh.domain.comment.dto;
 
 import com.sh.domain.comment.domain.Comment;
 import com.sh.domain.user.domain.User;
-import com.sh.domain.user.dto.WriterResponseDto;
+import com.sh.domain.user.dto.WriterDto;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,14 +14,14 @@ import lombok.Getter;
 public class SimpleCommentResponseDto {
 
     private String content;
-    private WriterResponseDto writer;
+    private WriterDto writer;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedData;
 
     public static SimpleCommentResponseDto of(Comment comment, User user) {
         return SimpleCommentResponseDto.builder()
                 .content(comment.getContent())
-                .writer(new WriterResponseDto(user.getUserId(), user.getId(), user.getNickname()))
+                .writer(new WriterDto(user))
                 .createdDate(comment.getCreatedDate())
                 .modifiedData(comment.getModifiedDate())
                 .build();

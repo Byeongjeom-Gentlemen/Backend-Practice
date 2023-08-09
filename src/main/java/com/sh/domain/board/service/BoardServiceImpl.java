@@ -2,7 +2,12 @@ package com.sh.domain.board.service;
 
 import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.domain.Like;
-import com.sh.domain.board.dto.*;
+import com.sh.domain.board.dto.request.CreateBoardRequestDto;
+import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
+import com.sh.domain.board.dto.response.BoardBasicResponseDto;
+import com.sh.domain.board.dto.response.LikeResponseDto;
+import com.sh.domain.board.dto.response.PagingBoardsResponseDto;
+import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
 import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.repository.LikeRepository;
 import com.sh.domain.board.util.SearchType;
@@ -62,7 +67,7 @@ public class BoardServiceImpl implements BoardService {
         List<SimpleCommentResponseDto> commentList =
                 commentService.selectCommentList(pageable, boardId).getCommentList();
 
-        return BoardBasicResponseDto.from(board, commentList);
+        return BoardBasicResponseDto.of(board, commentList);
     }
 
     // 게시글 수정

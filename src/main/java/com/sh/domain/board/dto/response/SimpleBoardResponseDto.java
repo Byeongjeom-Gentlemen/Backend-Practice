@@ -1,4 +1,4 @@
-package com.sh.domain.board.dto;
+package com.sh.domain.board.dto.response;
 
 import com.sh.domain.board.domain.Board;
 import java.time.LocalDateTime;

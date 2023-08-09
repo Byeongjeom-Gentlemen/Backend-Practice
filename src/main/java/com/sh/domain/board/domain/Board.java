@@ -1,6 +1,6 @@
 package com.sh.domain.board.domain;
 
-import com.sh.domain.board.dto.UpdateBoardRequestDto;
+import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.user.domain.User;
 import com.sh.global.common.BaseTimeEntity;
 import java.time.LocalDateTime;
