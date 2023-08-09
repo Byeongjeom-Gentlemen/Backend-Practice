@@ -4,7 +4,7 @@ import com.sh.global.exception.errorcode.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class CustomException {
+public class CustomException extends RuntimeException {
 
     private ErrorCode errorCode;
 

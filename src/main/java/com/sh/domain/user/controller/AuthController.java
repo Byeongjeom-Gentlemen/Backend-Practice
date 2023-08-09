@@ -2,7 +2,6 @@ package com.sh.domain.user.controller;
 
 import com.sh.domain.user.service.AuthService;
 import com.sh.global.common.custom_annotation.TokenInfo;
-import com.sh.global.util.jwt.JwtProvider;
 import com.sh.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Auth", description = "Auth API")
 public class AuthController {
 
-    private final JwtProvider jwtProvider;
     private final AuthService authService;
 
     // Access Token 재발급
