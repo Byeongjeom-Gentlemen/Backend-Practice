@@ -7,17 +7,16 @@ import com.sh.domain.comment.dto.CommentListResponseDto;
 import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import com.sh.domain.comment.repository.CommentRepository;
 import com.sh.domain.user.domain.User;
-import com.sh.domain.user.repository.UserRepository;
+import com.sh.domain.user.service.UserService;
 import com.sh.global.exception.customexcpetion.board.NotFoundBoardException;
 import com.sh.global.exception.customexcpetion.comment.NotAuthorityException;
 import com.sh.global.exception.customexcpetion.comment.NotFoundCommentException;
-import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
 import com.sh.global.exception.errorcode.BoardErrorCode;
 import com.sh.global.exception.errorcode.CommentErrorCode;
-import com.sh.global.exception.errorcode.UserErrorCode;
-import com.sh.global.util.SessionUtil;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -27,19 +26,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
-    private final SessionUtil sessionUtil;
-    private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final UserService userService;
 
+    // 댓글 등록
     @Override
     public Long createComment(Long boardId, String content) {
-        Long userId = sessionUtil.getAttribute();
-
-        User user =
-                userRepository
-                        .findByUserId(userId)
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user = userService.getLoginUser();
 
         Board board =
                 boardRepository
@@ -97,11 +91,8 @@ public class CommentServiceImpl implements CommentService {
 
     // 검증 로직(댓글 수정, 댓글 삭제)
     private Comment verification(Long boardId, Long commentId) {
-        Long userId = sessionUtil.getAttribute();
 
-        userRepository
-                .findByUserId(userId)
-                .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user = userService.getLoginUser();
 
         Board board =
                 boardRepository
@@ -125,7 +116,7 @@ public class CommentServiceImpl implements CommentService {
             throw new NotFoundCommentException(CommentErrorCode.DELETED_COMMENT);
         }
 
-        if (userId != comment.getUser().getUserId()) {
+        if (user.getUserId() != comment.getUser().getUserId()) {
             throw new NotAuthorityException(CommentErrorCode.NOT_AUTHORITY_COMMENT);
         }
 
