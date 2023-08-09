@@ -1,4 +1,4 @@
-package com.sh.domain.user.dto;
+package com.sh.domain.user.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.Pattern;

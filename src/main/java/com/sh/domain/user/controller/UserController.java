@@ -1,6 +1,8 @@
 package com.sh.domain.user.controller;
 
-import com.sh.domain.user.dto.*;
+import com.sh.domain.user.dto.request.SignupRequestDto;
+import com.sh.domain.user.dto.request.UpdateUserRequestDto;
+import com.sh.domain.user.dto.response.UserBasicResponseDto;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.common.custom_annotation.TokenInfo;
 import com.sh.global.util.jwt.TokenDto;

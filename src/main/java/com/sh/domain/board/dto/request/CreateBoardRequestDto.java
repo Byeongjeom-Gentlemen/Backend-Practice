@@ -1,4 +1,4 @@
-package com.sh.domain.board.dto;
+package com.sh.domain.board.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotBlank;

@@ -1,30 +1,30 @@
-package com.sh.domain.user.dto;
+package com.sh.domain.user.dto.response;
 
-import com.sh.domain.user.domain.User;
+import com.sh.global.util.CustomUserDetails;
+import com.sh.global.util.jwt.TokenDto;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class UserBasicResponseDto {
+public class UserLoginResponseDto {
+
     private Long userId;
     private String id;
     private String nickname;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+    private TokenDto token;
 
-    public static UserBasicResponseDto from(User user) {
-        return UserBasicResponseDto.builder()
+    public static UserLoginResponseDto of(CustomUserDetails user, TokenDto token) {
+        return UserLoginResponseDto.builder()
                 .userId(user.getUserId())
                 .id(user.getId())
                 .nickname(user.getNickname())
                 .createdDate(user.getCreatedDate())
                 .modifiedDate(user.getModifiedDate())
+                .token(token)
                 .build();
     }
 }

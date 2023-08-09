@@ -1,7 +1,7 @@
 package com.sh.domain.user.controller;
 
-import com.sh.domain.user.dto.LoginRequestDto;
-import com.sh.domain.user.dto.UserLoginResponseDto;
+import com.sh.domain.user.dto.request.LoginRequestDto;
+import com.sh.domain.user.dto.response.UserLoginResponseDto;
 import com.sh.domain.user.service.AuthService;
 import com.sh.global.common.custom_annotation.TokenInfo;
 import com.sh.global.util.jwt.TokenDto;

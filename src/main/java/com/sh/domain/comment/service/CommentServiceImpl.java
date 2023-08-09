@@ -1,7 +1,6 @@
 package com.sh.domain.comment.service;
 
 import com.sh.domain.board.domain.Board;
-import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.service.BoardService;
 import com.sh.domain.comment.domain.Comment;
 import com.sh.domain.comment.dto.CommentListResponseDto;
@@ -9,10 +8,8 @@ import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import com.sh.domain.comment.repository.CommentRepository;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.service.UserService;
-import com.sh.global.exception.customexcpetion.board.NotFoundBoardException;
 import com.sh.global.exception.customexcpetion.comment.NotAuthorityException;
 import com.sh.global.exception.customexcpetion.comment.NotFoundCommentException;
-import com.sh.global.exception.errorcode.BoardErrorCode;
 import com.sh.global.exception.errorcode.CommentErrorCode;
 
 import java.util.List;
