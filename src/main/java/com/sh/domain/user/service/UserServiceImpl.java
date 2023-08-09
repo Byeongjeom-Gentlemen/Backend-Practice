@@ -10,16 +10,8 @@ import com.sh.global.exception.customexcpetion.token.NonTokenException;
 import com.sh.global.exception.customexcpetion.user.*;
 import com.sh.global.exception.errorcode.TokenErrorCode;
 import com.sh.global.exception.errorcode.UserErrorCode;
-import com.sh.global.util.CustomUserDetails;
 import com.sh.global.util.SecurityUtils;
-import com.sh.global.util.jwt.JwtProvider;
-import com.sh.global.util.jwt.TokenDto;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +22,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final SecurityUtils securityUtils;
-    private final JwtProvider jwtProvider;
-    private final AuthenticationManager authenticationManager;
     private final UserRedisService userRedisService;
 
     @Override
@@ -68,36 +58,6 @@ public class UserServiceImpl implements UserService {
     private void existsByNickname(String nickname) {
         if (userRepository.existsByNickname(nickname)) {
             throw new AlreadyUsedUserNicknameException(UserErrorCode.ALREADY_EXISTS_NICKNAME);
-        }
-    }
-
-    // 로그인
-    @Override
-    public UserLoginResponseDto login(LoginRequestDto loginRequest) {
-        try {
-            // id / pw를 기반으로 Authentication 객체 생성 및 실제 검증 (아이디 존재 여부, 사용자 비밀번호 체크)
-            // 아이디가 존재하지 않거나 id와 비밀번호가 맞지 않으면 예외처리
-            Authentication authentication =
-                    authenticationManager.authenticate(
-                            new UsernamePasswordAuthenticationToken(
-                                    loginRequest.getId(), loginRequest.getPw()));
-
-            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-
-            // 인증정보를 기반으로 토큰 생성
-            String accessToken = jwtProvider.generateAccessToken(customUserDetails);
-            String refreshToken = jwtProvider.generateRefreshToken();
-            
-            // Redis에 저장 (access token과 refresh token 값을 유저와 1대1로 저장)
-            userRedisService.saveRefreshToken(customUserDetails.getUsername(), refreshToken, accessToken);
-
-            // 토큰정보
-            TokenDto token = TokenDto.of(accessToken, refreshToken);
-
-            return UserLoginResponseDto.from(customUserDetails, token);
-
-        } catch (BadCredentialsException e) {
-            throw new NotMatchesUserException(UserErrorCode.INVALID_AUTHENTICATION);
         }
     }
 

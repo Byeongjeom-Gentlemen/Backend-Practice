@@ -2,8 +2,6 @@ package com.sh.domain.user.service;
 
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
-import com.sh.global.util.jwt.TokenDto;
-import org.hibernate.validator.internal.util.stereotypes.ThreadSafe;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface UserService {
@@ -11,10 +9,6 @@ public interface UserService {
     // 회원 생성
     @Transactional
     Long join(SignupRequestDto signupRequest);
-
-    // 로그인
-    @Transactional
-    UserLoginResponseDto login(LoginRequestDto loginRequest);
 
     // 내 정보 조회
     @Transactional(readOnly = true)

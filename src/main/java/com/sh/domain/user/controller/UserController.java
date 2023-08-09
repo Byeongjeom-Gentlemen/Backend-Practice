@@ -33,14 +33,6 @@ public class UserController {
         return userService.join(signupRequest);
     }
 
-    // 로그인
-    @Operation(summary = "로그인 API", description = "로그인하는 API 입니다. 로그인시에는 Id, Password 값이 필요합니다.")
-    @PostMapping("/api/v1/users/login")
-    public ResponseEntity<UserLoginResponseDto> login(
-            @RequestBody @Valid LoginRequestDto loginRequest) {
-        return ResponseEntity.ok().body(userService.login(loginRequest));
-    }
-
     // 내 정보조회
     @Operation(summary = "내정보 조회 API", description = "내 정보를 조회하는 API 입니다. 로그인 여부를 필요로 합니다.")
     @GetMapping("/api/v1/users/me")
