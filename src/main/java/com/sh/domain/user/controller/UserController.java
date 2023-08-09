@@ -8,7 +8,6 @@ import com.sh.global.common.custom_annotation.TokenInfo;
 import com.sh.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -60,8 +59,7 @@ public class UserController {
     @PatchMapping("/api/v1/users/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modify(
-            @RequestBody @Valid UpdateUserRequestDto updateRequest,
-            @TokenInfo TokenDto token) {
+            @RequestBody @Valid UpdateUserRequestDto updateRequest, @TokenInfo TokenDto token) {
         userService.modifyMe(updateRequest);
 
         // 로그아웃

@@ -131,7 +131,7 @@ public class UserServiceImpl implements UserService {
 
         return UserBasicResponseDto.from(user);
     }
-    
+
     // 로그인된 회원 정보 가져오기
     @Override
     public User getLoginUser() {

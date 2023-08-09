@@ -1,5 +1,6 @@
 package com.sh.domain.user.domain;
 
+import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,15 +9,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
-import java.util.concurrent.TimeUnit;
-
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @RedisHash(value = "blacklistToken")
 public class BlackListToken {
 
-    @Id
-    private String accessToken;
+    @Id private String accessToken;
 
     private String value;
 

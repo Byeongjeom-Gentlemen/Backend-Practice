@@ -1,6 +1,5 @@
 package com.sh.global.util.jwt;
 
-import com.sh.domain.user.service.UserRedisService;
 import com.sh.global.exception.customexcpetion.token.UnauthorizedTokenException;
 import com.sh.global.exception.errorcode.TokenErrorCode;
 import com.sh.global.util.CustomUserDetails;

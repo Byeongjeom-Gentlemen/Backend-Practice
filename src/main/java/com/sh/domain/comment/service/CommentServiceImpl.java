@@ -11,10 +11,8 @@ import com.sh.domain.user.service.UserService;
 import com.sh.global.exception.customexcpetion.comment.NotAuthorityException;
 import com.sh.global.exception.customexcpetion.comment.NotFoundCommentException;
 import com.sh.global.exception.errorcode.CommentErrorCode;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -34,11 +32,7 @@ public class CommentServiceImpl implements CommentService {
         User user = userService.getLoginUser();
         Board board = boardService.verificationBoard(boardId);
 
-        Comment comment = Comment.builder()
-                .content(content)
-                .board(board)
-                .user(user)
-                .build();
+        Comment comment = Comment.builder().content(content).board(board).user(user).build();
 
         return commentRepository.save(comment).getCommentId();
     }
