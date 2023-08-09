@@ -1,5 +1,7 @@
 package com.sh.domain.user.controller;
 
+import com.sh.domain.user.dto.LoginRequestDto;
+import com.sh.domain.user.dto.UserLoginResponseDto;
 import com.sh.domain.user.service.AuthService;
 import com.sh.global.common.custom_annotation.TokenInfo;
 import com.sh.global.util.jwt.TokenDto;
@@ -8,7 +10,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,6 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+
+    // 로그인
+    @Operation(summary = "로그인 API", description = "로그인하는 API 입니다. 로그인시에는 Id, Password 값이 필요합니다.")
+    @PostMapping("/api/v1/auth/login")
+    public ResponseEntity<UserLoginResponseDto> login(
+            @RequestBody @Valid LoginRequestDto loginRequest) {
+        return ResponseEntity.ok().body(authService.login(loginRequest));
+    }
 
     // Access Token 재발급
     @Operation(

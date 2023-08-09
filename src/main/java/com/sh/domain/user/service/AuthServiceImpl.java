@@ -2,18 +2,24 @@ package com.sh.domain.user.service;
 
 import com.sh.domain.user.domain.RefreshToken;
 import com.sh.domain.user.domain.User;
+import com.sh.domain.user.dto.LoginRequestDto;
+import com.sh.domain.user.dto.UserLoginResponseDto;
 import com.sh.domain.user.repository.RefreshTokenRedisRepository;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.exception.customexcpetion.token.NonTokenException;
 import com.sh.global.exception.customexcpetion.token.UnauthorizedTokenException;
+import com.sh.global.exception.customexcpetion.user.NotMatchesUserException;
 import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
 import com.sh.global.exception.errorcode.TokenErrorCode;
 import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.util.CustomUserDetails;
 import com.sh.global.util.jwt.JwtProvider;
 import com.sh.global.util.jwt.TokenDto;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,8 +28,39 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRedisService userRedisService;
     private final UserRepository userRepository;
-    private final JwtProvider jwtProvider;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+    private final JwtProvider jwtProvider;
+    private final AuthenticationManager authenticationManager;
+
+    // 로그인
+    @Override
+    public UserLoginResponseDto login(LoginRequestDto loginRequest) {
+        try {
+            // id / pw를 기반으로 Authentication 객체 생성 및 실제 검증 (아이디 존재 여부, 사용자 비밀번호 체크)
+            // 아이디가 존재하지 않거나 id와 비밀번호가 맞지 않으면 예외처리
+            Authentication authentication =
+                    authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    loginRequest.getId(), loginRequest.getPw()));
+
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            // 인증정보를 기반으로 토큰 생성
+            String accessToken = jwtProvider.generateAccessToken(customUserDetails);
+            String refreshToken = jwtProvider.generateRefreshToken();
+
+            // Redis에 저장 (access token과 refresh token 값을 유저와 1대1로 저장)
+            userRedisService.saveRefreshToken(customUserDetails.getUsername(), refreshToken, accessToken);
+
+            // 토큰정보
+            TokenDto token = TokenDto.of(accessToken, refreshToken);
+
+            return UserLoginResponseDto.from(customUserDetails, token);
+
+        } catch (BadCredentialsException e) {
+            throw new NotMatchesUserException(UserErrorCode.INVALID_AUTHENTICATION);
+        }
+    }
 
     // Access Token 재발급
     @Override
