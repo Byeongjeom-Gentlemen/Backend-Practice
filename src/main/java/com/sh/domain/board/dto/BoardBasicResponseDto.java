@@ -19,6 +19,7 @@ public class BoardBasicResponseDto {
     private WriterResponseDto user;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+    private Integer likeCount;
     private List<SimpleCommentResponseDto> commentList;
 
     public static BoardBasicResponseDto from(
@@ -30,6 +31,7 @@ public class BoardBasicResponseDto {
                 .user(new WriterResponseDto(board.getUser()))
                 .createdDate(board.getCreatedDate())
                 .modifiedDate(board.getModifiedDate())
+                .likeCount(board.getLikeCount())
                 .commentList(commentList)
                 .build();
     }

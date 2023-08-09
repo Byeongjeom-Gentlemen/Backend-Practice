@@ -12,7 +12,6 @@ import lombok.Getter;
 public class SimpleBoardResponseDto {
 
     private LocalDateTime createdDate;
-    private LocalDateTime updatedDate;
     private Long id;
     private String title;
     private String writer;
@@ -20,7 +19,6 @@ public class SimpleBoardResponseDto {
     public static SimpleBoardResponseDto from(Board board) {
         return SimpleBoardResponseDto.builder()
                 .createdDate(board.getCreatedDate())
-                .updatedDate(board.getModifiedDate())
                 .id(board.getId())
                 .title(board.getTitle())
                 .writer(board.getUser().getNickname())
