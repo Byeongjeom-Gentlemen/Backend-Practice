@@ -1,7 +1,9 @@
 package com.sh.domain.user.service;
 
+import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.*;
 import com.sh.global.util.jwt.TokenDto;
+import org.hibernate.validator.internal.util.stereotypes.ThreadSafe;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface UserService {
@@ -32,4 +34,8 @@ public interface UserService {
 
     // 로그아웃
     void logout(String accessToken);
+
+    // 로그인된 회원 정보 가져오기
+    @Transactional(readOnly = true)
+    User getLoginUser();
 }

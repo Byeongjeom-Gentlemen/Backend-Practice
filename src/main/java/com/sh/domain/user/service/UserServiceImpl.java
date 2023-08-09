@@ -104,8 +104,7 @@ public class UserServiceImpl implements UserService {
     // 내 정보 조회
     @Override
     public UserBasicResponseDto selectMe() {
-        String id = securityUtils.getCurrentUserId();
-        User user = getUser(id);
+        User user = getLoginUser();
 
         return UserBasicResponseDto.from(user);
     }
@@ -114,8 +113,7 @@ public class UserServiceImpl implements UserService {
     // CASCADE 옵션은 되도록 사용하지 않는다.
     @Override
     public void deleteUser() {
-        String id = securityUtils.getCurrentUserId();
-        User user = getUser(id);
+        User user = getLoginUser();
 
         userRepository.delete(user);
     }
@@ -140,8 +138,7 @@ public class UserServiceImpl implements UserService {
     // 회원 수정(PATCH)
     @Override
     public void modifyMe(UpdateUserRequestDto updateRequest) {
-        String id = securityUtils.getCurrentUserId();
-        User user = getUser(id);
+        User user = getLoginUser();
 
         // 아이디 수정 시
         if (updateRequest.getAfterId() != null) {
@@ -162,7 +159,26 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    // 회원 ID로 유저정보 가져오기
+    // 다른 회원 조회
+    @Override
+    public UserBasicResponseDto selectOtherUser(Long userId) {
+        User user =
+                userRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+
+        return UserBasicResponseDto.from(user);
+    }
+    
+    // 로그인된 회원 정보 가져오기
+    @Override
+    public User getLoginUser() {
+        String id = securityUtils.getCurrentUserId();
+
+        return getUser(id);
+    }
+
+    // 회원 ID로 회원정보 가져오기
     private User getUser(String id) {
         User user =
                 userRepository
@@ -174,16 +190,5 @@ public class UserServiceImpl implements UserService {
         }
 
         return user;
-    }
-
-    // 다른 회원 조회
-    @Override
-    public UserBasicResponseDto selectOtherUser(Long userId) {
-        User user =
-                userRepository
-                        .findByUserId(userId)
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
-
-        return UserBasicResponseDto.from(user);
     }
 }
