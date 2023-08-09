@@ -1,4 +1,4 @@
-package com.sh.global.config;
+package com.sh.global.config.sequrity;
 
 import com.sh.domain.user.service.UserRedisService;
 import com.sh.global.util.jwt.CustomAuthenticationEntryPoint;
@@ -73,6 +73,8 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/api/v1/users/**")
                 .permitAll()
                 .antMatchers("/api/v1/auth/reissue", "/api/v1/users/logout")
+                .permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/board/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

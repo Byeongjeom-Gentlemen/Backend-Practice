@@ -1,4 +1,4 @@
-package com.sh.global.util;
+package com.sh.global.config.resolver;
 
 import com.sh.global.exception.customexcpetion.page.PageRangeOverException;
 import com.sh.global.exception.customexcpetion.page.SizeRangeOverException;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+// 페이지, 사이즈 검증 Resolver
 @Component
 public class PageableVerificationArgumentResolver extends PageableHandlerMethodArgumentResolver {
 
@@ -28,9 +29,6 @@ public class PageableVerificationArgumentResolver extends PageableHandlerMethodA
             WebDataBinderFactory binderFactory) {
         final String pageText = webRequest.getParameter("page");
         final String sizeText = webRequest.getParameter("size");
-
-        System.out.println(pageText);
-        System.out.println(sizeText);
 
         // page값이 숫자가 아니라면
         if (pageText != null && !pageText.equals("") && !isInteger(pageText)) {

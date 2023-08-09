@@ -1,4 +1,4 @@
-package com.sh.global.util;
+package com.sh.global.config.resolver;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.PageRequest;

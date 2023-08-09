@@ -1,4 +1,4 @@
-package com.sh.global.config;
+package com.sh.global.config.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
