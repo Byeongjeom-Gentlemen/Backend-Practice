@@ -10,13 +10,15 @@ import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import com.sh.domain.comment.service.CommentService;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
+import com.sh.domain.user.service.UserService;
 import com.sh.global.exception.customexcpetion.board.*;
 import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
 import com.sh.global.exception.errorcode.BoardErrorCode;
 import com.sh.global.exception.errorcode.UserErrorCode;
-import com.sh.global.util.SessionUtil;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,19 +32,14 @@ public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final LikeRepository likeRepository;
     private final CommentService commentService;
-    private final SessionUtil sessionUtil;
 
     // 게시글 등록
     @Override
     public Long createBoard(CreateBoardRequestDto createRequest) {
-        Long userId = sessionUtil.getAttribute();
-
-        User user =
-                userRepository
-                        .findByUserId(userId)
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user = userService.getLoginUser();
 
         Board newBoard =
                 Board.builder()
@@ -95,7 +92,7 @@ public class BoardServiceImpl implements BoardService {
 
     // 공통 검증 로직
     private Board verification(Long boardId) {
-        Long userId = sessionUtil.getAttribute();
+        User user = userService.getLoginUser();
 
         // 해당 게시글이 존재하지 않을 경우
         Board board =
@@ -110,7 +107,7 @@ public class BoardServiceImpl implements BoardService {
         }
 
         // 해당 게시글의 작성자가 다른 경우
-        if (board.getUser().getUserId() != userId) {
+        if (board.getUser().getUserId() != user.getUserId()) {
             throw new NotMatchesWriterException(BoardErrorCode.BOARD_NOT_AUTHORITY);
         }
 
@@ -188,12 +185,7 @@ public class BoardServiceImpl implements BoardService {
     // 좋아요
     @Override
     public LikeResponseDto likeBoard(Long boardId) {
-        Long userId = sessionUtil.getAttribute();
-
-        User user =
-                userRepository
-                        .findByUserId(userId)
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+        User user = userService.getLoginUser();
 
         Board board =
                 boardRepository
