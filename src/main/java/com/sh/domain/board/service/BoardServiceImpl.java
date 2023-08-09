@@ -32,8 +32,8 @@ public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
     private final LikeRepository likeRepository;
+    private final UserService userService;
     private final CommentService commentService;
 
     // 게시글 등록
@@ -51,19 +51,10 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.save(newBoard).getId();
     }
 
-    // 게시글 상세 조회
+    // 게시글 상세 조회 (해당 게시글의 댓글까지 조회)
     @Override
     public BoardBasicResponseDto selectBoard(Long boardId) {
-
-        Board board =
-                boardRepository
-                        .findById(boardId)
-                        .orElseThrow(
-                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
-
-        if (board.getDelete_at() != null) {
-            throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD);
-        }
+        Board board = verificationBoard(boardId);
 
         // 게시글을 조회함과 동시에 해당 게시글의 댓글 정보도 조회
         // default 값으로 첫 페이지, 사이즈는 10개, 최신순으로 정렬되도록 설정
@@ -77,7 +68,8 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 수정
     @Override
     public void modifyBoard(Long boardId, UpdateBoardRequestDto updateRequest) {
-        Board board = verification(boardId);
+        Board board = verificationBoard(boardId);
+        verificationWriter(board.getUser().getUserId());
 
         board.update(updateRequest);
     }
@@ -85,15 +77,41 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 삭제
     @Override
     public void deleteBoard(Long boardId) {
-        Board board = verification(boardId);
+        Board board = verificationBoard(boardId);
+        verificationWriter(board.getUser().getUserId());
 
         boardRepository.delete(board);
     }
 
-    // 공통 검증 로직
-    private Board verification(Long boardId) {
+    // 좋아요
+    @Override
+    public LikeResponseDto likeBoard(Long boardId) {
         User user = userService.getLoginUser();
+        Board board = verificationBoard(boardId);
 
+        Like like = likeRepository.findByUserAndBoard(user, board);
+        String status = "";
+
+        // 이미 해당 게시글의 좋아요를 누른 경우
+        if (like != null) {
+            board.minusLike();
+            likeRepository.deleteByLikeId(like.getLikeId());
+            status = "Cancel";
+        }
+
+        // 해당 게시글의 좋아요를 누르지 않은 경우
+        if (like == null) {
+            board.plusLike();
+            like = likeRepository.save(Like.builder().user(user).board(board).build());
+            status = "Press";
+        }
+
+        return LikeResponseDto.of(like.getLikeId(), status);
+    }
+
+    // 게시글 검증 로직
+    @Override
+    public Board verificationBoard(Long boardId) {
         // 해당 게시글이 존재하지 않을 경우
         Board board =
                 boardRepository
@@ -106,15 +124,20 @@ public class BoardServiceImpl implements BoardService {
             throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD);
         }
 
-        // 해당 게시글의 작성자가 다른 경우
-        if (board.getUser().getUserId() != user.getUserId()) {
-            throw new NotMatchesWriterException(BoardErrorCode.BOARD_NOT_AUTHORITY);
-        }
-
         return board;
     }
 
-    // 게시글 조회(전체 조회, 검색어를 통한 조회)
+    // 작성자 검증 로직
+    private void verificationWriter(Long userId) {
+        User user = userService.getLoginUser();
+
+        // 해당 게시글의 작성자가 다른 경우
+        if (userId != user.getUserId()) {
+            throw new NotMatchesWriterException(BoardErrorCode.BOARD_NOT_AUTHORITY);
+        }
+    }
+
+    // 게시글 리스트 조회 (전체 조회, 검색어를 통한 조회)
     @Override
     public PagingBoardsResponseDto searchBoards(
             Pageable pageable, String searchType, String keyword) {
@@ -180,36 +203,5 @@ public class BoardServiceImpl implements BoardService {
                         .collect(Collectors.toList());
 
         return PagingBoardsResponseDto.of(pages, boardList);
-    }
-
-    // 좋아요
-    @Override
-    public LikeResponseDto likeBoard(Long boardId) {
-        User user = userService.getLoginUser();
-
-        Board board =
-                boardRepository
-                        .findByIdForUpdate(boardId)
-                        .orElseThrow(
-                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
-
-        Like like = likeRepository.findByUserAndBoard(user, board);
-        String status = "";
-
-        // 이미 해당 게시글의 좋아요를 누른 경우
-        if (like != null) {
-            board.minusLike();
-            likeRepository.deleteByLikeId(like.getLikeId());
-            status = "Cancel";
-        }
-
-        // 해당 게시글의 좋아요를 누르지 않은 경우
-        if (like == null) {
-            board.plusLike();
-            like = likeRepository.save(Like.builder().user(user).board(board).build());
-            status = "Press";
-        }
-
-        return LikeResponseDto.of(like.getLikeId(), status);
     }
 }

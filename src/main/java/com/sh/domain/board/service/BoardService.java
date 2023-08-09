@@ -1,5 +1,6 @@
 package com.sh.domain.board.service;
 
+import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.dto.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +23,13 @@ public interface BoardService {
     @Transactional
     void deleteBoard(Long boardId);
 
-    // 게시글 조회(전체 조회, 검색을 통한 조회)
+    // 게시글 리스트 조회(전체 조회, 검색을 통한 조회) -> 페이징
     @Transactional(readOnly = true)
     PagingBoardsResponseDto searchBoards(Pageable pageable, String searchType, String keyword);
+
+    // 게시글 검증
+    @Transactional(readOnly = true)
+    Board verificationBoard(Long boardId);
 
     /*// 게시글 좋아요
     @Transactional(timeout = 5)

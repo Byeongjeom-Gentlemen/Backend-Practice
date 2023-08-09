@@ -2,6 +2,7 @@ package com.sh.domain.comment.service;
 
 import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.repository.BoardRepository;
+import com.sh.domain.board.service.BoardService;
 import com.sh.domain.comment.domain.Comment;
 import com.sh.domain.comment.dto.CommentListResponseDto;
 import com.sh.domain.comment.dto.SimpleCommentResponseDto;
@@ -26,22 +27,21 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
-    private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final BoardService boardService;
     private final UserService userService;
 
     // 댓글 등록
     @Override
     public Long createComment(Long boardId, String content) {
         User user = userService.getLoginUser();
+        Board board = boardService.verificationBoard(boardId);
 
-        Board board =
-                boardRepository
-                        .findById(boardId)
-                        .orElseThrow(
-                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
-
-        Comment comment = Comment.builder().content(content).board(board).user(user).build();
+        Comment comment = Comment.builder()
+                .content(content)
+                .board(board)
+                .user(user)
+                .build();
 
         return commentRepository.save(comment).getCommentId();
     }
@@ -49,14 +49,9 @@ public class CommentServiceImpl implements CommentService {
     // 댓글 조회(댓글 더보기)
     @Override
     public CommentListResponseDto selectCommentList(Pageable pageable, Long boardId) {
+        Board board = boardService.verificationBoard(boardId);
 
-        Board board =
-                boardRepository
-                        .findById(boardId)
-                        .orElseThrow(
-                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
-
-        Slice<Comment> pageComment = commentRepository.findByBoardId(boardId, pageable);
+        Slice<Comment> pageComment = commentRepository.findByBoardId(board.getId(), pageable);
 
         boolean hasNext = true;
         // 현재 페이지, 다음 페이지에 데이터가 없으면 프론트 영역에서 더보기 버튼이 사라진다고 가정
@@ -76,7 +71,7 @@ public class CommentServiceImpl implements CommentService {
     // 댓글 수정
     @Override
     public void updateComment(Long boardId, Long commentId, String updateRequest) {
-        Comment comment = verification(boardId, commentId);
+        Comment comment = verificationComment(boardId, commentId);
 
         comment.update(updateRequest);
     }
@@ -84,25 +79,15 @@ public class CommentServiceImpl implements CommentService {
     // 댓글 삭제
     @Override
     public void deleteComment(Long boardId, Long commentId) {
-        Comment comment = verification(boardId, commentId);
+        Comment comment = verificationComment(boardId, commentId);
 
         commentRepository.delete(comment);
     }
 
     // 검증 로직(댓글 수정, 댓글 삭제)
-    private Comment verification(Long boardId, Long commentId) {
-
+    private Comment verificationComment(Long boardId, Long commentId) {
         User user = userService.getLoginUser();
-
-        Board board =
-                boardRepository
-                        .findById(boardId)
-                        .orElseThrow(
-                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
-
-        if (board.getDelete_at() != null) {
-            throw new NotFoundBoardException(BoardErrorCode.DELETED_BOARD);
-        }
+        boardService.verificationBoard(boardId);
 
         Comment comment =
                 commentRepository
@@ -112,10 +97,12 @@ public class CommentServiceImpl implements CommentService {
                                         new NotFoundCommentException(
                                                 CommentErrorCode.NOT_FOUND_COMMENT));
 
+        // 댓글이 이미 삭제된 경우
         if (comment.getDelete_at() != null) {
             throw new NotFoundCommentException(CommentErrorCode.DELETED_COMMENT);
         }
 
+        // 로그인한 회원과 댓글 작성자가 다른 경우
         if (user.getUserId() != comment.getUser().getUserId()) {
             throw new NotAuthorityException(CommentErrorCode.NOT_AUTHORITY_COMMENT);
         }
