@@ -10,7 +10,7 @@ public interface CommentService {
     @Transactional
     Long createComment(Long boardId, String content);
 
-    // 댓글 조회
+    // 댓글 리스트 조회 -> 페이징
     @Transactional(readOnly = true)
     CommentListResponseDto selectCommentList(Pageable pageable, Long boardId);
 
