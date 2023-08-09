@@ -1,6 +1,7 @@
 package com.sh.domain.user.controller;
 
 import com.sh.domain.user.service.AuthService;
+import com.sh.global.common.custom_annotation.TokenInfo;
 import com.sh.global.util.jwt.JwtProvider;
 import com.sh.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +24,7 @@ public class AuthController {
             summary = "Access Token 재발급 API",
             description = "Request Header에 있는 Refresh Token 값으로 Access Token을 재발급 받는 API 입니다.")
     @GetMapping("/api/v1/auth/reissue")
-    public ResponseEntity<TokenDto> accessTokenReIssue(TokenDto token) {
+    public ResponseEntity<TokenDto> accessTokenReIssue(@TokenInfo TokenDto token) {
         return ResponseEntity.ok().body(authService.accessTokenReIssue(token));
     }
 }

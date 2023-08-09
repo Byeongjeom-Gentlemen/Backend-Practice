@@ -2,6 +2,7 @@ package com.sh.domain.user.controller;
 
 import com.sh.domain.user.dto.*;
 import com.sh.domain.user.service.UserService;
+import com.sh.global.common.custom_annotation.TokenInfo;
 import com.sh.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -51,7 +52,7 @@ public class UserController {
     @Operation(summary = "회원삭제 API", description = "회원을 삭제하는 API 입니다. 회원삭제 시에는 로그인 여부를 필요로 합니다.")
     @DeleteMapping("/api/v1/users")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(TokenDto token) {
+    public void deleteUser(@TokenInfo TokenDto token) {
         userService.deleteUser();
 
         // 로그아웃
@@ -66,7 +67,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modify(
             @RequestBody @Valid UpdateUserRequestDto updateRequest,
-            TokenDto token) {
+            @TokenInfo TokenDto token) {
         userService.modifyMe(updateRequest);
 
         // 로그아웃
@@ -86,7 +87,7 @@ public class UserController {
     @Operation(summary = "로그아웃 API", description = "회원 로그아웃하는 API 입니다. 로그인이 되어 있는 상태여야 합니다.")
     @GetMapping("/api/v1/users/logout")
     @ResponseStatus(HttpStatus.OK)
-    public void logout(TokenDto token) {
+    public void logout(@TokenInfo TokenDto token) {
         userService.logout(token.getAccessToken());
     }
 }
