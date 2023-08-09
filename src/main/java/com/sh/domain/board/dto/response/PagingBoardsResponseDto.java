@@ -2,7 +2,6 @@ package com.sh.domain.board.dto.response;
 
 import com.sh.domain.board.domain.Board;
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

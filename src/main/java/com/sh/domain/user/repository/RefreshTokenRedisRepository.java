@@ -1,9 +1,8 @@
 package com.sh.domain.user.repository;
 
 import com.sh.domain.user.domain.RefreshToken;
-import org.springframework.data.repository.CrudRepository;
-
 import java.util.Optional;
+import org.springframework.data.repository.CrudRepository;
 
 public interface RefreshTokenRedisRepository extends CrudRepository<RefreshToken, String> {
 

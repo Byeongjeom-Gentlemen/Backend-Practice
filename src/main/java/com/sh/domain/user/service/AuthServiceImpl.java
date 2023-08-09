@@ -50,7 +50,8 @@ public class AuthServiceImpl implements AuthService {
             String refreshToken = jwtProvider.generateRefreshToken();
 
             // Redis에 저장 (access token과 refresh token 값을 유저와 1대1로 저장)
-            userRedisService.saveRefreshToken(customUserDetails.getUsername(), refreshToken, accessToken);
+            userRedisService.saveRefreshToken(
+                    customUserDetails.getUsername(), refreshToken, accessToken);
 
             // 토큰정보
             TokenDto token = TokenDto.of(accessToken, refreshToken);
@@ -70,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
 
         // access token 값이 null 인 경우
         verifiedAccessToken(accessToken);
-        
+
         // refresh token 값이 null 인 경우
         verifiedRefreshToken(refreshToken);
 
@@ -83,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
 
         // Refresh Token 이 존재한다면, 요청으로 넘어온 Refresh Token과 Redis에 저장되어 있는 Refresh Token을 비교
         // 두 Refresh Token 값이 일치하지 않는다면, 비정상적인 접근으로 처리
-        if(!refreshToken.equals(rt.getRefreshToken())) {
+        if (!refreshToken.equals(rt.getRefreshToken())) {
             userRedisService.deleteRefreshToken(rt);
             userRedisService.saveBlackListToken(accessToken);
             throw new UnauthorizedTokenException(TokenErrorCode.UNAVAILABLE_TOKENS);
@@ -98,7 +99,12 @@ public class AuthServiceImpl implements AuthService {
         String newRefreshToken = jwtProvider.generateRefreshToken();
 
         // Redis 갱신
-        RefreshToken newRt = RefreshToken.builder().id(user.getId()).refreshToken(newRefreshToken).accessToken(newAccessToken).build();
+        RefreshToken newRt =
+                RefreshToken.builder()
+                        .id(user.getId())
+                        .refreshToken(newRefreshToken)
+                        .accessToken(newAccessToken)
+                        .build();
         refreshTokenRedisRepository.save(newRt);
 
         return TokenDto.of(newAccessToken, newRefreshToken);
@@ -106,7 +112,7 @@ public class AuthServiceImpl implements AuthService {
 
     // Access Token 값 확인
     private void verifiedAccessToken(String accessToken) {
-        if(accessToken == null) {
+        if (accessToken == null) {
             throw new NonTokenException(TokenErrorCode.NON_ACCESS_TOKEN_REQUEST_HEADER);
         }
     }
