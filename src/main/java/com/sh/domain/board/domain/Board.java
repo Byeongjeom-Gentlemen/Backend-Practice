@@ -5,6 +5,9 @@ import com.sh.domain.user.domain.User;
 import com.sh.global.common.BaseTimeEntity;
 import java.time.LocalDateTime;
 import javax.persistence.*;
+
+import com.sh.global.exception.customexcpetion.board.NotFoundBoardException;
+import com.sh.global.exception.errorcode.BoardErrorCode;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 
@@ -51,10 +54,17 @@ public class Board extends BaseTimeEntity {
         this.likeCount = this.likeCount == null ? 0 : this.likeCount;
     }
 
+    // 게시글 검증
+    public void verification() {
+        if(this.getDelete_at() != null) {
+            throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD);
+        }
+    }
+
     // 게시글 수정
-    public void update(UpdateBoardRequestDto updateRequest) {
-        this.title = updateRequest.getTitle();
-        this.content = updateRequest.getContent();
+    public void update(String title, String comment) {
+        this.title = title;
+        this.content = comment;
     }
 
     // 좋아요 카운트 plus
