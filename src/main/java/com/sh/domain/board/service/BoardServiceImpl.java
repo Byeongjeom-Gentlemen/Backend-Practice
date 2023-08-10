@@ -11,7 +11,9 @@ import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
 import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.repository.LikeRepository;
 import com.sh.domain.board.util.SearchType;
+import com.sh.domain.comment.domain.Comment;
 import com.sh.domain.comment.dto.SimpleCommentResponseDto;
+import com.sh.domain.comment.repository.CommentRepository;
 import com.sh.domain.comment.service.CommentService;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
@@ -57,7 +59,7 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 상세 조회 (해당 게시글의 댓글까지 조회)
     @Override
     public BoardBasicResponseDto selectBoard(Long boardId) {
-        Board board = verificationBoard(boardId);
+        Board board = queryBoard(boardId);
 
         // 게시글을 조회함과 동시에 해당 게시글의 댓글 정보도 조회
         // default 값으로 첫 페이지, 사이즈는 10개, 최신순으로 정렬되도록 설정
@@ -71,26 +73,45 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 수정
     @Override
     public void modifyBoard(Long boardId, UpdateBoardRequestDto updateRequest) {
-        Board board = verificationBoard(boardId);
+        Board board = queryBoard(boardId);
+        board.verification();
         verificationWriter(board.getUser().getUserId());
 
-        board.update(updateRequest);
+        board.update(updateRequest.getTitle(), updateRequest.getContent());
     }
 
     // 게시글 삭제
     @Override
     public void deleteBoard(Long boardId) {
-        Board board = verificationBoard(boardId);
+        Board board = queryBoard(boardId);
+        board.verification();
         verificationWriter(board.getUser().getUserId());
 
         boardRepository.delete(board);
+    }
+
+    // 게시글 조회 로직
+    private Board queryBoard(Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+    }
+
+    // 작성자 검증 로직
+    private void verificationWriter(Long userId) {
+        User user = userService.getLoginUser();
+
+        // 해당 게시글의 작성자가 다른 경우
+        if (userId != user.getUserId()) {
+            throw new NotMatchesWriterException(BoardErrorCode.BOARD_NOT_AUTHORITY);
+        }
     }
 
     // 좋아요
     @Override
     public LikeResponseDto likeBoard(Long boardId) {
         User user = userService.getLoginUser();
-        Board board = verificationBoard(boardId);
+        Board board = boardRepository.findByIdForUpdate(boardId)
+                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
         Like like = likeRepository.findByUserAndBoard(user, board);
         String status = "";
@@ -110,34 +131,6 @@ public class BoardServiceImpl implements BoardService {
         }
 
         return LikeResponseDto.of(like.getLikeId(), status);
-    }
-
-    // 게시글 검증 로직
-    @Override
-    public Board verificationBoard(Long boardId) {
-        // 해당 게시글이 존재하지 않을 경우
-        Board board =
-                boardRepository
-                        .findById(boardId)
-                        .orElseThrow(
-                                () -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
-
-        // 삭제된 게시글일 경우
-        if (board.getDelete_at() != null) {
-            throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD);
-        }
-
-        return board;
-    }
-
-    // 작성자 검증 로직
-    private void verificationWriter(Long userId) {
-        User user = userService.getLoginUser();
-
-        // 해당 게시글의 작성자가 다른 경우
-        if (userId != user.getUserId()) {
-            throw new NotMatchesWriterException(BoardErrorCode.BOARD_NOT_AUTHORITY);
-        }
     }
 
     // 게시글 리스트 조회 (전체 조회, 검색어를 통한 조회)

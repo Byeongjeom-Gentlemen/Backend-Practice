@@ -31,10 +31,6 @@ public interface BoardService {
     @Transactional(readOnly = true)
     PagingBoardsResponseDto searchBoards(Pageable pageable, String searchType, String keyword);
 
-    // 게시글 검증
-    @Transactional(readOnly = true)
-    Board verificationBoard(Long boardId);
-
     /*// 게시글 좋아요
     @Transactional(timeout = 5)
     Long createLike(Long boardId);
