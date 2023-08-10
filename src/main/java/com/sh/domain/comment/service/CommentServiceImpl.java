@@ -1,6 +1,7 @@
 package com.sh.domain.comment.service;
 
 import com.sh.domain.board.domain.Board;
+import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.service.BoardService;
 import com.sh.domain.comment.domain.Comment;
 import com.sh.domain.comment.dto.CommentListResponseDto;
@@ -8,8 +9,10 @@ import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import com.sh.domain.comment.repository.CommentRepository;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.service.UserService;
+import com.sh.global.exception.customexcpetion.board.NotFoundBoardException;
 import com.sh.global.exception.customexcpetion.comment.NotAuthorityException;
 import com.sh.global.exception.customexcpetion.comment.NotFoundCommentException;
+import com.sh.global.exception.errorcode.BoardErrorCode;
 import com.sh.global.exception.errorcode.CommentErrorCode;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,14 +26,15 @@ import org.springframework.stereotype.Service;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final BoardService boardService;
     private final UserService userService;
+    private final BoardRepository boardRepository;
 
     // 댓글 등록
     @Override
     public Long createComment(Long boardId, String content) {
         User user = userService.getLoginUser();
-        Board board = boardService.verificationBoard(boardId);
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
         Comment comment = Comment.builder().content(content).board(board).user(user).build();
 
@@ -40,7 +44,8 @@ public class CommentServiceImpl implements CommentService {
     // 댓글 조회(댓글 더보기)
     @Override
     public CommentListResponseDto selectCommentList(Pageable pageable, Long boardId) {
-        Board board = boardService.verificationBoard(boardId);
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
         Slice<Comment> pageComment = commentRepository.findByBoardId(board.getId(), pageable);
 
@@ -78,7 +83,8 @@ public class CommentServiceImpl implements CommentService {
     // 검증 로직(댓글 수정, 댓글 삭제)
     private Comment verificationComment(Long boardId, Long commentId) {
         User user = userService.getLoginUser();
-        boardService.verificationBoard(boardId);
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
 
         Comment comment =
                 commentRepository
