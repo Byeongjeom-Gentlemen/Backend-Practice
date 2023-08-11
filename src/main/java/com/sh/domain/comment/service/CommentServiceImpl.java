@@ -1,7 +1,6 @@
 package com.sh.domain.comment.service;
 
 import com.sh.domain.board.domain.Board;
-import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.service.BoardService;
 import com.sh.domain.comment.domain.Comment;
 import com.sh.domain.comment.dto.CommentListResponseDto;
@@ -9,11 +8,8 @@ import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import com.sh.domain.comment.repository.CommentRepository;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.service.UserService;
-import com.sh.global.exception.customexcpetion.board.NotFoundBoardException;
-import com.sh.global.exception.customexcpetion.comment.NotAuthorityException;
-import com.sh.global.exception.customexcpetion.comment.NotFoundCommentException;
-import com.sh.global.exception.errorcode.BoardErrorCode;
-import com.sh.global.exception.errorcode.CommentErrorCode;
+import com.sh.global.exception.customexcpetion.CommentCustomException;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -87,7 +83,7 @@ public class CommentServiceImpl implements CommentService {
     // 댓글 조회
     private Comment queryComment(Long commentId) {
         return commentRepository.findByCommentId(commentId)
-                .orElseThrow(() -> new NotFoundCommentException(CommentErrorCode.NOT_FOUND_COMMENT));
+                .orElseThrow(() -> CommentCustomException.COMMENT_NOT_FOUND);
     }
 
     // 작성자 검사
@@ -95,7 +91,7 @@ public class CommentServiceImpl implements CommentService {
         Long userId = userService.getLoginUser().getUserId();
 
         if(userId != writerId) {
-            throw new NotAuthorityException(CommentErrorCode.NOT_AUTHORITY_COMMENT);
+            throw CommentCustomException.NOT_AUTHORITY_COMMENT;
         }
     }
 }
