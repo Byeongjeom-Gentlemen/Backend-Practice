@@ -12,7 +12,7 @@ public enum UserErrorCode implements ErrorCode {
     // 데이터 중복(아이디, 닉네임)
     ALREADY_EXISTS_ID(HttpStatus.CONFLICT, "U_002", "이미 사용중인 아이디입니다."),
     ALREADY_EXISTS_NICKNAME(HttpStatus.CONFLICT, "U_003", "이미 사용중인 닉네임입니다."),
-    FORBIDDEN_REQUEST_USER(HttpStatus.FORBIDDEN, "U_004", "해당 리소스에 접근할 권한이 없습니다.(로그인 필요)ㄴ"),
+    FORBIDDEN_REQUEST_USER(HttpStatus.FORBIDDEN, "U_004", "해당 리소스에 접근할 권한이 없습니다.(로그인 필요)"),
 
     // 해당 유저가 없을 경우
     NOT_FOUND_USER(HttpStatus.UNAUTHORIZED, "U_005", "해당 사용자가 존재하지 않습니다."),
