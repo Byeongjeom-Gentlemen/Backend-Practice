@@ -4,8 +4,8 @@ import com.sh.domain.user.domain.BlackListToken;
 import com.sh.domain.user.domain.RefreshToken;
 import com.sh.domain.user.repository.BlackListTokenRedisRepository;
 import com.sh.domain.user.repository.RefreshTokenRedisRepository;
-import com.sh.global.exception.customexcpetion.token.NonTokenException;
-import com.sh.global.exception.customexcpetion.user.AlreadyLoginException;
+import com.sh.global.exception.customexcpetion.TokenCustomException;
+import com.sh.global.exception.customexcpetion.UserCustomException;
 import com.sh.global.exception.errorcode.TokenErrorCode;
 import com.sh.global.exception.errorcode.UserErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +44,7 @@ public class UserRedisServiceImpl implements UserRedisService {
     private void existsByRefreshToken(String id) {
         // 이미 사용자의 Refresh Token이 존재한다면 로그아웃을 하지 않고 로그인을 재 요청한 경우
         if (refreshTokenRedisRepository.existsById(id)) {
-            throw new AlreadyLoginException(UserErrorCode.ALREADY_LOGIN);
+            throw UserCustomException.ALREADY_LOGIN;
         }
     }
 
@@ -55,7 +55,7 @@ public class UserRedisServiceImpl implements UserRedisService {
                 refreshTokenRedisRepository
                         .findByAccessToken(accessToken)
                         .orElseThrow(
-                                () -> new NonTokenException(TokenErrorCode.EXPIRED_REFRESH_TOKEN));
+                                () -> TokenCustomException.EXPIRED_REFRESH_TOKEN);
 
         return refreshToken;
     }

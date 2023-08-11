@@ -1,6 +1,5 @@
 package com.sh.domain.user.service;
 
-import com.sh.domain.user.domain.RefreshToken;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.dto.request.SignupRequestDto;
 import com.sh.domain.user.dto.request.UpdateUserRequestDto;
@@ -8,10 +7,7 @@ import com.sh.domain.user.dto.response.UserBasicResponseDto;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.util.Role;
 import com.sh.domain.user.util.UserStatus;
-import com.sh.global.exception.customexcpetion.token.NonTokenException;
-import com.sh.global.exception.customexcpetion.user.*;
-import com.sh.global.exception.errorcode.TokenErrorCode;
-import com.sh.global.exception.errorcode.UserErrorCode;
+import com.sh.global.exception.customexcpetion.UserCustomException;
 import com.sh.global.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,14 +48,14 @@ public class UserServiceImpl implements UserService {
     // 아이디 중복 확인
     private void existsById(String id) {
         if (userRepository.existsById(id)) {
-            throw new AlreadyUsedUserIdException(UserErrorCode.ALREADY_EXISTS_ID);
+            throw UserCustomException.ALREADY_USED_USER_ID;
         }
     }
 
     // 닉네임 중복 확인
     private void existsByNickname(String nickname) {
         if (userRepository.existsByNickname(nickname)) {
-            throw new AlreadyUsedUserNicknameException(UserErrorCode.ALREADY_EXISTS_NICKNAME);
+            throw UserCustomException.ALREADY_USED_USER_NICKNAME;
         }
     }
 
@@ -110,7 +106,7 @@ public class UserServiceImpl implements UserService {
         User user =
                 userRepository
                         .findByUserId(userId)
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+                        .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
 
         return UserBasicResponseDto.from(user);
     }
@@ -129,6 +125,6 @@ public class UserServiceImpl implements UserService {
     // 회원 조회
     private User queryUser(String id) {
         return userRepository.findById(id)
-                        .orElseThrow(() -> UserNotFoundException.USER_NOT_FOUND);
+                        .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
     }
 }
