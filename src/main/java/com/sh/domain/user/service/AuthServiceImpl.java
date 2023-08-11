@@ -6,10 +6,8 @@ import com.sh.domain.user.dto.request.LoginRequestDto;
 import com.sh.domain.user.dto.response.UserLoginResponseDto;
 import com.sh.domain.user.repository.RefreshTokenRedisRepository;
 import com.sh.domain.user.repository.UserRepository;
-import com.sh.global.exception.customexcpetion.token.NonTokenException;
-import com.sh.global.exception.customexcpetion.token.UnauthorizedTokenException;
-import com.sh.global.exception.customexcpetion.user.NotMatchesUserException;
-import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
+import com.sh.global.exception.customexcpetion.TokenCustomException;
+import com.sh.global.exception.customexcpetion.UserCustomException;
 import com.sh.global.exception.errorcode.TokenErrorCode;
 import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.util.CustomUserDetails;
@@ -59,16 +57,14 @@ public class AuthServiceImpl implements AuthService {
             return UserLoginResponseDto.of(customUserDetails, token);
 
         } catch (BadCredentialsException e) {
-            throw new NotMatchesUserException(UserErrorCode.INVALID_AUTHENTICATION);
+            throw UserCustomException.NOT_MATCHED_USER;
         }
     }
 
     // 로그아웃
     @Override
     public void logout(String accessToken) {
-        if (accessToken == null) {
-            throw new NonTokenException(TokenErrorCode.NON_ACCESS_TOKEN_REQUEST_HEADER);
-        }
+        verifiedAccessToken(accessToken);
 
         // Refresh Token 조회
         RefreshToken refreshToken = userRedisService.selectRefreshToken(accessToken);
@@ -104,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
         if (!refreshToken.equals(rt.getRefreshToken())) {
             userRedisService.deleteRefreshToken(rt);
             userRedisService.saveBlackListToken(accessToken);
-            throw new UnauthorizedTokenException(TokenErrorCode.UNAVAILABLE_TOKENS);
+            throw TokenCustomException.UNAVAILABLE_TOKENS;
         }
 
         // CustomUserDetails 형으로 변환
@@ -130,14 +126,14 @@ public class AuthServiceImpl implements AuthService {
     // Access Token 값 확인
     private void verifiedAccessToken(String accessToken) {
         if (accessToken == null) {
-            throw new NonTokenException(TokenErrorCode.NON_ACCESS_TOKEN_REQUEST_HEADER);
+            throw TokenCustomException.NON_ACCESS_TOKEN_REQUEST_HEADER;
         }
     }
 
     // Refresh Token 값 확인
     private void verifiedRefreshToken(String refreshToken) {
         if (refreshToken == null) {
-            throw new NonTokenException(TokenErrorCode.NON_REFRESH_TOKEN_REQUEST_HEADER);
+            throw TokenCustomException.NON_REFRESH_TOKEN_REQUEST_HEADER;
         }
     }
 
@@ -146,7 +142,7 @@ public class AuthServiceImpl implements AuthService {
         User user =
                 userRepository
                         .findById(id)
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+                        .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
 
         return user;
     }
