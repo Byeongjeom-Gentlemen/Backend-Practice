@@ -25,16 +25,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
-    private final CommentRepository commentRepository;
     private final UserService userService;
-    private final BoardRepository boardRepository;
+    private final BoardService boardService;
+    private final CommentRepository commentRepository;
 
     // 댓글 등록
     @Override
     public Long createComment(Long boardId, String content) {
         User user = userService.getLoginUser();
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+        Board board = boardService.queryBoard(boardId);
+        board.verification();
 
         Comment comment = Comment.builder().content(content).board(board).user(user).build();
 
@@ -44,8 +44,8 @@ public class CommentServiceImpl implements CommentService {
     // 댓글 조회(댓글 더보기)
     @Override
     public CommentListResponseDto selectCommentList(Pageable pageable, Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+        Board board = boardService.queryBoard(boardId);
+        board.verification();
 
         Slice<Comment> pageComment = commentRepository.findByBoardId(board.getId(), pageable);
 
@@ -67,7 +67,9 @@ public class CommentServiceImpl implements CommentService {
     // 댓글 수정
     @Override
     public void updateComment(Long boardId, Long commentId, String updateRequest) {
-        Comment comment = verificationComment(boardId, commentId);
+        Comment comment = queryComment(commentId);
+        comment.verification();
+        checkWriter(comment.getUser().getUserId());
 
         comment.update(updateRequest);
     }
@@ -75,35 +77,25 @@ public class CommentServiceImpl implements CommentService {
     // 댓글 삭제
     @Override
     public void deleteComment(Long boardId, Long commentId) {
-        Comment comment = verificationComment(boardId, commentId);
+        Comment comment = queryComment(commentId);
+        comment.verification();
+        checkWriter(comment.getUser().getUserId());
 
         commentRepository.delete(comment);
     }
 
-    // 검증 로직(댓글 수정, 댓글 삭제)
-    private Comment verificationComment(Long boardId, Long commentId) {
-        User user = userService.getLoginUser();
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+    // 댓글 조회
+    private Comment queryComment(Long commentId) {
+        return commentRepository.findByCommentId(commentId)
+                .orElseThrow(() -> new NotFoundCommentException(CommentErrorCode.NOT_FOUND_COMMENT));
+    }
 
-        Comment comment =
-                commentRepository
-                        .findByCommentId(commentId)
-                        .orElseThrow(
-                                () ->
-                                        new NotFoundCommentException(
-                                                CommentErrorCode.NOT_FOUND_COMMENT));
+    // 작성자 검사
+    private void checkWriter(Long writerId) {
+        Long userId = userService.getLoginUser().getUserId();
 
-        // 댓글이 이미 삭제된 경우
-        if (comment.getDelete_at() != null) {
-            throw new NotFoundCommentException(CommentErrorCode.DELETED_COMMENT);
-        }
-
-        // 로그인한 회원과 댓글 작성자가 다른 경우
-        if (user.getUserId() != comment.getUser().getUserId()) {
+        if(userId != writerId) {
             throw new NotAuthorityException(CommentErrorCode.NOT_AUTHORITY_COMMENT);
         }
-
-        return comment;
     }
 }
