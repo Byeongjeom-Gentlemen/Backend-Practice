@@ -1,6 +1,6 @@
 package com.sh.global.util;
 
-import com.sh.global.exception.customexcpetion.user.UnauthorizedUserException;
+import com.sh.global.exception.customexcpetion.UserCustomException;
 import com.sh.global.exception.errorcode.UserErrorCode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,7 +15,7 @@ public class SecurityUtils {
                 SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication.getName() == null) {
-            throw new UnauthorizedUserException(UserErrorCode.FORBIDDEN_REQUEST_USER);
+            throw UserCustomException.FORBIDDEN_REQUEST_USER;
         }
 
         return authentication.getName();
