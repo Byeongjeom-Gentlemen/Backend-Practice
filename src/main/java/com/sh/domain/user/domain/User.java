@@ -4,6 +4,9 @@ import com.sh.domain.user.util.Role;
 import com.sh.domain.user.util.UserStatus;
 import com.sh.global.common.BaseTimeEntity;
 import javax.persistence.*;
+
+import com.sh.global.exception.customexcpetion.user.UserWithdrawalException;
+import com.sh.global.exception.errorcode.UserErrorCode;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 
@@ -45,6 +48,13 @@ public class User extends BaseTimeEntity {
         this.nickname = nickname;
         this.role = role;
         this.status = status;
+    }
+
+    // 회원 검증 (탈퇴한 회원인지 검증)
+    public void verification() {
+        if(this.status == UserStatus.WITHDRAWN) {
+            throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
+        }
     }
 
     // 회원 아이디 수정

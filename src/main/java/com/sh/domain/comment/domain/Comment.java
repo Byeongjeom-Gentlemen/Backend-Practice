@@ -5,6 +5,9 @@ import com.sh.domain.user.domain.User;
 import com.sh.global.common.BaseTimeEntity;
 import java.time.LocalDateTime;
 import javax.persistence.*;
+
+import com.sh.global.exception.customexcpetion.comment.NotFoundCommentException;
+import com.sh.global.exception.errorcode.CommentErrorCode;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,6 +43,13 @@ public class Comment extends BaseTimeEntity {
         this.content = content;
         this.board = board;
         this.user = user;
+    }
+
+    // 댓글 검증 (삭제된 댓글인지)
+    public void verification() {
+        if(this.delete_at != null) {
+            throw new NotFoundCommentException(CommentErrorCode.NOT_FOUND_COMMENT);
+        }
     }
 
     // 댓글 수정
