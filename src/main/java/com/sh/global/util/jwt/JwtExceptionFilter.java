@@ -1,6 +1,6 @@
 package com.sh.global.util.jwt;
 
-import com.sh.global.exception.customexcpetion.token.UnauthorizedTokenException;
+import com.sh.global.exception.customexcpetion.TokenCustomException;
 import com.sh.global.exception.errorcode.ErrorCode;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -19,7 +19,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (UnauthorizedTokenException e) {
+        } catch (TokenCustomException e) {
             ErrorCode errorCode = e.getErrorCode();
             request.setAttribute("exception", errorCode);
             filterChain.doFilter(request, response);

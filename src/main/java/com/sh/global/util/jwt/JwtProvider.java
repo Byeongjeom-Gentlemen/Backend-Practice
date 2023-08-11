@@ -1,6 +1,6 @@
 package com.sh.global.util.jwt;
 
-import com.sh.global.exception.customexcpetion.token.UnauthorizedTokenException;
+import com.sh.global.exception.customexcpetion.TokenCustomException;
 import com.sh.global.exception.errorcode.TokenErrorCode;
 import com.sh.global.util.CustomUserDetails;
 import com.sh.global.util.CustomUserDetailsService;
@@ -145,15 +145,15 @@ public class JwtProvider {
             parseClaims(token);
             return true;
         } catch (MalformedJwtException e) {
-            throw new UnauthorizedTokenException(TokenErrorCode.MALFORMED_ACCESS_TOKEN);
+            throw new TokenCustomException(TokenErrorCode.MALFORMED_ACCESS_TOKEN);
         } catch (UnsupportedJwtException e) {
-            throw new UnauthorizedTokenException(TokenErrorCode.WRONG_TYPE_TOKEN);
+            throw new TokenCustomException(TokenErrorCode.WRONG_TYPE_TOKEN);
         } catch (SignatureException e) {
-            throw new UnauthorizedTokenException(TokenErrorCode.WRONG_TYPE_SIGNATURE);
+            throw new TokenCustomException(TokenErrorCode.WRONG_TYPE_SIGNATURE);
         } catch (ExpiredJwtException e) {
-            throw new UnauthorizedTokenException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
+            throw new TokenCustomException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
         } catch (IllegalArgumentException e) {
-            throw new UnauthorizedTokenException(TokenErrorCode.NON_TOKEN);
+            throw new TokenCustomException(TokenErrorCode.NON_TOKEN);
         }
     }
 

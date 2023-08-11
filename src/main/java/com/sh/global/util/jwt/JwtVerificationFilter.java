@@ -1,7 +1,7 @@
 package com.sh.global.util.jwt;
 
 import com.sh.domain.user.service.UserRedisService;
-import com.sh.global.exception.customexcpetion.token.UnauthorizedTokenException;
+import com.sh.global.exception.customexcpetion.TokenCustomException;
 import com.sh.global.exception.errorcode.TokenErrorCode;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -43,7 +43,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 
     private boolean doLogout(String accessToken) {
         if (userRedisService.checkBlackListToken(accessToken)) {
-            throw new UnauthorizedTokenException(TokenErrorCode.UNAVAILABLE_TOKENS);
+            throw TokenCustomException.UNAVAILABLE_TOKENS;
         }
         return false;
     }
