@@ -9,7 +9,6 @@ import com.sh.domain.comment.repository.CommentRepository;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.exception.customexcpetion.CommentCustomException;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -82,7 +81,8 @@ public class CommentServiceImpl implements CommentService {
 
     // 댓글 조회
     private Comment queryComment(Long commentId) {
-        return commentRepository.findByCommentId(commentId)
+        return commentRepository
+                .findByCommentId(commentId)
                 .orElseThrow(() -> CommentCustomException.COMMENT_NOT_FOUND);
     }
 
@@ -90,7 +90,7 @@ public class CommentServiceImpl implements CommentService {
     private void checkWriter(Long writerId) {
         Long userId = userService.getLoginUser().getUserId();
 
-        if(userId != writerId) {
+        if (userId != writerId) {
             throw CommentCustomException.NOT_AUTHORITY_COMMENT;
         }
     }

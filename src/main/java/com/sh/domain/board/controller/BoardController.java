@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -70,7 +69,9 @@ public class BoardController {
     @GetMapping("/api/v1/board")
     @ResponseStatus(HttpStatus.OK)
     public PagingBoardsResponseDto searchBoard(
-            @PageableDefault(page = 0, size = 5, sort = "id", direction = Sort.Direction.DESC) @ParameterObject Pageable pageable,
+            @PageableDefault(page = 0, size = 5, sort = "id", direction = Sort.Direction.DESC)
+                    @ParameterObject
+                    Pageable pageable,
             @RequestParam(required = false, defaultValue = "all") String searchType,
             @RequestParam(required = false) String keyword) {
         return boardService.searchBoards(pageable, searchType, keyword);

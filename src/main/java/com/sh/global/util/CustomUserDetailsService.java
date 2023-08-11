@@ -2,9 +2,7 @@ package com.sh.global.util;
 
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
-import com.sh.domain.user.util.UserStatus;
 import com.sh.global.exception.customexcpetion.UserCustomException;
-import com.sh.global.exception.errorcode.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,9 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
         User user =
-                userRepository
-                        .findById(id)
-                        .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
+                userRepository.findById(id).orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
 
         user.verification();
 

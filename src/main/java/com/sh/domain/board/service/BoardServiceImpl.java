@@ -11,18 +11,12 @@ import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
 import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.repository.LikeRepository;
 import com.sh.domain.board.util.SearchType;
-import com.sh.domain.comment.domain.Comment;
-import com.sh.domain.comment.dto.SimpleCommentResponseDto;
-import com.sh.domain.comment.repository.CommentRepository;
-import com.sh.domain.comment.service.CommentService;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.customexcpetion.PageCustomException;
 import com.sh.global.exception.customexcpetion.UserCustomException;
-import com.sh.global.exception.errorcode.BoardErrorCode;
-import com.sh.global.exception.errorcode.UserErrorCode;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -85,7 +79,8 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 조회
     @Override
     public Board queryBoard(Long boardId) {
-        return boardRepository.findById(boardId)
+        return boardRepository
+                .findById(boardId)
                 .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
     }
 
@@ -103,8 +98,10 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public LikeResponseDto likeBoard(Long boardId) {
         User user = userService.getLoginUser();
-        Board board = boardRepository.findByIdForUpdate(boardId)
-                .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
+        Board board =
+                boardRepository
+                        .findByIdForUpdate(boardId)
+                        .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
 
         Like like = likeRepository.findByUserAndBoard(user, board);
         String status = "";
@@ -132,12 +129,12 @@ public class BoardServiceImpl implements BoardService {
             Pageable pageable, String searchType, String keyword) {
 
         // pageNumber or pageSize 가 음수일 경우
-        if(pageable.getPageNumber() < 0 || pageable.getPageSize() < 0) {
+        if (pageable.getPageNumber() < 0 || pageable.getPageSize() < 0) {
             throw PageCustomException.NEGATIVE_NUMBER;
         }
 
         // pageSize 가 max 값을 초과할 경우
-        if(pageable.getPageSize() > 10) {
+        if (pageable.getPageSize() > 10) {
             throw PageCustomException.RANGE_OVER;
         }
 
@@ -180,8 +177,7 @@ public class BoardServiceImpl implements BoardService {
             User user =
                     userRepository
                             .findByNickname(keyword)
-                            .orElseThrow(
-                                    () -> UserCustomException.USER_NOT_FOUND);
+                            .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
 
             // 해당 유저가 작성한 게시글이 있다면 pageable 값에 따라 데이터 저장
             pages = boardRepository.findByUserId(user.getUserId(), pageable);

@@ -1,13 +1,10 @@
 package com.sh.domain.board.domain;
 
-import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.user.domain.User;
 import com.sh.global.common.BaseTimeEntity;
+import com.sh.global.exception.customexcpetion.BoardCustomException;
 import java.time.LocalDateTime;
 import javax.persistence.*;
-
-import com.sh.global.exception.customexcpetion.BoardCustomException;
-import com.sh.global.exception.errorcode.BoardErrorCode;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 
@@ -56,7 +53,7 @@ public class Board extends BaseTimeEntity {
 
     // 게시글 검증
     public void verification() {
-        if(this.getDelete_at() != null) {
+        if (this.getDelete_at() != null) {
             throw BoardCustomException.DELETED_BOARD;
         }
     }
