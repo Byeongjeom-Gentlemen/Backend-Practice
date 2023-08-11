@@ -137,20 +137,15 @@ public class UserServiceImpl implements UserService {
     public User getLoginUser() {
         String id = securityUtils.getCurrentUserId();
 
-        return getUser(id);
-    }
-
-    // 회원 ID로 회원정보 가져오기
-    private User getUser(String id) {
-        User user =
-                userRepository
-                        .findById(id)
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
-
-        if (user.getStatus() == UserStatus.WITHDRAWN) {
-            throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
-        }
+        User user = queryUser(id);
+        user.verification();
 
         return user;
+    }
+
+    // 회원 조회
+    private User queryUser(String id) {
+        return userRepository.findById(id)
+                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
     }
 }
