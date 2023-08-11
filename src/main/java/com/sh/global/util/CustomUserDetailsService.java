@@ -3,8 +3,7 @@ package com.sh.global.util;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.util.UserStatus;
-import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
-import com.sh.global.exception.customexcpetion.user.UserWithdrawalException;
+import com.sh.global.exception.customexcpetion.UserCustomException;
 import com.sh.global.exception.errorcode.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,11 +24,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user =
                 userRepository
                         .findById(id)
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+                        .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
 
-        if (user.getStatus() == UserStatus.WITHDRAWN) {
-            throw new UserWithdrawalException(UserErrorCode.WITHDRAWN_USER);
-        }
+        user.verification();
 
         return createUserDetails(user);
     }
