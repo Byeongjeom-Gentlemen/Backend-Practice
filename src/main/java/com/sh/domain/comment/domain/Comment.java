@@ -6,7 +6,7 @@ import com.sh.global.common.BaseTimeEntity;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 
-import com.sh.global.exception.customexcpetion.comment.NotFoundCommentException;
+import com.sh.global.exception.customexcpetion.CommentCustomException;
 import com.sh.global.exception.errorcode.CommentErrorCode;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -48,7 +48,7 @@ public class Comment extends BaseTimeEntity {
     // 댓글 검증 (삭제된 댓글인지)
     public void verification() {
         if(this.delete_at != null) {
-            throw new NotFoundCommentException(CommentErrorCode.NOT_FOUND_COMMENT);
+            throw CommentCustomException.DELETED_COMMENT;
         }
     }
 
