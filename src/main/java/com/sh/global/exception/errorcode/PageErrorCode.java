@@ -13,7 +13,6 @@ public enum PageErrorCode implements ErrorCode {
     // pageSize 값이 max 값을 벗어난 경우
     SIZE_RANGE_OVER(HttpStatus.BAD_REQUEST, "P_003", "PageSize의 범위는 0 ~ 10 사이의 정수여야 합니다.");
 
-
     private final HttpStatus status;
     private final String code;
     private final String message;

@@ -6,8 +6,6 @@ import com.sh.domain.user.repository.BlackListTokenRedisRepository;
 import com.sh.domain.user.repository.RefreshTokenRedisRepository;
 import com.sh.global.exception.customexcpetion.TokenCustomException;
 import com.sh.global.exception.customexcpetion.UserCustomException;
-import com.sh.global.exception.errorcode.TokenErrorCode;
-import com.sh.global.exception.errorcode.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -54,8 +52,7 @@ public class UserRedisServiceImpl implements UserRedisService {
         RefreshToken refreshToken =
                 refreshTokenRedisRepository
                         .findByAccessToken(accessToken)
-                        .orElseThrow(
-                                () -> TokenCustomException.EXPIRED_REFRESH_TOKEN);
+                        .orElseThrow(() -> TokenCustomException.EXPIRED_REFRESH_TOKEN);
 
         return refreshToken;
     }

@@ -3,10 +3,8 @@ package com.sh.domain.user.domain;
 import com.sh.domain.user.util.Role;
 import com.sh.domain.user.util.UserStatus;
 import com.sh.global.common.BaseTimeEntity;
-import javax.persistence.*;
-
 import com.sh.global.exception.customexcpetion.UserCustomException;
-import com.sh.global.exception.errorcode.UserErrorCode;
+import javax.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 
@@ -52,7 +50,7 @@ public class User extends BaseTimeEntity {
 
     // 회원 검증 (탈퇴한 회원인지 검증)
     public void verification() {
-        if(this.status == UserStatus.WITHDRAWN) {
+        if (this.status == UserStatus.WITHDRAWN) {
             throw UserCustomException.WITHDRAWN_USER;
         }
     }

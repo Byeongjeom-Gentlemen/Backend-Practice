@@ -2,7 +2,6 @@ package com.sh.global.util.jwt;
 
 import com.sh.domain.user.service.UserRedisService;
 import com.sh.global.exception.customexcpetion.TokenCustomException;
-import com.sh.global.exception.errorcode.TokenErrorCode;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

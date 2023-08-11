@@ -124,7 +124,6 @@ public class UserServiceImpl implements UserService {
 
     // 회원 조회
     private User queryUser(String id) {
-        return userRepository.findById(id)
-                        .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
+        return userRepository.findById(id).orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
     }
 }

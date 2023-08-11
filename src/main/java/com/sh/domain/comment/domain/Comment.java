@@ -3,11 +3,9 @@ package com.sh.domain.comment.domain;
 import com.sh.domain.board.domain.Board;
 import com.sh.domain.user.domain.User;
 import com.sh.global.common.BaseTimeEntity;
+import com.sh.global.exception.customexcpetion.CommentCustomException;
 import java.time.LocalDateTime;
 import javax.persistence.*;
-
-import com.sh.global.exception.customexcpetion.CommentCustomException;
-import com.sh.global.exception.errorcode.CommentErrorCode;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,7 +45,7 @@ public class Comment extends BaseTimeEntity {
 
     // 댓글 검증 (삭제된 댓글인지)
     public void verification() {
-        if(this.delete_at != null) {
+        if (this.delete_at != null) {
             throw CommentCustomException.DELETED_COMMENT;
         }
     }

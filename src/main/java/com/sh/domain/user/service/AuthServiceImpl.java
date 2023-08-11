@@ -8,8 +8,6 @@ import com.sh.domain.user.repository.RefreshTokenRedisRepository;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.exception.customexcpetion.TokenCustomException;
 import com.sh.global.exception.customexcpetion.UserCustomException;
-import com.sh.global.exception.errorcode.TokenErrorCode;
-import com.sh.global.exception.errorcode.UserErrorCode;
 import com.sh.global.util.CustomUserDetails;
 import com.sh.global.util.jwt.JwtProvider;
 import com.sh.global.util.jwt.TokenDto;
@@ -140,9 +138,7 @@ public class AuthServiceImpl implements AuthService {
     // 회원정보 반환
     private User findUserById(String id) {
         User user =
-                userRepository
-                        .findById(id)
-                        .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
+                userRepository.findById(id).orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
 
         return user;
     }

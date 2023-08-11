@@ -1,10 +1,8 @@
 package com.sh.domain.board.dto.response;
 
 import com.sh.domain.board.domain.Board;
-import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import com.sh.domain.user.dto.WriterDto;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.*;
 
 @Getter
