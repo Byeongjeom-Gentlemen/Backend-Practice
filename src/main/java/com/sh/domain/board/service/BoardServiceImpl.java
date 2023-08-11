@@ -18,8 +18,9 @@ import com.sh.domain.comment.service.CommentService;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.service.UserService;
-import com.sh.global.exception.customexcpetion.board.*;
-import com.sh.global.exception.customexcpetion.user.UserNotFoundException;
+import com.sh.global.exception.customexcpetion.BoardCustomException;
+import com.sh.global.exception.customexcpetion.PageCustomException;
+import com.sh.global.exception.customexcpetion.UserCustomException;
 import com.sh.global.exception.errorcode.BoardErrorCode;
 import com.sh.global.exception.errorcode.UserErrorCode;
 import java.util.List;
@@ -85,7 +86,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public Board queryBoard(Long boardId) {
         return boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+                .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
     }
 
     // 작성자 검사
@@ -94,7 +95,7 @@ public class BoardServiceImpl implements BoardService {
 
         // 해당 게시글의 작성자가 다른 경우
         if (userId != user.getUserId()) {
-            throw new NotMatchesWriterException(BoardErrorCode.BOARD_NOT_AUTHORITY);
+            throw BoardCustomException.NOT_MATCHES_WRITER;
         }
     }
 
@@ -103,7 +104,7 @@ public class BoardServiceImpl implements BoardService {
     public LikeResponseDto likeBoard(Long boardId) {
         User user = userService.getLoginUser();
         Board board = boardRepository.findByIdForUpdate(boardId)
-                .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
+                .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
 
         Like like = likeRepository.findByUserAndBoard(user, board);
         String status = "";
@@ -129,10 +130,21 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public PagingBoardsResponseDto searchBoards(
             Pageable pageable, String searchType, String keyword) {
-        SearchType type = SearchType.convertToType(searchType);
+
+        // pageNumber or pageSize 가 음수일 경우
+        if(pageable.getPageNumber() < 0 || pageable.getPageSize() < 0) {
+            throw PageCustomException.NEGATIVE_NUMBER;
+        }
+
+        // pageSize 가 max 값을 초과할 경우
+        if(pageable.getPageSize() > 10) {
+            throw PageCustomException.RANGE_OVER;
+        }
+
+        SearchType type = SearchType.convertToType(searchType.toLowerCase());
 
         if (type == null) {
-            throw new UnsupportedSearchTypeException(BoardErrorCode.UNSUPPORTED_SEARCH_TYPE);
+            throw BoardCustomException.UNSUPPORTED_SEARCH_TYPE;
         }
 
         // 게시글 조회에서는 Page<>를 사용해 구현하고자 함
@@ -141,16 +153,12 @@ public class BoardServiceImpl implements BoardService {
         // 전체 조회
         if (type == SearchType.ALL) {
             pages = boardRepository.findAll(pageable);
-
-            if (pages.getContent().isEmpty()) {
-                throw new BoardListIsEmptyException(BoardErrorCode.EMPTY_BOARD_LIST);
-            }
         }
 
         // 제목으로 게시글 조회
         if (type == SearchType.TITLE) {
             if (keyword == null || keyword.equals("")) {
-                throw new SearchKeywordIsEmptyException(BoardErrorCode.KEYWORD_EMPTY);
+                throw BoardCustomException.SEARCH_KEYWORD_IS_EMPTY;
             }
 
             // 해당 제목을 포함한 게시글이 있다면 pageable 값에 따라 데이터 저장
@@ -158,14 +166,14 @@ public class BoardServiceImpl implements BoardService {
 
             // 설정한 page에 데이터가 없을 경우
             if (pages.getContent().isEmpty()) {
-                throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_SEARCH_TITLE);
+                throw BoardCustomException.NOT_FOUND_BOARD_FOR_TITLE;
             }
         }
 
         // 작성자로 게시글 조회
         if (type == SearchType.WRITER) {
             if (keyword == null || keyword.equals("")) {
-                throw new SearchKeywordIsEmptyException(BoardErrorCode.KEYWORD_EMPTY);
+                throw BoardCustomException.SEARCH_KEYWORD_IS_EMPTY;
             }
 
             // 해당 닉네임을 가진 유저가 있는지 확인, 없으면 예외처리
@@ -173,14 +181,14 @@ public class BoardServiceImpl implements BoardService {
                     userRepository
                             .findByNickname(keyword)
                             .orElseThrow(
-                                    () -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+                                    () -> UserCustomException.USER_NOT_FOUND);
 
             // 해당 유저가 작성한 게시글이 있다면 pageable 값에 따라 데이터 저장
             pages = boardRepository.findByUserId(user.getUserId(), pageable);
 
             // 설정한 page에 데이터가 없을 경우
             if (pages.getContent().isEmpty()) {
-                throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_SEARCH_WRITER);
+                throw BoardCustomException.NOT_FOUND_BOARD_FOR_WRITER;
             }
         }
 

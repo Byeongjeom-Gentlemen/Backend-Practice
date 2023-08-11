@@ -6,7 +6,7 @@ import com.sh.global.common.BaseTimeEntity;
 import java.time.LocalDateTime;
 import javax.persistence.*;
 
-import com.sh.global.exception.customexcpetion.board.NotFoundBoardException;
+import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.errorcode.BoardErrorCode;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -57,7 +57,7 @@ public class Board extends BaseTimeEntity {
     // 게시글 검증
     public void verification() {
         if(this.getDelete_at() != null) {
-            throw new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD);
+            throw BoardCustomException.DELETED_BOARD;
         }
     }
 
