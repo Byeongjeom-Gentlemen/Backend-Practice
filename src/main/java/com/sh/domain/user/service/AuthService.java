@@ -11,6 +11,9 @@ public interface AuthService {
     @Transactional
     UserLoginResponseDto login(LoginRequestDto loginRequest);
 
+    // 로그아웃
+    void logout(String accessToken);
+
     // Access Token 재발급
     @Transactional
     TokenDto accessTokenReIssue(TokenDto tokens);

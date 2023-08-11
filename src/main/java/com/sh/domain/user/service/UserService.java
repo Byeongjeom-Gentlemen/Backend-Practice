@@ -28,9 +28,6 @@ public interface UserService {
     @Transactional(readOnly = true)
     UserBasicResponseDto selectOtherUser(Long userId);
 
-    // 로그아웃
-    void logout(String accessToken);
-
     // 로그인된 회원 정보 가져오기
     @Transactional(readOnly = true)
     User getLoginUser();
