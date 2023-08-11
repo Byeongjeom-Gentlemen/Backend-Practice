@@ -3,6 +3,7 @@ package com.sh.domain.user.controller;
 import com.sh.domain.user.dto.request.SignupRequestDto;
 import com.sh.domain.user.dto.request.UpdateUserRequestDto;
 import com.sh.domain.user.dto.response.UserBasicResponseDto;
+import com.sh.domain.user.service.AuthService;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.common.custom_annotation.TokenInfo;
 import com.sh.global.util.jwt.TokenDto;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final AuthService authService;
 
     // @Valid : 자바에서 제공하는 유효성 검증 어노테이션, 유효성 검증과 관련된 어노테이션이 붙은 모든 필드를 검증, 유효성 검증에 실패하면
     // MethodArgumentNotValidException 발생
@@ -50,7 +52,7 @@ public class UserController {
         userService.deleteUser();
 
         // 로그아웃
-        userService.logout(token.getAccessToken());
+        authService.logout(token.getAccessToken());
     }
 
     // 회원 수정(PATCH)
@@ -64,7 +66,7 @@ public class UserController {
         userService.modifyMe(updateRequest);
 
         // 로그아웃
-        userService.logout(token.getAccessToken());
+        authService.logout(token.getAccessToken());
     }
 
     // 다른 회원 조회
@@ -75,13 +77,5 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public UserBasicResponseDto selectByOtherUser(@PathVariable Long userId) {
         return userService.selectOtherUser(userId);
-    }
-
-    // 로그아웃
-    @Operation(summary = "로그아웃 API", description = "회원 로그아웃하는 API 입니다. 로그인이 되어 있는 상태여야 합니다.")
-    @GetMapping("/api/v1/users/logout")
-    @ResponseStatus(HttpStatus.OK)
-    public void logout(@TokenInfo TokenDto token) {
-        userService.logout(token.getAccessToken());
     }
 }

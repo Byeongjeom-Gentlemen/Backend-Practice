@@ -80,23 +80,6 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
-    // 로그아웃
-    @Override
-    public void logout(String accessToken) {
-        if (accessToken == null) {
-            throw new NonTokenException(TokenErrorCode.NON_ACCESS_TOKEN_REQUEST_HEADER);
-        }
-
-        // Refresh Token 조회
-        RefreshToken refreshToken = userRedisService.selectRefreshToken(accessToken);
-
-        // Refresh Token 삭제
-        userRedisService.deleteRefreshToken(refreshToken);
-
-        // BlackList Token에 해당 Access Token 저장
-        userRedisService.saveBlackListToken(accessToken);
-    }
-
     // 회원 수정(PATCH)
     @Override
     public void modifyMe(UpdateUserRequestDto updateRequest) {
@@ -146,6 +129,6 @@ public class UserServiceImpl implements UserService {
     // 회원 조회
     private User queryUser(String id) {
         return userRepository.findById(id)
-                        .orElseThrow(() -> new UserNotFoundException(UserErrorCode.NOT_FOUND_USER));
+                        .orElseThrow(() -> UserNotFoundException.USER_NOT_FOUND);
     }
 }
