@@ -20,10 +20,8 @@ public class BoardBasicResponseDto {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private Integer likeCount;
-    private List<SimpleCommentResponseDto> commentList;
 
-    public static BoardBasicResponseDto of(
-            Board board, List<SimpleCommentResponseDto> commentList) {
+    public static BoardBasicResponseDto from(Board board) {
         return BoardBasicResponseDto.builder()
                 .boardId(board.getId())
                 .title(board.getTitle())
@@ -32,7 +30,6 @@ public class BoardBasicResponseDto {
                 .createdDate(board.getCreatedDate())
                 .modifiedDate(board.getModifiedDate())
                 .likeCount(board.getLikeCount())
-                .commentList(commentList)
                 .build();
     }
 }
