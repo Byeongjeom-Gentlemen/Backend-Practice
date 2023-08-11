@@ -19,6 +19,10 @@ public interface BoardService {
     @Transactional(readOnly = true)
     BoardBasicResponseDto selectBoard(Long boardId);
 
+    // 게시글 조회
+    @Transactional(readOnly = true)
+    Board queryBoard(Long boardId);
+
     // 게시글 수정
     @Transactional
     void modifyBoard(Long boardId, UpdateBoardRequestDto updateRequest);

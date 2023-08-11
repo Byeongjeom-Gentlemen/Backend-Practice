@@ -25,21 +25,17 @@ import com.sh.global.exception.errorcode.UserErrorCode;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
 
+    private final UserService userService;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
-    private final UserService userService;
-    private final CommentService commentService;
 
     // 게시글 등록
     @Override
@@ -56,18 +52,13 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.save(newBoard).getId();
     }
 
-    // 게시글 상세 조회 (해당 게시글의 댓글까지 조회)
+    // 게시글 상세 조회
     @Override
     public BoardBasicResponseDto selectBoard(Long boardId) {
         Board board = queryBoard(boardId);
+        board.verification();
 
-        // 게시글을 조회함과 동시에 해당 게시글의 댓글 정보도 조회
-        // default 값으로 첫 페이지, 사이즈는 10개, 최신순으로 정렬되도록 설정
-        PageRequest pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdDate");
-        List<SimpleCommentResponseDto> commentList =
-                commentService.selectCommentList(pageable, boardId).getCommentList();
-
-        return BoardBasicResponseDto.of(board, commentList);
+        return BoardBasicResponseDto.from(board);
     }
 
     // 게시글 수정
@@ -75,7 +66,7 @@ public class BoardServiceImpl implements BoardService {
     public void modifyBoard(Long boardId, UpdateBoardRequestDto updateRequest) {
         Board board = queryBoard(boardId);
         board.verification();
-        verificationWriter(board.getUser().getUserId());
+        checkWriter(board.getUser().getUserId());
 
         board.update(updateRequest.getTitle(), updateRequest.getContent());
     }
@@ -85,19 +76,20 @@ public class BoardServiceImpl implements BoardService {
     public void deleteBoard(Long boardId) {
         Board board = queryBoard(boardId);
         board.verification();
-        verificationWriter(board.getUser().getUserId());
+        checkWriter(board.getUser().getUserId());
 
         boardRepository.delete(board);
     }
 
-    // 게시글 조회 로직
-    private Board queryBoard(Long boardId) {
+    // 게시글 조회
+    @Override
+    public Board queryBoard(Long boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundBoardException(BoardErrorCode.NOT_FOUND_BOARD));
     }
 
-    // 작성자 검증 로직
-    private void verificationWriter(Long userId) {
+    // 작성자 검사
+    private void checkWriter(Long userId) {
         User user = userService.getLoginUser();
 
         // 해당 게시글의 작성자가 다른 경우
