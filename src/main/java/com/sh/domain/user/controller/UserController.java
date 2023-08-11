@@ -37,8 +37,9 @@ public class UserController {
     // 내 정보조회
     @Operation(summary = "내정보 조회 API", description = "내 정보를 조회하는 API 입니다. 로그인 여부를 필요로 합니다.")
     @GetMapping("/api/v1/users/me")
-    public ResponseEntity<UserBasicResponseDto> myProfile() {
-        return ResponseEntity.ok().body(userService.selectMe());
+    @ResponseStatus(HttpStatus.OK)
+    public UserBasicResponseDto myProfile() {
+        return userService.selectMe();
     }
 
     // 회원 삭제
@@ -71,8 +72,9 @@ public class UserController {
             summary = "다른회원 조회 API",
             description = "다른 회원정보를 조회하는 API 입니다. 회원의 ID(PK)값을 필요로 합니다.")
     @GetMapping("/api/v1/users/{userId}")
-    public ResponseEntity<UserBasicResponseDto> selectByOtherUser(@PathVariable Long userId) {
-        return ResponseEntity.ok().body(userService.selectOtherUser(userId));
+    @ResponseStatus(HttpStatus.OK)
+    public UserBasicResponseDto selectByOtherUser(@PathVariable Long userId) {
+        return userService.selectOtherUser(userId);
     }
 
     // 로그아웃
