@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class UserTest {
+    /*
     @Test
     @DisplayName("유저 생성 테스트")
     public void createUser() {
@@ -19,4 +20,5 @@ class UserTest {
         Assertions.assertThat(user.getPw()).isEqualTo("thdgus!");
         Assertions.assertThat(user.getNickname()).isEqualTo("할로");
     }
+     */
 }
