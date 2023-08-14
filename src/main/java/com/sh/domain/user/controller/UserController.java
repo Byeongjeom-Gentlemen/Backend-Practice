@@ -5,7 +5,6 @@ import com.sh.domain.user.dto.request.UpdateUserRequestDto;
 import com.sh.domain.user.dto.response.UserBasicResponseDto;
 import com.sh.domain.user.service.AuthService;
 import com.sh.domain.user.service.UserService;
-import com.sh.global.common.custom_annotation.TokenInfo;
 import com.sh.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,11 +46,11 @@ public class UserController {
     @Operation(summary = "회원삭제 API", description = "회원을 삭제하는 API 입니다. 회원삭제 시에는 로그인 여부를 필요로 합니다.")
     @DeleteMapping("/api/v1/users")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@TokenInfo TokenDto token) {
-        userService.deleteUser();
-
+    public void deleteUser() {
         // 로그아웃
-        authService.logout(token.getAccessToken());
+        authService.logout();
+
+        userService.deleteUser();
     }
 
     // 회원 수정(PATCH)
@@ -61,11 +60,11 @@ public class UserController {
     @PatchMapping("/api/v1/users/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modify(
-            @RequestBody @Valid UpdateUserRequestDto updateRequest, @TokenInfo TokenDto token) {
+            @RequestBody @Valid UpdateUserRequestDto updateRequest) {
         userService.modifyMe(updateRequest);
 
         // 로그아웃
-        authService.logout(token.getAccessToken());
+        authService.logout();
     }
 
     // 다른 회원 조회

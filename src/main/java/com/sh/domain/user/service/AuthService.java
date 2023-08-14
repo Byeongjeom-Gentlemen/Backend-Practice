@@ -12,9 +12,9 @@ public interface AuthService {
     UserLoginResponseDto login(LoginRequestDto loginRequest);
 
     // 로그아웃
-    void logout(String accessToken);
+    void logout();
 
     // Access Token 재발급
     @Transactional
-    TokenDto accessTokenReIssue(TokenDto tokens);
+    TokenDto accessTokenReIssue(String accessToken, String refreshToken);
 }

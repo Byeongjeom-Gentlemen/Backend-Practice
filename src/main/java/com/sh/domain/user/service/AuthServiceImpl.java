@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRedisService userRedisService;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
@@ -61,25 +61,20 @@ public class AuthServiceImpl implements AuthService {
 
     // 로그아웃
     @Override
-    public void logout(String accessToken) {
-        verifiedAccessToken(accessToken);
+    public void logout() {
+        User user = userService.getLoginUser();
+        RefreshToken token = getToken(user.getId());
 
-        // Refresh Token 조회
-        RefreshToken refreshToken = userRedisService.selectRefreshToken(accessToken);
+        // Redis Token 값 삭제
+        userRedisService.deleteRefreshToken(token);
 
-        // Refresh Token 삭제
-        userRedisService.deleteRefreshToken(refreshToken);
-
-        // BlackList Token에 해당 Access Token 저장
-        userRedisService.saveBlackListToken(accessToken);
+        // BlackList Token 에 해당 Access Token 저장
+        userRedisService.saveBlackListToken(token.getAccessToken());
     }
 
     // Access Token 재발급
     @Override
-    public TokenDto accessTokenReIssue(TokenDto token) {
-        String accessToken = token.getAccessToken();
-        String refreshToken = token.getRefreshToken();
-
+    public TokenDto accessTokenReIssue(String accessToken, String refreshToken) {
         // access token 값이 null 인 경우
         verifiedAccessToken(accessToken);
 
@@ -102,7 +97,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // CustomUserDetails 형으로 변환
-        User user = findUserById(rt.getId());
+        User user = userService.getLoginUser();
         CustomUserDetails customUserDetails = CustomUserDetails.from(user);
 
         // Refresh Token Rotation (Access Token 재발급 시 Refresh Token도 재발급)
@@ -116,9 +111,16 @@ public class AuthServiceImpl implements AuthService {
                         .refreshToken(newRefreshToken)
                         .accessToken(newAccessToken)
                         .build();
+
         refreshTokenRedisRepository.save(newRt);
 
         return TokenDto.of(newAccessToken, newRefreshToken);
+    }
+    
+    // 회원의 토큰 정보 가져오기
+    private RefreshToken getToken(String id) {
+        return refreshTokenRedisRepository.findById(id)
+                .orElseThrow(() -> TokenCustomException.NON_TOKEN);
     }
 
     // Access Token 값 확인
@@ -133,13 +135,5 @@ public class AuthServiceImpl implements AuthService {
         if (refreshToken == null) {
             throw TokenCustomException.NON_REFRESH_TOKEN_REQUEST_HEADER;
         }
-    }
-
-    // 회원정보 반환
-    private User findUserById(String id) {
-        User user =
-                userRepository.findById(id).orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
-
-        return user;
     }
 }
