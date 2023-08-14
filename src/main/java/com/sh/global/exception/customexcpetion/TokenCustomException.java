@@ -20,6 +20,10 @@ public class TokenCustomException extends CustomException {
     public static final TokenCustomException EXPIRED_REFRESH_TOKEN =
             new TokenCustomException(TokenErrorCode.EXPIRED_REFRESH_TOKEN);
 
+    // 토큰이 없을 경우
+    public static final TokenCustomException NON_TOKEN =
+            new TokenCustomException(TokenErrorCode.NON_TOKEN);
+
     public TokenCustomException(TokenErrorCode errorCode) {
         super(errorCode);
     }
