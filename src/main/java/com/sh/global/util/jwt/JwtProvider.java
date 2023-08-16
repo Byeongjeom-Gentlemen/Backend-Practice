@@ -126,34 +126,52 @@ public class JwtProvider {
     public Authentication getAuthentication(String token) {
     	UserDetails userDetails = userDetailsService.loadUserByUsername(this.getAccount(token));
     	return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    }
+    } */
 
     // 토큰에 담겨있는 유저 account 획득
     public String getAccount(String token) {
     	return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJwt(token).getBody().getSubject();
     }
-    */
 
     // Token 복호화
     public Claims parseClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
-    // Access Token 검증
+    // Token 검증
     public boolean validateToken(String token) {
         try {
             parseClaims(token);
             return true;
         } catch (MalformedJwtException e) {
-            throw new TokenCustomException(TokenErrorCode.MALFORMED_ACCESS_TOKEN);
+            throw TokenCustomException.MALFORMED_TOKEN;
         } catch (UnsupportedJwtException e) {
-            throw new TokenCustomException(TokenErrorCode.WRONG_TYPE_TOKEN);
+            throw TokenCustomException.WRONG_TYPE_TOKEN;
         } catch (SignatureException e) {
-            throw new TokenCustomException(TokenErrorCode.WRONG_TYPE_SIGNATURE);
+            throw TokenCustomException.WRONG_TYPE_SIGNATURE;
         } catch (ExpiredJwtException e) {
-            throw new TokenCustomException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
+            throw TokenCustomException.EXPIRED_TOKEN;
         } catch (IllegalArgumentException e) {
-            throw new TokenCustomException(TokenErrorCode.NON_TOKEN);
+            throw TokenCustomException.NON_TOKEN;
+        }
+    }
+
+    // Access Token 재발급 시 token 검증 및 만료정보 확인
+    // true : 만료되지 않은 토큰일 경우
+    // false : 만료된 토큰일 경우
+    public boolean validateTokenAndIsExpired(String token) {
+        try {
+            return !parseClaims(token).getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            return false;
+        } catch (MalformedJwtException e) {
+            throw TokenCustomException.MALFORMED_TOKEN;
+        } catch (UnsupportedJwtException e) {
+            throw TokenCustomException.WRONG_TYPE_TOKEN;
+        } catch (SignatureException e) {
+            throw TokenCustomException.WRONG_TYPE_SIGNATURE;
+        } catch (IllegalArgumentException e) {
+            throw TokenCustomException.NON_TOKEN;
         }
     }
 
