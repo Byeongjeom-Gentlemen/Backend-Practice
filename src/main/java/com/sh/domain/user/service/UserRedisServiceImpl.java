@@ -52,7 +52,7 @@ public class UserRedisServiceImpl implements UserRedisService {
         RefreshToken refreshToken =
                 refreshTokenRedisRepository
                         .findByAccessToken(accessToken)
-                        .orElseThrow(() -> TokenCustomException.EXPIRED_REFRESH_TOKEN);
+                        .orElseThrow(() -> TokenCustomException.NOT_FOUND_TOKEN);
 
         return refreshToken;
     }
@@ -76,7 +76,7 @@ public class UserRedisServiceImpl implements UserRedisService {
         blackListTokenRedisRepository.save(blackListToken);
     }
 
-    // BlackList Token 조회 및 확인(filter에서 확인)
+    // BlackList Token 조회 및 확인
     @Override
     public boolean checkBlackListToken(String accessToken) {
         return blackListTokenRedisRepository.existsById(accessToken);
