@@ -7,7 +7,6 @@ import com.sh.global.util.jwt.JwtProvider;
 import com.sh.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,9 @@ public class AuthController {
     @Operation(summary = "로그아웃 API", description = "회원 로그아웃하는 API 입니다. 로그인이 되어 있는 상태여야 합니다.")
     @GetMapping("/api/v1/auth/logout")
     @ResponseStatus(HttpStatus.OK)
-    public void logout() { authService.logout(); }
+    public void logout() {
+        authService.logout();
+    }
 
     // Access Token 재발급
     @Operation(

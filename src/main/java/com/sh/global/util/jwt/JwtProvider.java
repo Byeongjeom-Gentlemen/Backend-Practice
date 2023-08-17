@@ -1,7 +1,6 @@
 package com.sh.global.util.jwt;
 
 import com.sh.global.exception.customexcpetion.TokenCustomException;
-import com.sh.global.exception.errorcode.TokenErrorCode;
 import com.sh.global.util.CustomUserDetails;
 import com.sh.global.util.CustomUserDetailsService;
 import io.jsonwebtoken.*;
@@ -130,7 +129,12 @@ public class JwtProvider {
 
     // 토큰에 담겨있는 유저 account 획득
     public String getAccount(String token) {
-    	return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJwt(token).getBody().getSubject();
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJwt(token)
+                .getBody()
+                .getSubject();
     }
 
     // Token 복호화
