@@ -105,13 +105,20 @@ public class AuthServiceImpl implements AuthService {
         // 존재하지 않으면 Exception (Refresh Token 만료 or Access Token 값 오류)
         RefreshToken rt = userRedisService.selectRefreshToken(accessToken);
 
-        // Access Token 만료 정보 및 Refresh Token 값 비교
+        // Access Token 만료 정보 확인
         // 만약 Access Token 이 만료되지 않은 상태라면, 악의적인 요청으로 간주
+        // 기존에 저장되어 있던 Refresh Token 정보를 삭제하고, Access Token 값을 BlackList Token 으로 등록, 재로그인 요청
+        if (jwtProvider.validateTokenAndIsExpired(accessToken)) {
+            userRedisService.deleteRefreshToken(rt);
+            userRedisService.saveBlackListToken(accessToken);
+            throw TokenCustomException.UNAVAILABLE_TOKENS;
+        }
+
+        // Refresh Token 값 비교
         // 요청으로 넘어온 Refresh Token 값과 Redis 에서 조회한 Refresh Token 값이 다르다면, Access Token 을 탈취당한 경우로 간주
         // 기존에 저장되어 있던 Refresh Token 정보를 삭제하고, 재로그인 요청
-        if (jwtProvider.validateTokenAndIsExpired(accessToken)
-                || !refreshToken.equals(rt.getRefreshToken())) {
-            userRedisService.deleteRefreshToken(rt);
+        if(!refreshToken.equals(rt.getRefreshToken())) {
+            userRedisService.saveBlackListToken(accessToken);
             throw TokenCustomException.UNAVAILABLE_TOKENS;
         }
 
