@@ -5,7 +5,6 @@ import com.sh.domain.user.dto.request.UpdateUserRequestDto;
 import com.sh.domain.user.dto.response.UserBasicResponseDto;
 import com.sh.domain.user.service.AuthService;
 import com.sh.domain.user.service.UserService;
-import com.sh.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
@@ -59,8 +58,7 @@ public class UserController {
             description = "회원정보를 수정하는 API 입니다. 로그인 여부를 필요로 하며, 수정필드 값이 존재할 경우 수정됩니다.")
     @PatchMapping("/api/v1/users/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void modify(
-            @RequestBody @Valid UpdateUserRequestDto updateRequest) {
+    public void modify(@RequestBody @Valid UpdateUserRequestDto updateRequest) {
         userService.modifyMe(updateRequest);
 
         // 로그아웃
