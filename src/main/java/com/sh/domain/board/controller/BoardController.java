@@ -3,7 +3,6 @@ package com.sh.domain.board.controller;
 import com.sh.domain.board.dto.request.CreateBoardRequestDto;
 import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.board.dto.response.BoardBasicResponseDto;
-import com.sh.domain.board.dto.response.LikeResponseDto;
 import com.sh.domain.board.dto.response.PagingBoardsResponseDto;
 import com.sh.domain.board.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,13 +76,23 @@ public class BoardController {
         return boardService.searchBoards(pageable, searchType, keyword);
     }
 
-    // 게시글 좋아요
+    // 게시글 좋아요 등록
     @Operation(
-            summary = "게시글 좋아요 API",
-            description = "boardId 값을 통해 해당 게시글을 좋아요 할 수 있습니다. 이미 해당 게시글의 좋아요를 누른 상태면 좋아요가 취소됩니다.")
-    @PostMapping("/ap1/v1/board/{boardId}/like")
+            summary = "게시글 좋아요 등록 API",
+            description = "boardId 값을 통해 해당 게시글을 좋아요 할 수 있습니다.")
+    @PostMapping("/api/v1/board/{boardId}/like")
     @ResponseStatus(HttpStatus.OK)
-    public LikeResponseDto likeBoard(@PathVariable Long boardId) {
-        return boardService.likeBoard(boardId);
+    public void addLikeBoard(@PathVariable Long boardId) { boardService.addLikeCountUseRedisson(boardId);
     }
+
+    // 게시글 좋아요 취소
+    @Operation(
+            summary = "게시글 좋아요 취소 API",
+            description = "boardId 값을 통해 해당 게시글 좋아요를 누른 내역이 존재한다면 좋아요 기록을 취소할 수 있습니다.")
+    @DeleteMapping("/api/v1/board/{boardId}/like")
+    @ResponseStatus(HttpStatus.OK)
+    public void cancelLikeBoard(@PathVariable Long boardId) {
+        boardService.minusLikeCountUseRedisson(boardId);
+    }
+
 }
