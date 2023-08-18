@@ -32,6 +32,14 @@ public class BoardCustomException extends CustomException {
     public static final BoardCustomException NOT_FOUND_BOARD_FOR_WRITER =
             new BoardCustomException(BoardErrorCode.NOT_FOUND_SEARCH_WRITER);
 
+    // 좋아요 등록 시 게시글의 좋아요가 이미 눌러져 있을 경우
+    public static final BoardCustomException ALREADY_PRESSED_LIKE =
+            new BoardCustomException(BoardErrorCode.ALREADY_PRESSED_LIKE);
+
+    // 좋아요 취소 시 게시글의 좋아요 기록이 존재하지 않을 경우
+    public static final BoardCustomException NOT_FOUND_LIKE =
+            new BoardCustomException(BoardErrorCode.NOT_FOUND_LIKE);
+
     public BoardCustomException(BoardErrorCode errorCode) {
         super(errorCode);
     }

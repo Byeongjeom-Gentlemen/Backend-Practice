@@ -13,8 +13,9 @@ public enum BoardErrorCode implements ErrorCode {
     NOT_FOUND_SEARCH_TITLE(HttpStatus.NOT_FOUND, "B_004", "해당 제목을 포함한 게시글이 존재하지 않습니다."),
     NOT_FOUND_SEARCH_WRITER(HttpStatus.NOT_FOUND, "B_005", "해당 작성자의 게시글이 존재하지 않습니다."),
     KEYWORD_EMPTY(HttpStatus.BAD_REQUEST, "B_006", "검색어를 입력해주세요."),
-    DELETED_BOARD(HttpStatus.UNAUTHORIZED, "b_007", "삭제된 게시글입니다."),
-    NOT_FOUND_LIKE(HttpStatus.NOT_FOUND, "B_008", "해당 게시글의 좋아요 기록이 존재하지 않습니다.");
+    DELETED_BOARD(HttpStatus.UNAUTHORIZED, "B_007", "삭제된 게시글입니다."),
+    ALREADY_PRESSED_LIKE(HttpStatus.UNAUTHORIZED, "B_008", "이미 좋아요를 누른 상태입니다."),
+    NOT_FOUND_LIKE(HttpStatus.NOT_FOUND, "B_009", "해당 게시글의 좋아요 기록이 존재하지 않습니다.");
 
     private final HttpStatus status;
     private final String code;
