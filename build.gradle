@@ -23,6 +23,9 @@ repositories {
 }
 
 dependencies {
+    /* Redisson */
+    implementation 'org.redisson:redisson-spring-boot-starter:3.17.7'
+
     /* Redis */
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
