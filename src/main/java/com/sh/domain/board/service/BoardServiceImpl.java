@@ -1,7 +1,6 @@
 package com.sh.domain.board.service;
 
 import com.sh.domain.board.domain.Board;
-import com.sh.domain.board.domain.Like;
 import com.sh.domain.board.dto.request.CreateBoardRequestDto;
 import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.board.dto.response.BoardBasicResponseDto;
@@ -14,15 +13,11 @@ import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
-import com.sh.global.exception.customexcpetion.CommonCustomException;
 import com.sh.global.exception.customexcpetion.PageCustomException;
 import com.sh.global.exception.customexcpetion.UserCustomException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 

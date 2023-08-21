@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum CommonErrorCode implements ErrorCode {
-
     TRY_AGAIN_LATER(HttpStatus.LOCKED, "CM_001", "잠시 후 다시 시도해주세요.");
 
     private final HttpStatus status;
