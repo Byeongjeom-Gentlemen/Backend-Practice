@@ -4,8 +4,8 @@ import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.dto.request.CreateBoardRequestDto;
 import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.board.dto.response.BoardBasicResponseDto;
-import com.sh.domain.board.dto.response.LikeResponseDto;
 import com.sh.domain.board.dto.response.PagingBoardsResponseDto;
+import com.sh.global.aop.DistributedLock;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,15 +35,13 @@ public interface BoardService {
     @Transactional(readOnly = true)
     PagingBoardsResponseDto searchBoards(Pageable pageable, String searchType, String keyword);
 
-    /*// 게시글 좋아요
-    @Transactional(timeout = 5)
-    Long createLike(Long boardId);
+    // 게시글 좋아요 등록 (락 X)
+    @Transactional
+    void addLikeCount(Long boardId);
 
-    // 게시글 좋아요 취소
-    @Transactional(timeout = 5)
-    void deleteLike(Long boardId);*/
+    // 게시글 좋아요 등록 (Redisson 분산 락)
+    void addLikeCountUseRedisson(Long boardId);
 
-    // 게시글 좋아요
-    @Transactional(timeout = 3)
-    LikeResponseDto likeBoard(Long boardId);
+    // 게시글 좋아요 취소 (Redisson 분산 락)
+    void minusLikeCountUseRedisson(Long boardId);
 }

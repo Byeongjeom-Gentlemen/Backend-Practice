@@ -54,7 +54,7 @@ public class LikeService {
         // 요청 한 사용자(로그인 한 사용자)
         User user = userService.getLoginUser();
 
-        // 좋아요 기록 조회 및 확인
+        // 좋아요 기록 조회, 좋아요 기록이 존재하지 않는다면 Exception
         Like like = likeRepository.findByUserAndBoard(user, board)
                 .orElseThrow(() -> BoardCustomException.NOT_FOUND_LIKE);
         // 좋아요 기록 삭제

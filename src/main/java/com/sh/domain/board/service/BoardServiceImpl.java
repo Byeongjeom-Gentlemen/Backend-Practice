@@ -5,7 +5,6 @@ import com.sh.domain.board.domain.Like;
 import com.sh.domain.board.dto.request.CreateBoardRequestDto;
 import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.board.dto.response.BoardBasicResponseDto;
-import com.sh.domain.board.dto.response.LikeResponseDto;
 import com.sh.domain.board.dto.response.PagingBoardsResponseDto;
 import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
 import com.sh.domain.board.repository.BoardRepository;
@@ -15,11 +14,15 @@ import com.sh.domain.user.domain.User;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
+import com.sh.global.exception.customexcpetion.CommonCustomException;
 import com.sh.global.exception.customexcpetion.PageCustomException;
 import com.sh.global.exception.customexcpetion.UserCustomException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +34,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
+    private final LikeService likeService;
 
     // 게시글 등록
     @Override
@@ -92,35 +96,6 @@ public class BoardServiceImpl implements BoardService {
         if (userId != user.getUserId()) {
             throw BoardCustomException.NOT_MATCHES_WRITER;
         }
-    }
-
-    // 좋아요
-    @Override
-    public LikeResponseDto likeBoard(Long boardId) {
-        User user = userService.getLoginUser();
-        Board board =
-                boardRepository
-                        .findByIdForUpdate(boardId)
-                        .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
-
-        Like like = likeRepository.findByUserAndBoard(user, board);
-        String status = "";
-
-        // 이미 해당 게시글의 좋아요를 누른 경우
-        if (like != null) {
-            board.minusLike();
-            likeRepository.deleteByLikeId(like.getLikeId());
-            status = "Cancel";
-        }
-
-        // 해당 게시글의 좋아요를 누르지 않은 경우
-        if (like == null) {
-            board.plusLike();
-            like = likeRepository.save(Like.builder().user(user).board(board).build());
-            status = "Press";
-        }
-
-        return LikeResponseDto.of(like.getLikeId(), status);
     }
 
     // 게시글 리스트 조회 (전체 조회, 검색어를 통한 조회)
@@ -195,5 +170,29 @@ public class BoardServiceImpl implements BoardService {
                         .collect(Collectors.toList());
 
         return PagingBoardsResponseDto.of(pages, boardList);
+    }
+
+    // 게시글 좋아요 추가
+    @Override
+    public void addLikeCount(Long boardId) {
+        // 게시글 검증
+        Board board = queryBoard(boardId);
+        board.verification();
+
+        board.plusLike();
+    }
+
+    // 게시글 좋아요 추가 (Redisson)
+    @Override
+    public void addLikeCountUseRedisson(Long boardId) {
+        String key = "LIKE_" + boardId;
+        likeService.addLikeCount(key, boardId);
+    }
+
+    // 게시글 좋아요 취소 (Redisson)
+    @Override
+    public void minusLikeCountUseRedisson(Long boardId) {
+        String key = "LIKE_" + boardId;
+        likeService.decreaseLikeCount(key, boardId);
     }
 }
