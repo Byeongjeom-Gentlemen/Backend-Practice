@@ -5,7 +5,6 @@ import com.sh.domain.board.dto.request.CreateBoardRequestDto;
 import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.board.dto.response.BoardBasicResponseDto;
 import com.sh.domain.board.dto.response.PagingBoardsResponseDto;
-import com.sh.global.aop.DistributedLock;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 

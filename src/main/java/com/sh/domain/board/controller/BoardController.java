@@ -78,12 +78,11 @@ public class BoardController {
     }
 
     // 게시글 좋아요 등록
-    @Operation(
-            summary = "게시글 좋아요 등록 API",
-            description = "boardId 값을 통해 해당 게시글을 좋아요 할 수 있습니다.")
+    @Operation(summary = "게시글 좋아요 등록 API", description = "boardId 값을 통해 해당 게시글을 좋아요 할 수 있습니다.")
     @PostMapping("/api/v1/board/{boardId}/like")
     @ResponseStatus(HttpStatus.OK)
-    public void addLikeBoard(@PathVariable Long boardId) { boardService.addLikeCountUseRedisson(boardId);
+    public void addLikeBoard(@PathVariable Long boardId) {
+        boardService.addLikeCountUseRedisson(boardId);
     }
 
     // 게시글 좋아요 취소
@@ -95,5 +94,4 @@ public class BoardController {
     public void cancelLikeBoard(@PathVariable Long boardId) {
         boardService.minusLikeCountUseRedisson(boardId);
     }
-
 }

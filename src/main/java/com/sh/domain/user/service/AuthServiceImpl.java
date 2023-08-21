@@ -117,7 +117,7 @@ public class AuthServiceImpl implements AuthService {
         // Refresh Token 값 비교
         // 요청으로 넘어온 Refresh Token 값과 Redis 에서 조회한 Refresh Token 값이 다르다면, Access Token 을 탈취당한 경우로 간주
         // 기존에 저장되어 있던 Refresh Token 정보를 삭제하고, 재로그인 요청
-        if(!refreshToken.equals(rt.getRefreshToken())) {
+        if (!refreshToken.equals(rt.getRefreshToken())) {
             userRedisService.saveBlackListToken(accessToken);
             throw TokenCustomException.UNAVAILABLE_TOKENS;
         }

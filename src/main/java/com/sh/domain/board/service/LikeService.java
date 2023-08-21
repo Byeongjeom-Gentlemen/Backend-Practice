@@ -22,19 +22,20 @@ public class LikeService {
     // 게시글 좋아요 등록
     @DistributedLock(key = "#key")
     public void addLikeCount(String key, Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
+        Board board =
+                boardRepository
+                        .findById(boardId)
+                        .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
         board.verification();
 
         // 요청 한 사용자(로그인 한 사용자)
         User user = userService.getLoginUser();
 
         // 좋아요 기록 조회
-        Like like = likeRepository.findByUserAndBoard(user, board)
-                .orElse(null);
+        Like like = likeRepository.findByUserAndBoard(user, board).orElse(null);
 
         // 이미 해당 게시글 좋아요를 누른 상태라면, Exception
-        if(like != null) {
+        if (like != null) {
             throw BoardCustomException.ALREADY_PRESSED_LIKE;
         }
 
@@ -47,16 +48,20 @@ public class LikeService {
     // 게시글 좋아요 취소
     @DistributedLock(key = "#key")
     public void decreaseLikeCount(String key, Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
+        Board board =
+                boardRepository
+                        .findById(boardId)
+                        .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
         board.verification();
 
         // 요청 한 사용자(로그인 한 사용자)
         User user = userService.getLoginUser();
 
         // 좋아요 기록 조회, 좋아요 기록이 존재하지 않는다면 Exception
-        Like like = likeRepository.findByUserAndBoard(user, board)
-                .orElseThrow(() -> BoardCustomException.NOT_FOUND_LIKE);
+        Like like =
+                likeRepository
+                        .findByUserAndBoard(user, board)
+                        .orElseThrow(() -> BoardCustomException.NOT_FOUND_LIKE);
         // 좋아요 기록 삭제
         likeRepository.delete(like);
 

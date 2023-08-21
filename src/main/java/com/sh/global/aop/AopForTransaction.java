@@ -5,9 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * AOP 에서 트랜잭션 분리를 위한 클래스
- */
+/** AOP 에서 트랜잭션 분리를 위한 클래스 */
 @Component
 public class AopForTransaction {
 
