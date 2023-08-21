@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class BoardController {
 
     private final BoardService boardService;
+    private static final String LIKE_KEY_PREFIX = "LIKE_";
 
     // 게시글 생성
     @Operation(summary = "게시글 등록 API", description = "게시글을 등록하는 API 입니다. 로그인 여부와 Title 값을 필요로 합니다.")
