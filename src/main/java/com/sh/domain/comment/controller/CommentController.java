@@ -32,21 +32,16 @@ public class CommentController {
         return commentService.createComment(boardId, content);
     }
 
-    // 댓글 조회(댓글 더보기)
+    // 댓글 조회(댓글 더보기 OR 무한 스크롤)
     @Operation(
             summary = "댓글 조회 API",
-            description = "boardId 값과 pageable 값으로 해당 게시글의 댓글을 조회합니다.(댓글 더보기)")
+            description = "boardId 값과 lastCommentId 값으로 해당 게시글의 댓글을 조회합니다.(댓글 더보기 OR 무한 스크롤)")
     @GetMapping("/api/v1/board/{boardId}/comment")
     @ResponseStatus(HttpStatus.OK)
     public CommentListResponseDto selectComment(
-            @PageableDefault(
-                            page = 0,
-                            size = 10,
-                            sort = "createdDate",
-                            direction = Sort.Direction.DESC)
-                    Pageable pageable,
-            @PathVariable Long boardId) {
-        return commentService.selectCommentList(pageable, boardId);
+            @PathVariable Long boardId,
+            @RequestParam(required = false) Long lastCommentId) {
+        return commentService.selectCommentList(boardId, lastCommentId);
     }
 
     // 댓글 수정
