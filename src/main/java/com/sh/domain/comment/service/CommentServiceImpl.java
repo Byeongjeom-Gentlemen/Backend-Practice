@@ -12,6 +12,7 @@ import com.sh.global.exception.customexcpetion.CommentCustomException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -38,25 +39,29 @@ public class CommentServiceImpl implements CommentService {
 
     // 댓글 조회(댓글 더보기)
     @Override
-    public CommentListResponseDto selectCommentList(Pageable pageable, Long boardId) {
+    public CommentListResponseDto selectCommentList(Long boardId, Long lastCommentId) {
         Board board = boardService.queryBoard(boardId);
         board.verification();
+        
+        // page : 0, size : 5 고정, no-offset 방식
+        PageRequest pageable = PageRequest.of(0, 5);
 
-        Slice<Comment> pageComment = commentRepository.findByBoardId(board.getId(), pageable);
+        // jpql
+        /*
+        Slice<Comment> pageCommentInJpql = commentRepository
+                .findByCommentIdLessThanOrderByCreatedAtDescInJpql(lastCommentId, boardId, pageable);
 
-        boolean hasNext = true;
-        // 현재 페이지, 다음 페이지에 데이터가 없으면 프론트 영역에서 더보기 버튼이 사라진다고 가정
-        if (pageComment.isLast() || !pageComment.hasNext() || !pageComment.hasContent()) {
-            hasNext = false;
-        }
+        List<SimpleCommentResponseDto> commentList = pageCommentInJpql.getContent()
+                .stream()
+                .map(comment -> SimpleCommentResponseDto.of(comment, comment.getUser()))
+                .collect(Collectors.toList());
+         */
 
-        List<SimpleCommentResponseDto> commentList =
-                pageComment.getContent().stream()
-                        .filter(comment -> comment.getDelete_at() == null)
-                        .map(comment -> SimpleCommentResponseDto.of(comment, comment.getUser()))
-                        .collect(Collectors.toList());
+        // querydsl
+        Slice<SimpleCommentResponseDto> pageComment = commentRepository
+                .findByCommentIdLessThanOrderByCreatedAtDesc(lastCommentId, boardId, pageable);
 
-        return CommentListResponseDto.of(hasNext, commentList);
+        return CommentListResponseDto.of(pageComment.hasNext(), pageComment.getContent());
     }
 
     // 댓글 수정
