@@ -12,7 +12,7 @@ public interface CommentService {
 
     // 댓글 리스트 조회 -> 페이징
     @Transactional(readOnly = true)
-    CommentListResponseDto selectCommentList(Pageable pageable, Long boardId);
+    CommentListResponseDto selectCommentList(Long boardId, Long lastCommentId);
 
     // 댓글 수정
     @Transactional
