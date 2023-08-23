@@ -22,6 +22,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
     void delete(Comment comment);
 
     // 댓글 조회 (무한 스크롤) - JPQL
-    @Query(value = "select c.commentId, c.content, c.user, c.createdDate, c.modifiedDate from Comment c where c.commentId < ?1 and c.board.id = ?2 and c.delete_at IS NULL order by c.createdDate desc")
-    Slice<Comment> findByCommentIdLessThanOrderByCreatedAtDescInJpql(Long lastCommentId, Long boardId, Pageable pageable);
+    @Query(
+            value =
+                    "select c.commentId, c.content, c.user, c.createdDate, c.modifiedDate from Comment c where c.commentId < ?1 and c.board.id = ?2 and c.delete_at IS NULL order by c.createdDate desc")
+    Slice<Comment> findByCommentIdLessThanOrderByCreatedAtDescInJpql(
+            Long lastCommentId, Long boardId, Pageable pageable);
 }

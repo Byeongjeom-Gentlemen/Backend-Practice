@@ -1,7 +1,6 @@
 package com.sh.domain.comment.service;
 
 import com.sh.domain.comment.dto.CommentListResponseDto;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface CommentService {

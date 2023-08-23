@@ -6,9 +6,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,8 +36,7 @@ public class CommentController {
     @GetMapping("/api/v1/board/{boardId}/comment")
     @ResponseStatus(HttpStatus.OK)
     public CommentListResponseDto selectComment(
-            @PathVariable Long boardId,
-            @RequestParam(required = false) Long lastCommentId) {
+            @PathVariable Long boardId, @RequestParam(required = false) Long lastCommentId) {
         return commentService.selectCommentList(boardId, lastCommentId);
     }
 
