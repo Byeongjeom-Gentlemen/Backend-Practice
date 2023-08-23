@@ -20,7 +20,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Slice<SimpleCommentResponseDto> findByCommentIdLessThanOrderByCreatedAtDesc(
+    public Slice<SimpleCommentResponseDto> findByCommentIdLessThanOrderByCommentIdDesc(
             Long lastCommentId, Long boardId, Pageable pageable) {
 
         List<SimpleCommentResponseDto> results =
@@ -39,7 +39,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                                 ltCommentId(lastCommentId),
                                 comment.board.id.eq(boardId),
                                 comment.delete_at.isNull())
-                        .orderBy(comment.createdDate.desc())
+                        .orderBy(comment.commentId.desc())
                         .limit(pageable.getPageSize() + 1)
                         .fetch();
 

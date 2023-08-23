@@ -56,7 +56,7 @@ public class CommentServiceImpl implements CommentService {
 
         // querydsl
         Slice<SimpleCommentResponseDto> pageComment =
-                commentRepository.findByCommentIdLessThanOrderByCreatedAtDesc(
+                commentRepository.findByCommentIdLessThanOrderByCommentIdDesc(
                         lastCommentId, boardId, pageable);
 
         return CommentListResponseDto.of(pageComment.hasNext(), pageComment.getContent());
