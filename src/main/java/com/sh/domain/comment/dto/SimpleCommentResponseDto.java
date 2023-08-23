@@ -19,7 +19,12 @@ public class SimpleCommentResponseDto {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedData;
 
-    public SimpleCommentResponseDto(Long commentId, String content, User user, LocalDateTime createdDate, LocalDateTime modifiedData) {
+    public SimpleCommentResponseDto(
+            Long commentId,
+            String content,
+            User user,
+            LocalDateTime createdDate,
+            LocalDateTime modifiedData) {
         this.commentId = commentId;
         this.content = content;
         this.writer = new WriterDto(user);
