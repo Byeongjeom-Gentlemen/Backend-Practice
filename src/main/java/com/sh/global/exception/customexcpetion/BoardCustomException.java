@@ -24,14 +24,6 @@ public class BoardCustomException extends CustomException {
     public static final BoardCustomException UNSUPPORTED_SEARCH_TYPE =
             new BoardCustomException(BoardErrorCode.UNSUPPORTED_SEARCH_TYPE);
 
-    // 해당 제목의 게시글이 없을 경우
-    public static final BoardCustomException NOT_FOUND_BOARD_FOR_TITLE =
-            new BoardCustomException(BoardErrorCode.NOT_FOUND_SEARCH_TITLE);
-
-    // 작성자의 게시글이 없을 경우
-    public static final BoardCustomException NOT_FOUND_BOARD_FOR_WRITER =
-            new BoardCustomException(BoardErrorCode.NOT_FOUND_SEARCH_WRITER);
-
     // 좋아요 등록 시 게시글의 좋아요가 이미 눌러져 있을 경우
     public static final BoardCustomException ALREADY_PRESSED_LIKE =
             new BoardCustomException(BoardErrorCode.ALREADY_PRESSED_LIKE);
