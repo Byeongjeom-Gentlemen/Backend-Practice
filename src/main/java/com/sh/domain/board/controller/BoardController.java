@@ -3,18 +3,19 @@ package com.sh.domain.board.controller;
 import com.sh.domain.board.dto.request.CreateBoardRequestDto;
 import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.board.dto.response.BoardBasicResponseDto;
-import com.sh.domain.board.dto.response.PagingBoardsResponseDto;
+import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
 import com.sh.domain.board.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+
 import lombok.RequiredArgsConstructor;
-import org.springdoc.api.annotations.ParameterObject;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -68,13 +69,12 @@ public class BoardController {
                     "게시글을 조회하는 API 입니다. searchType 값이 null이면 전체 조회, 아니면 searchType과 keyword를 통한 조회입니다.")
     @GetMapping("/api/v1/board")
     @ResponseStatus(HttpStatus.OK)
-    public PagingBoardsResponseDto searchBoard(
-            @PageableDefault(page = 0, size = 5, sort = "id", direction = Sort.Direction.DESC)
-                    @ParameterObject
-                    Pageable pageable,
+    public List<SimpleBoardResponseDto> searchBoard(
+            @RequestParam(required = false) Long lastBoardId,
             @RequestParam(required = false, defaultValue = "all") String searchType,
-            @RequestParam(required = false) String keyword) {
-        return boardService.searchBoards(pageable, searchType, keyword);
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false, defaultValue = "10") int size) {
+        return boardService.searchBoards(lastBoardId, searchType, keyword, size);
     }
 
     // 게시글 좋아요 등록
