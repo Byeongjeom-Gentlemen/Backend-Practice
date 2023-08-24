@@ -1,12 +1,14 @@
 package com.sh.global.exception;
 
 import com.sh.global.exception.customexcpetion.*;
+import com.sh.global.exception.errorcode.CommonErrorCode;
 import com.sh.global.exception.errorcode.UserErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 // 예외발생 시 처리해주는 객체
 @RestControllerAdvice
@@ -20,37 +22,24 @@ public class GlobalExceptionManager {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // User Custom Exception
-    @ExceptionHandler(UserCustomException.class)
-    public ResponseEntity<ErrorResponse> userError(UserCustomException e) {
-        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
-        return ResponseEntity.status(e.getErrorCode().getStatus()).body(response);
+    @ExceptionHandler(NumberFormatException.class)
+    public ResponseEntity<ErrorResponse> nonNumberError(NumberFormatException e) {
+        final ErrorResponse response =
+                ErrorResponse.from(CommonErrorCode.NON_NUMBER);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Board Custom Exception
-    @ExceptionHandler(BoardCustomException.class)
-    public ResponseEntity<ErrorResponse> boardError(BoardCustomException e) {
-        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
-        return ResponseEntity.status(e.getErrorCode().getStatus()).body(response);
+    // 타입 불일치
+    /*
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> typeMismatchError(MethodArgumentTypeMismatchException e) {
     }
+     */
 
-    // Comment Custom Exception
-    @ExceptionHandler(CommentCustomException.class)
-    public ResponseEntity<ErrorResponse> commentError(CommentCustomException e) {
-        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
-        return ResponseEntity.status(e.getErrorCode().getStatus()).body(response);
-    }
-
-    // Token Custom Exception
-    @ExceptionHandler(TokenCustomException.class)
-    public ResponseEntity<ErrorResponse> tokenError(TokenCustomException e) {
-        final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
-        return ResponseEntity.status(e.getErrorCode().getStatus()).body(response);
-    }
-
-    // Page Custom Exception
-    @ExceptionHandler(PageCustomException.class)
-    public ResponseEntity<ErrorResponse> pageError(PageCustomException e) {
+    @ExceptionHandler({UserCustomException.class, BoardCustomException.class,
+            CommentCustomException.class, TokenCustomException.class,
+            PageCustomException.class, CommentCustomException.class})
+    public ResponseEntity<ErrorResponse> customErrors(CustomException e) {
         final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return ResponseEntity.status(e.getErrorCode().getStatus()).body(response);
     }
