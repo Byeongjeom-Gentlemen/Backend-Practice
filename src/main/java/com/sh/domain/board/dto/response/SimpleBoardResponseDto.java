@@ -11,17 +11,17 @@ import lombok.Getter;
 @Builder
 public class SimpleBoardResponseDto {
 
-    private LocalDateTime createdDate;
     private Long id;
     private String title;
     private String writer;
+    private LocalDateTime createdDate;
 
     public static SimpleBoardResponseDto from(Board board) {
         return SimpleBoardResponseDto.builder()
-                .createdDate(board.getCreatedDate())
                 .id(board.getId())
                 .title(board.getTitle())
                 .writer(board.getUser().getNickname())
+                .createdDate(board.getCreatedDate())
                 .build();
     }
 }
