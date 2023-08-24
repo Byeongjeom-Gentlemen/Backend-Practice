@@ -4,7 +4,6 @@ import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.dto.request.CreateBoardRequestDto;
 import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.board.dto.response.BoardBasicResponseDto;
-import com.sh.domain.board.dto.response.PagingBoardsResponseDto;
 import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
 import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.repository.LikeRepository;
@@ -14,12 +13,11 @@ import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.customexcpetion.PageCustomException;
-import com.sh.global.exception.customexcpetion.UserCustomException;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -95,76 +93,27 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 리스트 조회 (전체 조회, 검색어를 통한 조회)
     @Override
-    public PagingBoardsResponseDto searchBoards(
-            Pageable pageable, String searchType, String keyword) {
+    public List<SimpleBoardResponseDto> searchBoards (
+            Long lastBoardId, String searchType, String keyword, int size) {
 
-        // pageNumber or pageSize 가 음수일 경우
-        if (pageable.getPageNumber() < 0 || pageable.getPageSize() < 0) {
-            throw PageCustomException.NEGATIVE_NUMBER;
-        }
-
-        // pageSize 가 max 값을 초과할 경우
-        if (pageable.getPageSize() > 10) {
+        // size 가 범위를 벗어난 경우
+        if (size < 0 || size > 10) {
             throw PageCustomException.RANGE_OVER;
         }
 
         SearchType type = SearchType.convertToType(searchType.toLowerCase());
-
+        // searchType 이 지원하지 않는 타입일 경우
         if (type == null) {
             throw BoardCustomException.UNSUPPORTED_SEARCH_TYPE;
         }
-
-        // 게시글 조회에서는 Page<>를 사용해 구현하고자 함
-        Page<Board> pages = null;
-
-        // 전체 조회
-        if (type == SearchType.ALL) {
-            pages = boardRepository.findAll(pageable);
+        
+        // keyword 가 null 이거나 빈 값일 경우
+        if(type != SearchType.ALL && (keyword == null || keyword.equals(""))) {
+            throw BoardCustomException.SEARCH_KEYWORD_IS_EMPTY;
         }
 
-        // 제목으로 게시글 조회
-        if (type == SearchType.TITLE) {
-            if (keyword == null || keyword.equals("")) {
-                throw BoardCustomException.SEARCH_KEYWORD_IS_EMPTY;
-            }
-
-            // 해당 제목을 포함한 게시글이 있다면 pageable 값에 따라 데이터 저장
-            pages = boardRepository.findByTitleContaining(keyword, pageable);
-
-            // 설정한 page에 데이터가 없을 경우
-            if (pages.getContent().isEmpty()) {
-                throw BoardCustomException.NOT_FOUND_BOARD_FOR_TITLE;
-            }
-        }
-
-        // 작성자로 게시글 조회
-        if (type == SearchType.WRITER) {
-            if (keyword == null || keyword.equals("")) {
-                throw BoardCustomException.SEARCH_KEYWORD_IS_EMPTY;
-            }
-
-            // 해당 닉네임을 가진 유저가 있는지 확인, 없으면 예외처리
-            User user =
-                    userRepository
-                            .findByNickname(keyword)
-                            .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
-
-            // 해당 유저가 작성한 게시글이 있다면 pageable 값에 따라 데이터 저장
-            pages = boardRepository.findByUserId(user.getUserId(), pageable);
-
-            // 설정한 page에 데이터가 없을 경우
-            if (pages.getContent().isEmpty()) {
-                throw BoardCustomException.NOT_FOUND_BOARD_FOR_WRITER;
-            }
-        }
-
-        List<SimpleBoardResponseDto> boardList =
-                pages.getContent().stream()
-                        .filter(board -> board.getDelete_at() == null)
-                        .map(board -> SimpleBoardResponseDto.from(board))
-                        .collect(Collectors.toList());
-
-        return PagingBoardsResponseDto.of(pages, boardList);
+        PageRequest pageable = PageRequest.of(0, size);
+        return boardRepository.findByBoardIdLessThanBoardInOrderByBoardIdDescAndSearch(lastBoardId, type.getType(), keyword, pageable);
     }
 
     // 게시글 좋아요 추가
