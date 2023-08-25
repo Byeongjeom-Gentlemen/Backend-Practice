@@ -1,18 +1,15 @@
 package com.sh.domain.board.repository;
 
+import static com.sh.domain.board.domain.QBoard.board;
+
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sh.domain.board.domain.QBoard;
 import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
-import com.sh.domain.comment.dto.SimpleCommentResponseDto;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-import static com.sh.domain.board.domain.QBoard.board;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,7 +18,8 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<SimpleBoardResponseDto> findByBoardIdLessThanBoardInOrderByBoardIdDescAndSearch(Long lastBoardId, String searchType, String keyword, Pageable pageable) {
+    public List<SimpleBoardResponseDto> findByBoardIdLessThanBoardInOrderByBoardIdDescAndSearch(
+            Long lastBoardId, String searchType, String keyword, Pageable pageable) {
         List<SimpleBoardResponseDto> result =
                 queryFactory
                         .select(
@@ -58,14 +56,14 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     }
 
     // 동적 쿼리
-    private BooleanExpression eqOrLikeKeyword (String searchType, String keyword) {
+    private BooleanExpression eqOrLikeKeyword(String searchType, String keyword) {
         // 전체 조회
-        if(searchType.equals("all")) {
+        if (searchType.equals("all")) {
             return null;
         }
 
         // 제목으로 조회
-        if(searchType.equals("title")) {
+        if (searchType.equals("title")) {
             return board.title.like(keyword + "%");
         }
 

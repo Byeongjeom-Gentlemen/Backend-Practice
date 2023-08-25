@@ -7,13 +7,12 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import java.util.Collections;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.method.HandlerMethod;
-
-import java.util.Collections;
 
 @Configuration
 public class OpenApiConfig {
@@ -29,30 +28,29 @@ public class OpenApiConfig {
         String key = "Access Token (Bearer)";
         String refreshKey = "Refresh Token";
 
-        SecurityRequirement securityRequirement = new SecurityRequirement()
-                .addList(key)
-                .addList(refreshKey);
+        SecurityRequirement securityRequirement =
+                new SecurityRequirement().addList(key).addList(refreshKey);
 
-        SecurityScheme accessTokenSecurityScheme = new SecurityScheme()
-                .type(SecurityScheme.Type.HTTP)
-                .scheme("bearer")
-                .bearerFormat("JWT")
-                .in(SecurityScheme.In.HEADER)
-                .name(HttpHeaders.AUTHORIZATION);
+        SecurityScheme accessTokenSecurityScheme =
+                new SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")
+                        .in(SecurityScheme.In.HEADER)
+                        .name(HttpHeaders.AUTHORIZATION);
 
-        SecurityScheme refreshTokenSecurityScheme = new SecurityScheme()
-                .type(SecurityScheme.Type.APIKEY)
-                .in(SecurityScheme.In.HEADER)
-                .name("Refresh");
+        SecurityScheme refreshTokenSecurityScheme =
+                new SecurityScheme()
+                        .type(SecurityScheme.Type.APIKEY)
+                        .in(SecurityScheme.In.HEADER)
+                        .name("Refresh");
 
-        Components components = new Components()
-                .addSecuritySchemes(key, accessTokenSecurityScheme)
-                .addSecuritySchemes(refreshKey, refreshTokenSecurityScheme);
+        Components components =
+                new Components()
+                        .addSecuritySchemes(key, accessTokenSecurityScheme)
+                        .addSecuritySchemes(refreshKey, refreshTokenSecurityScheme);
 
-        return new OpenAPI()
-                .info(info)
-                .addSecurityItem(securityRequirement)
-                .components(components);
+        return new OpenAPI().info(info).addSecurityItem(securityRequirement).components(components);
     }
 
     @Bean
@@ -60,7 +58,7 @@ public class OpenApiConfig {
         return (Operation operation, HandlerMethod handlerMethod) -> {
             DisableSwaggerSecurity methodAnnotation =
                     handlerMethod.getMethodAnnotation(DisableSwaggerSecurity.class);
-            if(methodAnnotation != null) {
+            if (methodAnnotation != null) {
                 operation.setSecurity(Collections.emptyList());
             }
             return operation;

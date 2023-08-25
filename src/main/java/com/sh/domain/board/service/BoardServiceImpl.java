@@ -13,11 +13,10 @@ import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.customexcpetion.PageCustomException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -93,7 +92,7 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 리스트 조회 (전체 조회, 검색어를 통한 조회)
     @Override
-    public List<SimpleBoardResponseDto> searchBoards (
+    public List<SimpleBoardResponseDto> searchBoards(
             Long lastBoardId, String searchType, String keyword, int size) {
 
         // size 가 범위를 벗어난 경우
@@ -106,14 +105,15 @@ public class BoardServiceImpl implements BoardService {
         if (type == null) {
             throw BoardCustomException.UNSUPPORTED_SEARCH_TYPE;
         }
-        
+
         // keyword 가 null 이거나 빈 값일 경우
-        if(type != SearchType.ALL && (keyword == null || keyword.equals(""))) {
+        if (type != SearchType.ALL && (keyword == null || keyword.equals(""))) {
             throw BoardCustomException.SEARCH_KEYWORD_IS_EMPTY;
         }
 
         PageRequest pageable = PageRequest.of(0, size);
-        return boardRepository.findByBoardIdLessThanBoardInOrderByBoardIdDescAndSearch(lastBoardId, type.getType(), keyword, pageable);
+        return boardRepository.findByBoardIdLessThanBoardInOrderByBoardIdDescAndSearch(
+                lastBoardId, type.getType(), keyword, pageable);
     }
 
     // 게시글 좋아요 추가
