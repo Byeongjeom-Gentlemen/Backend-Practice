@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 // 예외발생 시 처리해주는 객체
 @RestControllerAdvice
@@ -24,8 +23,7 @@ public class GlobalExceptionManager {
 
     @ExceptionHandler(NumberFormatException.class)
     public ResponseEntity<ErrorResponse> nonNumberError(NumberFormatException e) {
-        final ErrorResponse response =
-                ErrorResponse.from(CommonErrorCode.NON_NUMBER);
+        final ErrorResponse response = ErrorResponse.from(CommonErrorCode.NON_NUMBER);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -36,9 +34,14 @@ public class GlobalExceptionManager {
     }
      */
 
-    @ExceptionHandler({UserCustomException.class, BoardCustomException.class,
-            CommentCustomException.class, TokenCustomException.class,
-            PageCustomException.class, CommentCustomException.class})
+    @ExceptionHandler({
+        UserCustomException.class,
+        BoardCustomException.class,
+        CommentCustomException.class,
+        TokenCustomException.class,
+        PageCustomException.class,
+        CommentCustomException.class
+    })
     public ResponseEntity<ErrorResponse> customErrors(CustomException e) {
         final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
         return ResponseEntity.status(e.getErrorCode().getStatus()).body(response);

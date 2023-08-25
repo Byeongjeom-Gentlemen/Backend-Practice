@@ -5,10 +5,8 @@ import com.sh.domain.board.dto.request.CreateBoardRequestDto;
 import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.board.dto.response.BoardBasicResponseDto;
 import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
-import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface BoardService {
 
@@ -34,7 +32,8 @@ public interface BoardService {
 
     // 게시글 리스트 조회(전체 조회, 검색을 통한 조회) -> 페이징
     @Transactional(readOnly = true)
-    List<SimpleBoardResponseDto> searchBoards(Long lastBoardId, String searchType, String keyword, int size);
+    List<SimpleBoardResponseDto> searchBoards(
+            Long lastBoardId, String searchType, String keyword, int size);
 
     // 게시글 좋아요 등록 (락 X)
     @Transactional
