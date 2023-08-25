@@ -3,6 +3,7 @@ package com.sh.domain.user.controller;
 import com.sh.domain.user.dto.request.LoginRequestDto;
 import com.sh.domain.user.dto.response.UserLoginResponseDto;
 import com.sh.domain.user.service.AuthService;
+import com.sh.global.aop.DisableSwaggerSecurity;
 import com.sh.global.util.jwt.JwtProvider;
 import com.sh.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +25,7 @@ public class AuthController {
 
     // 로그인
     @Operation(summary = "로그인 API", description = "로그인하는 API 입니다. 로그인시에는 Id, Password 값이 필요합니다.")
+    @DisableSwaggerSecurity
     @PostMapping("/api/v1/auth/login")
     public ResponseEntity<UserLoginResponseDto> login(
             @RequestBody @Valid LoginRequestDto loginRequest) {
@@ -32,6 +34,7 @@ public class AuthController {
 
     // 로그아웃
     @Operation(summary = "로그아웃 API", description = "회원 로그아웃하는 API 입니다. 로그인이 되어 있는 상태여야 합니다.")
+    @DisableSwaggerSecurity
     @GetMapping("/api/v1/auth/logout")
     @ResponseStatus(HttpStatus.OK)
     public void logout() {

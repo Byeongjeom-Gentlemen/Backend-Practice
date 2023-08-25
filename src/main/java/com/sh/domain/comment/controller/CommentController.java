@@ -2,6 +2,7 @@ package com.sh.domain.comment.controller;
 
 import com.sh.domain.comment.dto.CommentListResponseDto;
 import com.sh.domain.comment.service.CommentService;
+import com.sh.global.aop.DisableSwaggerSecurity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.constraints.NotBlank;
@@ -33,6 +34,7 @@ public class CommentController {
     @Operation(
             summary = "댓글 조회 API",
             description = "boardId 값과 lastCommentId 값으로 해당 게시글의 댓글을 조회합니다.(댓글 더보기 OR 무한 스크롤)")
+    @DisableSwaggerSecurity
     @GetMapping("/api/v1/board/{boardId}/comment")
     @ResponseStatus(HttpStatus.OK)
     public CommentListResponseDto selectComment(
