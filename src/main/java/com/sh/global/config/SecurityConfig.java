@@ -72,7 +72,7 @@ public class SecurityConfig {
                 .permitAll()
                 .antMatchers("/api/v1/auth/**", "/api/v1/users")
                 .permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/board/*")
+                .antMatchers(HttpMethod.GET, "/api/v1/board/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
