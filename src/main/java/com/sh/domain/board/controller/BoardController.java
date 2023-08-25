@@ -5,13 +5,12 @@ import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.board.dto.response.BoardBasicResponseDto;
 import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
 import com.sh.domain.board.service.BoardService;
+import com.sh.global.aop.DisableSwaggerSecurity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +22,6 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
-    private static final String LIKE_KEY_PREFIX = "LIKE_";
 
     // 게시글 생성
     @Operation(summary = "게시글 등록 API", description = "게시글을 등록하는 API 입니다. 로그인 여부와 Title 값을 필요로 합니다.")
@@ -37,6 +35,7 @@ public class BoardController {
     @Operation(
             summary = "게시글 상세 조회 API",
             description = "게시글을 상세 조회하는 API 입니다. 게시글의 ID(PK) 값을 필요로 합니다.")
+    @DisableSwaggerSecurity
     @GetMapping("/api/v1/board/{boardId}")
     @ResponseStatus(HttpStatus.OK)
     public BoardBasicResponseDto selectBoard(@PathVariable Long boardId) {
@@ -67,6 +66,7 @@ public class BoardController {
             summary = "게시글 조회 API(전체 조회, 검색을 통한 조회)",
             description =
                     "게시글을 조회하는 API 입니다. searchType 값이 null이면 전체 조회, 아니면 searchType과 keyword를 통한 조회입니다.")
+    @DisableSwaggerSecurity
     @GetMapping("/api/v1/board")
     @ResponseStatus(HttpStatus.OK)
     public List<SimpleBoardResponseDto> searchBoard(

@@ -5,6 +5,7 @@ import com.sh.domain.user.dto.request.UpdateUserRequestDto;
 import com.sh.domain.user.dto.response.UserBasicResponseDto;
 import com.sh.domain.user.service.AuthService;
 import com.sh.domain.user.service.UserService;
+import com.sh.global.aop.DisableSwaggerSecurity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
@@ -27,6 +28,7 @@ public class UserController {
     @Operation(
             summary = "회원가입 API",
             description = "회원을 생성하는 API 입니다. 회원가입 시에는 Id, Password, Nickname 값이 필요합니다.")
+    @DisableSwaggerSecurity
     @PostMapping("/api/v1/users")
     @ResponseStatus(HttpStatus.CREATED)
     public Long join(@RequestBody @Valid SignupRequestDto signupRequest) {
@@ -69,6 +71,7 @@ public class UserController {
     @Operation(
             summary = "다른회원 조회 API",
             description = "다른 회원정보를 조회하는 API 입니다. 회원의 ID(PK)값을 필요로 합니다.")
+    @DisableSwaggerSecurity
     @GetMapping("/api/v1/users/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public UserBasicResponseDto selectByOtherUser(@PathVariable Long userId) {
