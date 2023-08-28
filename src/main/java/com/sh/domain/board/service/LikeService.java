@@ -15,19 +15,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class LikeService {
 
-    private final BoardRepository boardRepository;
     private final LikeRepository likeRepository;
     private final UserService userService;
 
     // 게시글 좋아요 등록
     @DistributedLock(key = "#key")
-    public void addLikeCount(String key, Long boardId) {
-        Board board =
-                boardRepository
-                        .findById(boardId)
-                        .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
-        board.verification();
-
+    public void addLikeCount(String key, Board board) {
         // 요청 한 사용자(로그인 한 사용자)
         User user = userService.getLoginUser();
 
@@ -47,13 +40,7 @@ public class LikeService {
 
     // 게시글 좋아요 취소
     @DistributedLock(key = "#key")
-    public void decreaseLikeCount(String key, Long boardId) {
-        Board board =
-                boardRepository
-                        .findById(boardId)
-                        .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
-        board.verification();
-
+    public void decreaseLikeCount(String key, Board board) {
         // 요청 한 사용자(로그인 한 사용자)
         User user = userService.getLoginUser();
 

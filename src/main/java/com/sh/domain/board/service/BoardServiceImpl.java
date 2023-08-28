@@ -6,10 +6,8 @@ import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.board.dto.response.BoardBasicResponseDto;
 import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
 import com.sh.domain.board.repository.BoardRepository;
-import com.sh.domain.board.repository.LikeRepository;
 import com.sh.domain.board.util.SearchType;
 import com.sh.domain.user.domain.User;
-import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.customexcpetion.PageCustomException;
@@ -23,10 +21,8 @@ import org.springframework.stereotype.Service;
 public class BoardServiceImpl implements BoardService {
 
     private final UserService userService;
-    private final BoardRepository boardRepository;
-    private final UserRepository userRepository;
-    private final LikeRepository likeRepository;
     private final LikeService likeService;
+    private final BoardRepository boardRepository;
 
     // 게시글 등록
     @Override
@@ -129,14 +125,20 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 좋아요 추가 (Redisson)
     @Override
     public void addLikeCountUseRedisson(Long boardId) {
+        Board board = queryBoard(boardId);
+        board.verification();
+
         String key = "LIKE_" + boardId;
-        likeService.addLikeCount(key, boardId);
+        likeService.addLikeCount(key, board);
     }
 
     // 게시글 좋아요 취소 (Redisson)
     @Override
     public void minusLikeCountUseRedisson(Long boardId) {
+        Board board = queryBoard(boardId);
+        board.verification();
+
         String key = "LIKE_" + boardId;
-        likeService.decreaseLikeCount(key, boardId);
+        likeService.decreaseLikeCount(key, board);
     }
 }
