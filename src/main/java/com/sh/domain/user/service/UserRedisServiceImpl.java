@@ -13,9 +13,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserRedisServiceImpl implements UserRedisService {
 
-    // Access Token 만료시간(초 단위)
-    private static final long ACCESS_TOKEN_EXPIRED_TIME = 1000 * 60; // 1분
-
     // Refresh Token 만료시간(초 단위)
     private static final long REFRESH_TOKEN_EXPIRED_TIME = 1000 * 60 * 24 * 7; // 7일
 
@@ -46,17 +43,6 @@ public class UserRedisServiceImpl implements UserRedisService {
         }
     }
 
-    // Refresh Token 조회
-    @Override
-    public RefreshToken selectRefreshToken(String accessToken) {
-        RefreshToken refreshToken =
-                refreshTokenRedisRepository
-                        .findByAccessToken(accessToken)
-                        .orElseThrow(() -> TokenCustomException.NOT_FOUND_TOKEN);
-
-        return refreshToken;
-    }
-
     // Refresh Token 삭제
     @Override
     public void deleteRefreshToken(RefreshToken refreshToken) {
@@ -66,11 +52,11 @@ public class UserRedisServiceImpl implements UserRedisService {
 
     // BlackList Token 등록
     @Override
-    public void saveBlackListToken(String accessToken) {
+    public void saveBlackListToken(String accessToken, Long expiredTime) {
         BlackListToken blackListToken =
                 BlackListToken.builder()
                         .accessToken(accessToken)
-                        .expiredTime(ACCESS_TOKEN_EXPIRED_TIME)
+                        .expiredTime(expiredTime)
                         .build();
 
         blackListTokenRedisRepository.save(blackListToken);
