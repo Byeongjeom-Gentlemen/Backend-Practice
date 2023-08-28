@@ -6,11 +6,14 @@ import com.sh.domain.user.dto.request.LoginRequestDto;
 import com.sh.domain.user.dto.response.UserLoginResponseDto;
 import com.sh.domain.user.repository.RefreshTokenRedisRepository;
 import com.sh.domain.user.repository.UserRepository;
+import com.sh.global.aop.TokenInfo;
 import com.sh.global.exception.customexcpetion.TokenCustomException;
 import com.sh.global.exception.customexcpetion.UserCustomException;
 import com.sh.global.util.CustomUserDetails;
+import com.sh.global.util.SecurityUtils;
 import com.sh.global.util.jwt.JwtProvider;
 import com.sh.global.util.jwt.TokenDto;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,7 +26,6 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRedisService userRedisService;
-    private final UserService userService;
     private final UserRepository userRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final JwtProvider jwtProvider;
@@ -62,24 +64,19 @@ public class AuthServiceImpl implements AuthService {
 
     // 로그아웃
     @Override
-    public void logout() {
-        User user = userService.getLoginUser();
-        RefreshToken token = queryToken(user.getId());
+    public void logout(String accessToken) {
+        String id = jwtProvider.parseClaims(accessToken).getSubject();
+        RefreshToken token = refreshTokenRedisRepository
+                .findById(id).orElse(null);
 
-        if (token.getAccessToken() != null && token.getRefreshToken() != null) {
+        // id를 key 값으로 가진 Refresh Token 이 존재하면
+        if (token != null) {
             // Redis Token 값 삭제
             userRedisService.deleteRefreshToken(token);
 
             // BlackList Token 저장
-            userRedisService.saveBlackListToken(token.getAccessToken());
+            userRedisService.saveBlackListToken(accessToken);
         }
-    }
-
-    // 회원의 토큰 정보 가져오기
-    private RefreshToken queryToken(String id) {
-        return refreshTokenRedisRepository
-                .findById(id)
-                .orElseThrow(() -> TokenCustomException.NON_TOKEN);
     }
 
     // Access Token 재발급

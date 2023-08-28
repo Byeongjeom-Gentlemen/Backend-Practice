@@ -2,6 +2,7 @@ package com.sh.domain.user.service;
 
 import com.sh.domain.user.dto.request.LoginRequestDto;
 import com.sh.domain.user.dto.response.UserLoginResponseDto;
+import com.sh.global.aop.TokenInfo;
 import com.sh.global.util.jwt.TokenDto;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,8 +12,9 @@ public interface AuthService {
     @Transactional
     UserLoginResponseDto login(LoginRequestDto loginRequest);
 
+    @Transactional
     // 로그아웃
-    void logout();
+    void logout(String accessToken);
 
     // Access Token 재발급
     @Transactional
