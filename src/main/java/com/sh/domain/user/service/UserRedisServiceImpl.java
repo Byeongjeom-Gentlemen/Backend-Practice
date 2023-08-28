@@ -4,7 +4,6 @@ import com.sh.domain.user.domain.BlackListToken;
 import com.sh.domain.user.domain.RefreshToken;
 import com.sh.domain.user.repository.BlackListTokenRedisRepository;
 import com.sh.domain.user.repository.RefreshTokenRedisRepository;
-import com.sh.global.exception.customexcpetion.TokenCustomException;
 import com.sh.global.exception.customexcpetion.UserCustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,10 +53,7 @@ public class UserRedisServiceImpl implements UserRedisService {
     @Override
     public void saveBlackListToken(String accessToken, Long expiredTime) {
         BlackListToken blackListToken =
-                BlackListToken.builder()
-                        .accessToken(accessToken)
-                        .expiredTime(expiredTime)
-                        .build();
+                BlackListToken.builder().accessToken(accessToken).expiredTime(expiredTime).build();
 
         blackListTokenRedisRepository.save(blackListToken);
     }
