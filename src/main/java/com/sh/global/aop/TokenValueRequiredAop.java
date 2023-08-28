@@ -1,10 +1,9 @@
 package com.sh.global.aop;
 
 import com.sh.global.util.jwt.JwtProvider;
+import com.sh.global.util.jwt.TokenDto;
 import java.lang.reflect.Method;
 import javax.servlet.http.HttpServletRequest;
-
-import com.sh.global.util.jwt.TokenDto;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -52,7 +51,7 @@ public class TokenValueRequiredAop {
         for (int i = 0; i < method.getParameters().length; i++) {
             String parameterName = method.getParameters()[i].getName();
 
-            if(parameterName.equals(TOKEN_PARAMETER_NAME)) {
+            if (parameterName.equals(TOKEN_PARAMETER_NAME)) {
                 parameters[i] = token;
             }
         }

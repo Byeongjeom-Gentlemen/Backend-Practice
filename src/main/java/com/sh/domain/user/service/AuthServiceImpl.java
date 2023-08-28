@@ -11,7 +11,6 @@ import com.sh.global.exception.customexcpetion.UserCustomException;
 import com.sh.global.util.CustomUserDetails;
 import com.sh.global.util.jwt.JwtProvider;
 import com.sh.global.util.jwt.TokenDto;
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -70,13 +69,15 @@ public class AuthServiceImpl implements AuthService {
         checkRefreshToken(token.getRefreshToken());
 
         // access token 검증
-        if(jwtProvider.validateToken(token.getAccessToken())) {
+        if (jwtProvider.validateToken(token.getAccessToken())) {
             // access token 에서 회원 아이디 정보를 가져옴.
             String id = jwtProvider.parseClaims(token.getAccessToken()).getSubject();
 
             // 회원 아이디로 Refresh Token 정보 조회, 없다면 이미 만료되어 삭제된 상태
-            RefreshToken refreshToken = refreshTokenRedisRepository.findById(id)
-                    .orElseThrow(() -> TokenCustomException.EXPIRED_REFRESH_TOKEN);
+            RefreshToken refreshToken =
+                    refreshTokenRedisRepository
+                            .findById(id)
+                            .orElseThrow(() -> TokenCustomException.EXPIRED_REFRESH_TOKEN);
             // 해당 Refresh Token 정보 삭제
             userRedisService.deleteRefreshToken(refreshToken);
 
@@ -93,14 +94,12 @@ public class AuthServiceImpl implements AuthService {
 
     // Access Token 재발급
     /**
-     * Refresh Token 이 탈취된 상황을 방지해 Access Token 을 함께 요청받아 Access Token 으로 해당 Refresh Token 정보를 조회 및 비교
-     * 1. Access Token, Refresh Token null check
-     * 2. Access Token 검증, 만료되지 않은 Access Token 일 경우 Exception
-     * 3. Refresh Token 검증, 이미 만료된 Refresh Token 일 경우 Exception
-     * 4. Access Token 값으로 Redis 에 저장된 Refresh Token 정보(userId, Refresh Token, Access Token) 조회, 없을
-     * 경우 Exception
-     * 5. Redis 에서 조회한 Refresh Token 값과 요청으로 넘어온 Refresh Token 값 비교, 다를 경우 Exception
-     * 6. 새로운 Access Token 과 Refresh Token 을 재발급하여 Redis 갱신 및 토큰 정보 반환
+     * Refresh Token 이 탈취된 상황을 방지해 Access Token 을 함께 요청받아 Access Token 으로 해당 Refresh Token 정보를 조회 및
+     * 비교 1. Access Token, Refresh Token null check 2. Access Token 검증, 만료되지 않은 Access Token 일 경우
+     * Exception 3. Refresh Token 검증, 이미 만료된 Refresh Token 일 경우 Exception 4. Access Token 값으로 Redis
+     * 에 저장된 Refresh Token 정보(userId, Refresh Token, Access Token) 조회, 없을 경우 Exception 5. Redis 에서
+     * 조회한 Refresh Token 값과 요청으로 넘어온 Refresh Token 값 비교, 다를 경우 Exception 6. 새로운 Access Token 과
+     * Refresh Token 을 재발급하여 Redis 갱신 및 토큰 정보 반환
      */
     @Override
     public TokenDto accessTokenReIssue(TokenDto token) {
@@ -113,8 +112,10 @@ public class AuthServiceImpl implements AuthService {
         // Access Token 값으로 Refresh Token 조회
         // Redis 에 존재하면 아직 유효한 Refresh Token
         // 존재하지 않으면 Exception
-        RefreshToken rt = refreshTokenRedisRepository.findByAccessToken(token.getAccessToken())
-                .orElseThrow(() -> TokenCustomException.EXPIRED_REFRESH_TOKEN);
+        RefreshToken rt =
+                refreshTokenRedisRepository
+                        .findByAccessToken(token.getAccessToken())
+                        .orElseThrow(() -> TokenCustomException.EXPIRED_REFRESH_TOKEN);
 
         // Access Token 만료 정보 확인
         // 만약 Access Token 이 만료되지 않은 상태라면, 악의적인 요청으로 간주

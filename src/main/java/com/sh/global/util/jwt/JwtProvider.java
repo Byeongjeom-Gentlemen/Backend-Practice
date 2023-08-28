@@ -2,7 +2,6 @@ package com.sh.global.util.jwt;
 
 import com.sh.global.exception.customexcpetion.TokenCustomException;
 import com.sh.global.util.CustomUserDetails;
-import com.sh.global.util.CustomUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
