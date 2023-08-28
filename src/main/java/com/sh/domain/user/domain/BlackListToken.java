@@ -19,10 +19,10 @@ public class BlackListToken {
     private String value;
 
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
-    private long expiredTime;
+    private Long expiredTime;
 
     @Builder
-    private BlackListToken(String accessToken, long expiredTime) {
+    private BlackListToken(String accessToken, Long expiredTime) {
         this.accessToken = accessToken;
         this.value = "logout";
         this.expiredTime = expiredTime;
