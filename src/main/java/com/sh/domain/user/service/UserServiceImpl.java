@@ -20,7 +20,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final SecurityUtils securityUtils;
-    private final UserRedisService userRedisService;
 
     @Override
     public Long join(SignupRequestDto signupRequest) {
@@ -68,11 +67,9 @@ public class UserServiceImpl implements UserService {
     }
 
     // 회원 삭제
-    // CASCADE 옵션은 되도록 사용하지 않는다.
     @Override
     public void deleteUser() {
         User user = getLoginUser();
-
         userRepository.delete(user);
     }
 
