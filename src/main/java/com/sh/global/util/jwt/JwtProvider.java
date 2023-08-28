@@ -32,8 +32,6 @@ public class JwtProvider {
     public static final String REFRESH_HEADER = "Refresh";
     public static final String BEARER_PREFIX = "Bearer ";
 
-    private final CustomUserDetailsService userDetailsService;
-
     @Getter
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -104,6 +102,15 @@ public class JwtProvider {
         return new Date(date.getTime() + expirationMillisecond);
     }
 
+    // 남은 만료 시간 가져오기
+    public Long getRemainExpiredTime(String token) {
+        Date expiration = parseClaims(token).getExpiration();
+        // 현재 시간
+        Long now = new Date().getTime();
+
+        return expiration.getTime() - now;
+    }
+
     // Jwt 복호화하여 토큰 정보 반환
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
@@ -117,24 +124,6 @@ public class JwtProvider {
 
         return new UsernamePasswordAuthenticationToken(
                 customUserDetails, "", customUserDetails.getAuthorities());
-    }
-
-    /*
-    // 권한정보 획득
-    // Spring Security 인증과정에서 권한확인을 위한 기능
-    public Authentication getAuthentication(String token) {
-    	UserDetails userDetails = userDetailsService.loadUserByUsername(this.getAccount(token));
-    	return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    } */
-
-    // 토큰에 담겨있는 유저 account 획득
-    public String getAccount(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJwt(token)
-                .getBody()
-                .getSubject();
     }
 
     // Token 복호화
