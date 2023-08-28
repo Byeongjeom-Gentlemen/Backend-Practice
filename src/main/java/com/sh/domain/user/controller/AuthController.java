@@ -4,7 +4,7 @@ import com.sh.domain.user.dto.request.LoginRequestDto;
 import com.sh.domain.user.dto.response.UserLoginResponseDto;
 import com.sh.domain.user.service.AuthService;
 import com.sh.global.aop.DisableSwaggerSecurity;
-import com.sh.global.aop.TokenInfo;
+import com.sh.global.aop.TokenValueRequired;
 import com.sh.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,11 +33,11 @@ public class AuthController {
     // 로그아웃
     @Operation(summary = "로그아웃 API", description = "회원 로그아웃하는 API 입니다. 로그인이 되어 있는 상태여야 합니다.")
     @DisableSwaggerSecurity
-    @TokenInfo
+    @TokenValueRequired
     @GetMapping("/api/v1/auth/logout")
     @ResponseStatus(HttpStatus.OK)
-    public void logout(String accessToken) {
-        authService.logout(accessToken);
+    public void logout(TokenDto token) {
+        authService.logout(token);
     }
 
     // Access Token 재발급
@@ -45,10 +45,10 @@ public class AuthController {
             summary = "Access Token 재발급 API",
             description = "Request Header에 있는 Refresh Token 값으로 Access Token을 재발급 받는 API 입니다.")
     @DisableSwaggerSecurity
-    @TokenInfo
+    @TokenValueRequired
     @GetMapping("/api/v1/auth/reissue")
     @ResponseStatus(HttpStatus.OK)
-    public TokenDto accessTokenReIssue(String accessToken, String refreshToken) {
-        return authService.accessTokenReIssue(accessToken, refreshToken);
+    public TokenDto accessTokenReIssue(TokenDto token) {
+        return authService.accessTokenReIssue(token);
     }
 }
