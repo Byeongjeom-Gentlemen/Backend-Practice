@@ -6,14 +6,11 @@ import com.sh.domain.user.dto.request.LoginRequestDto;
 import com.sh.domain.user.dto.response.UserLoginResponseDto;
 import com.sh.domain.user.repository.RefreshTokenRedisRepository;
 import com.sh.domain.user.repository.UserRepository;
-import com.sh.global.aop.TokenInfo;
 import com.sh.global.exception.customexcpetion.TokenCustomException;
 import com.sh.global.exception.customexcpetion.UserCustomException;
 import com.sh.global.util.CustomUserDetails;
-import com.sh.global.util.SecurityUtils;
 import com.sh.global.util.jwt.JwtProvider;
 import com.sh.global.util.jwt.TokenDto;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -66,8 +63,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void logout(String accessToken) {
         String id = jwtProvider.parseClaims(accessToken).getSubject();
-        RefreshToken token = refreshTokenRedisRepository
-                .findById(id).orElse(null);
+        RefreshToken token = refreshTokenRedisRepository.findById(id).orElse(null);
 
         // id를 key 값으로 가진 Refresh Token 이 존재하면
         if (token != null) {
