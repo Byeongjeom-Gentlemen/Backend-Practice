@@ -2,7 +2,6 @@ package com.sh.domain.board.service;
 
 import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.domain.Like;
-import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.repository.LikeRepository;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.service.UserService;
