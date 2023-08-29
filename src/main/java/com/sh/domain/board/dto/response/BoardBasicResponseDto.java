@@ -17,6 +17,7 @@ public class BoardBasicResponseDto {
     private WriterDto writer;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+    private Integer viewCount;
     private Integer likeCount;
 
     public static BoardBasicResponseDto from(Board board) {
@@ -27,6 +28,7 @@ public class BoardBasicResponseDto {
                 .writer(new WriterDto(board.getUser()))
                 .createdDate(board.getCreatedDate())
                 .modifiedDate(board.getModifiedDate())
+                .viewCount(board.getViewCount())
                 .likeCount(board.getLikeCount())
                 .build();
     }
