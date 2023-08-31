@@ -79,5 +79,7 @@ public class Board extends BaseTimeEntity {
     }
 
     // 게시글 조회수 up
-    public void addViewCount() { this.viewCount += 1; }
+    public void addViewCount() {
+        this.viewCount += 1;
+    }
 }

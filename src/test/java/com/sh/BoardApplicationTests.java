@@ -46,36 +46,36 @@ class BoardApplicationTests {
     /*
     @Test
     void 동시_100명_좋아요_요청() throws InterruptedException {
-        int threadCount = 100;
-        ExecutorService executorService = Executors.newFixedThreadPool(32);
-        CountDownLatch latch = new CountDownLatch(threadCount);
+    	int threadCount = 100;
+    	ExecutorService executorService = Executors.newFixedThreadPool(32);
+    	CountDownLatch latch = new CountDownLatch(threadCount);
 
-        for (int i = 0; i < threadCount; i++) {
-            executorService.submit(
-                    () -> {
-                        try {
-                            // 락을 적용한 경우
-                            boardService.addLikeCountUseRedisson(1L);
-                            // 락을 적용하지 않은 경우
-                            // boardService.addLikeCount(1L);
-                        } finally {
-                            latch.countDown();
-                        }
-                    });
-        }
+    	for (int i = 0; i < threadCount; i++) {
+    		executorService.submit(
+    				() -> {
+    					try {
+    						// 락을 적용한 경우
+    						boardService.addLikeCountUseRedisson(1L);
+    						// 락을 적용하지 않은 경우
+    						// boardService.addLikeCount(1L);
+    					} finally {
+    						latch.countDown();
+    					}
+    				});
+    	}
 
-        latch.await();
+    	latch.await();
 
-        Board b =
-                boardRepository
-                        .findById(board.getId())
-                        .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
+    	Board b =
+    			boardRepository
+    					.findById(board.getId())
+    					.orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
 
-        System.out.println("게시글 좋아요 수 : " + b.getLikeCount());
-        Assertions.assertEquals(b.getLikeCount(), threadCount);
+    	System.out.println("게시글 좋아요 수 : " + b.getLikeCount());
+    	Assertions.assertEquals(b.getLikeCount(), threadCount);
     }
      */
-    
+
     @Test
     void 동시_100명_게시글상세조회_조회수() throws InterruptedException {
         int threadCount = 100;
@@ -89,7 +89,7 @@ class BoardApplicationTests {
                             // 락을 적용한 경우
                             boardService.selectBoard("VIEW_COUNT_" + board.getId(), 1L);
                             // 락을 적용하지 않은 경우
-                            //boardService.selectBoardUnLock(1L);
+                            // boardService.selectBoardUnLock(1L);
                         } finally {
                             latch.countDown();
                         }
