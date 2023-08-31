@@ -14,9 +14,12 @@ public interface BoardService {
     @Transactional
     Long createBoard(CreateBoardRequestDto createRequest);
 
+    // 게시글 상세 조회 (UnLock)
+    @Transactional
+    BoardBasicResponseDto selectBoardUnLock(Long boardId);
+
     // 게시글 상세 조회
-    @Transactional(readOnly = true)
-    BoardBasicResponseDto selectBoard(Long boardId);
+    BoardBasicResponseDto selectBoard(String key, Long boardId);
 
     // 게시글 조회
     @Transactional(readOnly = true)
@@ -35,7 +38,7 @@ public interface BoardService {
     List<SimpleBoardResponseDto> searchBoards(
             Long lastBoardId, String searchType, String keyword, int size);
 
-    // 게시글 좋아요 등록 (락 X)
+    // 게시글 좋아요 등록 (UnLock)
     @Transactional
     void addLikeCount(Long boardId);
 

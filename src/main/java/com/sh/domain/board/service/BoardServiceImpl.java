@@ -9,6 +9,7 @@ import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.util.SearchType;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.service.UserService;
+import com.sh.global.aop.DistributedLock;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.customexcpetion.PageCustomException;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
 
+    private static final String LIKE_KEY_PREFIX = "LIKE_";
     private final UserService userService;
     private final LikeService likeService;
     private final BoardRepository boardRepository;
@@ -39,9 +41,21 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.save(newBoard).getId();
     }
 
+    // 게시글 상세 조회 (UnLock)
+    @Override
+    public BoardBasicResponseDto selectBoardUnLock(Long boardId) {
+        Board board = queryBoard(boardId);
+        board.verification();
+
+        board.addViewCount();
+
+        return BoardBasicResponseDto.from(board);
+    }
+
     // 게시글 상세 조회
     @Override
-    public BoardBasicResponseDto selectBoard(Long boardId) {
+    @DistributedLock(key = "#key")
+    public BoardBasicResponseDto selectBoard(String key, Long boardId) {
         Board board = queryBoard(boardId);
         board.verification();
 
@@ -112,7 +126,7 @@ public class BoardServiceImpl implements BoardService {
                 lastBoardId, type.getType(), keyword, pageable);
     }
 
-    // 게시글 좋아요 추가
+    // 게시글 좋아요 추가 (UnLock)
     @Override
     public void addLikeCount(Long boardId) {
         // 게시글 검증
@@ -128,7 +142,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = queryBoard(boardId);
         board.verification();
 
-        String key = "LIKE_" + boardId;
+        String key = LIKE_KEY_PREFIX + boardId;
         likeService.addLikeCount(key, board);
     }
 
@@ -138,7 +152,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = queryBoard(boardId);
         board.verification();
 
-        String key = "LIKE_" + boardId;
+        String key = LIKE_KEY_PREFIX + boardId;
         likeService.decreaseLikeCount(key, board);
     }
 }
