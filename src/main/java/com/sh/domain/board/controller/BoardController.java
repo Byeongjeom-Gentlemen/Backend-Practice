@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Board", description = "Board API")
 public class BoardController {
 
+    private static final String VIEW_KEY_PREFIX = "VIEW_COUNT_";
     private final BoardService boardService;
 
     // 게시글 생성
@@ -37,7 +38,7 @@ public class BoardController {
     @GetMapping("/api/v1/board/{boardId}")
     @ResponseStatus(HttpStatus.OK)
     public BoardBasicResponseDto selectBoard(@PathVariable Long boardId) {
-        return boardService.selectBoard(boardId);
+        return boardService.selectBoard(VIEW_KEY_PREFIX + boardId, boardId);
     }
 
     // 게시글 수정
