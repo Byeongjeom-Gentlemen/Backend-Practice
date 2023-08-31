@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class AopForTransaction {
 
+    // 락을 제어하는 커넥션과 비즈니스 로직을 위한 커넥션을 분리
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Object proceed(final ProceedingJoinPoint joinPoint) throws Throwable {
         return joinPoint.proceed();
