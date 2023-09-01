@@ -43,7 +43,7 @@ class BoardApplicationTests {
         boardRepository.save(board);
     }
 
-    /*
+	/*
     @Test
     void 동시_100명_좋아요_요청() throws InterruptedException {
     	int threadCount = 100;
@@ -74,7 +74,7 @@ class BoardApplicationTests {
     	System.out.println("게시글 좋아요 수 : " + b.getLikeCount());
     	Assertions.assertEquals(b.getLikeCount(), threadCount);
     }
-     */
+	*/
 
     @Test
     void 동시_100명_게시글상세조회_조회수() throws InterruptedException {
@@ -87,7 +87,7 @@ class BoardApplicationTests {
                     () -> {
                         try {
                             // 락을 적용한 경우
-                            boardService.selectBoard("VIEW_COUNT_" + board.getId(), 1L);
+                            boardService.selectBoard(1L);
                             // 락을 적용하지 않은 경우
                             // boardService.selectBoardUnLock(1L);
                         } finally {
@@ -106,4 +106,5 @@ class BoardApplicationTests {
         System.out.println("게시글 조회수 : " + b.getViewCount());
         Assertions.assertEquals(b.getViewCount(), threadCount);
     }
+
 }
