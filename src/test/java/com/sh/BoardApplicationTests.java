@@ -43,7 +43,7 @@ class BoardApplicationTests {
         boardRepository.save(board);
     }
 
-	/*
+    /*
     @Test
     void 동시_100명_좋아요_요청() throws InterruptedException {
     	int threadCount = 100;
@@ -74,7 +74,7 @@ class BoardApplicationTests {
     	System.out.println("게시글 좋아요 수 : " + b.getLikeCount());
     	Assertions.assertEquals(b.getLikeCount(), threadCount);
     }
-	*/
+    */
 
     @Test
     void 동시_100명_게시글상세조회_조회수() throws InterruptedException {
@@ -106,5 +106,4 @@ class BoardApplicationTests {
         System.out.println("게시글 조회수 : " + b.getViewCount());
         Assertions.assertEquals(b.getViewCount(), threadCount);
     }
-
 }

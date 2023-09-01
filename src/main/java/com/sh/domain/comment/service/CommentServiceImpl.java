@@ -2,7 +2,6 @@ package com.sh.domain.comment.service;
 
 import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.repository.BoardRepository;
-import com.sh.domain.board.service.BoardService;
 import com.sh.domain.comment.domain.Comment;
 import com.sh.domain.comment.dto.CommentListResponseDto;
 import com.sh.domain.comment.dto.SimpleCommentResponseDto;
@@ -65,7 +64,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private Board queryBoard(Long boardId) {
-        return boardRepository.findById(boardId)
+        return boardRepository
+                .findById(boardId)
                 .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
     }
 

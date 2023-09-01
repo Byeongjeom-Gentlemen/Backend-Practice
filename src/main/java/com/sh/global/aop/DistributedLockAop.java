@@ -1,22 +1,14 @@
 package com.sh.global.aop;
 
-import com.sh.domain.board.domain.Board;
-import com.sh.domain.board.repository.BoardRepository;
-import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.customexcpetion.CommonCustomException;
 import com.sh.global.exception.customexcpetion.CustomException;
 import com.sh.global.util.CustomSpringELParser;
 import java.lang.reflect.Method;
-import java.lang.reflect.UndeclaredThrowableException;
-
-import io.netty.handler.timeout.TimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -61,7 +53,7 @@ public class DistributedLockAop {
             if (!isLock) {
                 throw CommonCustomException.TRY_AGAIN_LATER;
             }
-            
+
             // DistributedLock 어노테이션이 선언된 메서드를 별도의 트랜잭션으로 실행
             return aopForTransaction.proceed(joinPoint);
         } catch (CustomException | TransactionTimeoutException e) {
@@ -86,7 +78,7 @@ public class DistributedLockAop {
             // IllegalMonitorStateException 이 발생하지 않음.
             /*
             if(rLock.isLocked() && rLock.isHeldByCurrentThread()) {
-                rLock.unlock();
+            	rLock.unlock();
             }
              */
         }

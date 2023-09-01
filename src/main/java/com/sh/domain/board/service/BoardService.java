@@ -1,6 +1,5 @@
 package com.sh.domain.board.service;
 
-import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.dto.request.CreateBoardRequestDto;
 import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.board.dto.response.BoardBasicResponseDto;
