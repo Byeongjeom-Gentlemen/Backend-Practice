@@ -21,5 +21,5 @@ public @interface DistributedLock {
     long waitTime() default 5L;
 
     /** Lock 임대 시간 (default - 3초) Lock 을 획득한 후 leaseTime 이 지나면 해제 */
-    long leaseTime() default 3L;
+    long leaseTime() default 5L;
 }
