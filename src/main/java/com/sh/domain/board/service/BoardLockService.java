@@ -2,6 +2,7 @@ package com.sh.domain.board.service;
 
 import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.domain.Like;
+import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.repository.LikeRepository;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.service.UserService;
@@ -14,12 +15,17 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class LikeService {
 
+    private final BoardRepository boardRepository;
     private final LikeRepository likeRepository;
     private final UserService userService;
 
     // 게시글 좋아요 등록
     @DistributedLock(key = "#key")
-    public void addLikeCount(String key, Board board) {
+    public void addLikeCount(final String key, Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                        .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
+        board.verification();
+        /*
         // 요청 한 사용자(로그인 한 사용자)
         User user = userService.getLoginUser();
 
@@ -33,6 +39,7 @@ public class LikeService {
 
         like = Like.builder().user(user).board(board).build();
         likeRepository.save(like);
+         */
 
         board.plusLike();
     }
