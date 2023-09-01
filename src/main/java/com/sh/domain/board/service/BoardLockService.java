@@ -13,19 +13,28 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class LikeService {
+public class BoardLockService {
 
     private final BoardRepository boardRepository;
     private final LikeRepository likeRepository;
     private final UserService userService;
 
+    // 게시글 조회수 카운트
+    @DistributedLock(key = "#key")
+    public Board addViewCount(final String key, Long boardId) {
+        Board board = queryBoard(boardId);
+        board.verification();
+
+        board.addViewCount();
+        return board;
+    }
+
     // 게시글 좋아요 등록
     @DistributedLock(key = "#key")
     public void addLikeCount(final String key, Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                        .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
+        Board board = queryBoard(boardId);
         board.verification();
-        /*
+
         // 요청 한 사용자(로그인 한 사용자)
         User user = userService.getLoginUser();
 
@@ -39,14 +48,16 @@ public class LikeService {
 
         like = Like.builder().user(user).board(board).build();
         likeRepository.save(like);
-         */
 
         board.plusLike();
     }
 
     // 게시글 좋아요 취소
     @DistributedLock(key = "#key")
-    public void decreaseLikeCount(String key, Board board) {
+    public void decreaseLikeCount(final String key, Long boardId) {
+        Board board = queryBoard(boardId);
+        board.verification();
+
         // 요청 한 사용자(로그인 한 사용자)
         User user = userService.getLoginUser();
 
@@ -59,5 +70,10 @@ public class LikeService {
         likeRepository.delete(like);
 
         board.minusLike();
+    }
+
+    private Board queryBoard(Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
     }
 }
