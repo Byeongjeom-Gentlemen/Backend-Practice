@@ -21,9 +21,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
 
+    private static final String VIEW_KEY_PREFIX = "VIEW_COUNT_";
     private static final String LIKE_KEY_PREFIX = "LIKE_";
     private final UserService userService;
-    private final LikeService likeService;
+    private final BoardLockService boardLockService;
     private final BoardRepository boardRepository;
 
     // 게시글 등록
@@ -54,10 +55,9 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 상세 조회
     @Override
-    @DistributedLock(key = "#key")
-    public BoardBasicResponseDto selectBoard(String key, Long boardId) {
-        Board board = queryBoard(boardId);
-        board.verification();
+    public BoardBasicResponseDto selectBoard(Long boardId) {
+        String key = VIEW_KEY_PREFIX + boardId;
+        Board board = boardLockService.addViewCount(key, boardId);
 
         return BoardBasicResponseDto.from(board);
     }
@@ -80,14 +80,6 @@ public class BoardServiceImpl implements BoardService {
         checkWriter(board.getUser().getUserId());
 
         boardRepository.delete(board);
-    }
-
-    // 게시글 조회
-    @Override
-    public Board queryBoard(Long boardId) {
-        return boardRepository
-                .findById(boardId)
-                .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
     }
 
     // 작성자 검사
@@ -136,23 +128,24 @@ public class BoardServiceImpl implements BoardService {
         board.plusLike();
     }
 
+    // 게시글 조회
+    private Board queryBoard(Long boardId) {
+        return boardRepository
+                .findById(boardId)
+                .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
+    }
+
     // 게시글 좋아요 추가 (Redisson)
     @Override
     public void addLikeCountUseRedisson(Long boardId) {
-        Board board = queryBoard(boardId);
-        board.verification();
-
         String key = LIKE_KEY_PREFIX + boardId;
-        likeService.addLikeCount(key, board);
+        boardLockService.addLikeCount(key, boardId);
     }
 
     // 게시글 좋아요 취소 (Redisson)
     @Override
     public void minusLikeCountUseRedisson(Long boardId) {
-        Board board = queryBoard(boardId);
-        board.verification();
-
         String key = LIKE_KEY_PREFIX + boardId;
-        likeService.decreaseLikeCount(key, board);
+        boardLockService.decreaseLikeCount(key, boardId);
     }
 }
