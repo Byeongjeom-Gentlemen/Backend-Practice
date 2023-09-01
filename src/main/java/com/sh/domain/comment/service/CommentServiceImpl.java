@@ -1,6 +1,7 @@
 package com.sh.domain.comment.service;
 
 import com.sh.domain.board.domain.Board;
+import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.service.BoardService;
 import com.sh.domain.comment.domain.Comment;
 import com.sh.domain.comment.dto.CommentListResponseDto;
@@ -8,6 +9,7 @@ import com.sh.domain.comment.dto.SimpleCommentResponseDto;
 import com.sh.domain.comment.repository.CommentRepository;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.service.UserService;
+import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.customexcpetion.CommentCustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -19,14 +21,14 @@ import org.springframework.stereotype.Service;
 public class CommentServiceImpl implements CommentService {
 
     private final UserService userService;
-    private final BoardService boardService;
+    private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
     // 댓글 등록
     @Override
     public Long createComment(Long boardId, String content) {
         User user = userService.getLoginUser();
-        Board board = boardService.queryBoard(boardId);
+        Board board = queryBoard(boardId);
         board.verification();
 
         Comment comment = Comment.builder().content(content).board(board).user(user).build();
@@ -37,7 +39,7 @@ public class CommentServiceImpl implements CommentService {
     // 댓글 조회(댓글 더보기)
     @Override
     public CommentListResponseDto selectCommentList(Long boardId, Long lastCommentId) {
-        Board board = boardService.queryBoard(boardId);
+        Board board = queryBoard(boardId);
         board.verification();
 
         // page : 0, size : 5 고정, no-offset 방식
@@ -60,6 +62,11 @@ public class CommentServiceImpl implements CommentService {
                         lastCommentId, boardId, pageable);
 
         return CommentListResponseDto.of(pageComment.hasNext(), pageComment.getContent());
+    }
+
+    private Board queryBoard(Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
     }
 
     // 댓글 수정
