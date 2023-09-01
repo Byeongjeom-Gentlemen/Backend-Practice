@@ -9,7 +9,6 @@ import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.util.SearchType;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.service.UserService;
-import com.sh.global.aop.DistributedLock;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.customexcpetion.PageCustomException;
 import java.util.List;

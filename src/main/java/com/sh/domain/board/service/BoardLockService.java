@@ -73,7 +73,8 @@ public class BoardLockService {
     }
 
     private Board queryBoard(Long boardId) {
-        return boardRepository.findById(boardId)
+        return boardRepository
+                .findById(boardId)
                 .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
     }
 }
