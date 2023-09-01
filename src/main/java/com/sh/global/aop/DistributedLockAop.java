@@ -1,20 +1,30 @@
 package com.sh.global.aop;
 
+import com.sh.domain.board.domain.Board;
+import com.sh.domain.board.repository.BoardRepository;
+import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.customexcpetion.CommonCustomException;
+import com.sh.global.exception.customexcpetion.CustomException;
 import com.sh.global.util.CustomSpringELParser;
 import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
+
+import io.netty.handler.timeout.TimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.redisson.transaction.TransactionTimeoutException;
 import org.springframework.stereotype.Component;
 
 /**
- * @RedissonDistributedLock 선언 시 수행되는 Aop Class
+ * @DistributedLock 선언 시 수행되는 Aop Class
  */
 @Aspect
 @Component
@@ -51,18 +61,34 @@ public class DistributedLockAop {
             if (!isLock) {
                 throw CommonCustomException.TRY_AGAIN_LATER;
             }
-            // RedissonDistributedLock 어노테이션이 선언된 메서드를 별도의 트랜잭션으로 실행
+            
+            // DistributedLock 어노테이션이 선언된 메서드를 별도의 트랜잭션으로 실행
             return aopForTransaction.proceed(joinPoint);
-        } catch (Exception e) {
+        } catch (CustomException | TransactionTimeoutException e) {
             log.info(e.getMessage());
-            throw new Exception();
+            throw e;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new InterruptedException();
         } finally {
+            // case 1 (try,catch)
             try {
-                // 종료 시 무조건 Lock 해제
+                // 종료 시 Lock 해제
                 rLock.unlock();
             } catch (IllegalMonitorStateException e) {
+                // Lock leaseTime 이 종료되어 자동으로 Lock 이 해제된 후 unlock() 시도 시 발생
                 log.info("Redisson Lock Already UnLock {} {}");
             }
+
+            // case 2 (if)
+            // 현재 Lock 이 잠겨있고 현재 스레드의 Lock 인 경우에만 Lock 해제
+            // 이미 Lock 이 해제되었거나, 다른 스레드의 Lock 인 경우 Lock 을 해제를 시도하지 않음.
+            // IllegalMonitorStateException 이 발생하지 않음.
+            /*
+            if(rLock.isLocked() && rLock.isHeldByCurrentThread()) {
+                rLock.unlock();
+            }
+             */
         }
     }
 }

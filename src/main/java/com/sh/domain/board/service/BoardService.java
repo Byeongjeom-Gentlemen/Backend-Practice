@@ -19,11 +19,7 @@ public interface BoardService {
     BoardBasicResponseDto selectBoardUnLock(Long boardId);
 
     // 게시글 상세 조회
-    BoardBasicResponseDto selectBoard(String key, Long boardId);
-
-    // 게시글 조회
-    @Transactional(readOnly = true)
-    Board queryBoard(Long boardId);
+    BoardBasicResponseDto selectBoard(Long boardId);
 
     // 게시글 수정
     @Transactional
