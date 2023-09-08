@@ -28,6 +28,16 @@ spring:
     host: localhost
     port: 6379
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+custom:
+  userImage-upload-path: C:\dev\userImage
+  boardImage-upload-path: C:\dev\boardImage
+
 logging:
   level:
     # hibernate 가 남기는 모든 로그가 debug모드로 설정
