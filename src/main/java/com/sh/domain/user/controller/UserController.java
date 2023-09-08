@@ -1,9 +1,11 @@
 package com.sh.domain.user.controller;
 
+import com.sh.domain.file.dto.FileResponseDto;
 import com.sh.domain.user.dto.request.SignupRequestDto;
 import com.sh.domain.user.dto.request.UpdateUserRequestDto;
 import com.sh.domain.user.dto.response.UserBasicResponseDto;
 import com.sh.domain.user.service.AuthService;
+import com.sh.domain.user.service.UserImageStorageService;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.aop.DisableSwaggerSecurity;
 import com.sh.global.aop.TokenValueRequired;
@@ -14,6 +16,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor // final 키워드가 붙은 필드에 자동으로 생성자 주입을 해주는 어노테이션
@@ -22,6 +25,7 @@ public class UserController {
 
     private final UserService userService;
     private final AuthService authService;
+    private final UserImageStorageService userImageStorageService;
 
     // @Valid : 자바에서 제공하는 유효성 검증 어노테이션, 유효성 검증과 관련된 어노테이션이 붙은 모든 필드를 검증, 유효성 검증에 실패하면
     // MethodArgumentNotValidException 발생
@@ -76,5 +80,16 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public UserBasicResponseDto selectByOtherUser(@PathVariable Long userId) {
         return userService.selectOtherUser(userId);
+    }
+
+    // 회원 프로필 이미지 업로드
+    @Operation(
+            summary = "회원 프로필 이미지 업로드 API",
+            description = "파일을 요청값으로 받아 회원 프로필 사진으로 업로드하는 API 입니다."
+    )
+    @PostMapping("/api/v1/users/me/img")
+    @ResponseStatus(HttpStatus.OK)
+    public void uploadProfileImg(@RequestParam MultipartFile file) {
+        userImageStorageService.uploadUserImg(file);
     }
 }
