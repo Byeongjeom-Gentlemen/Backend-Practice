@@ -39,6 +39,9 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
+    @OneToOne(mappedBy = "user")
+    private UserImage image;
+
     @Builder
     private User(String id, String pw, String nickname, Role role, UserStatus status) {
         this.id = id;
@@ -68,5 +71,10 @@ public class User extends BaseTimeEntity {
     // 회원 비밀번호 수정
     public void updateUserPassword(String password) {
         this.pw = password;
+    }
+
+    // 회원 프로필 수정
+    public void updateImage(UserImage image) {
+        this.image = image;
     }
 }
