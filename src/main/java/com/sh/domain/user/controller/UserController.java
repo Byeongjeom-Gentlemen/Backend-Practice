@@ -12,11 +12,16 @@ import com.sh.global.aop.TokenValueRequired;
 import com.sh.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.net.MalformedURLException;
 
 @RestController
 @RequiredArgsConstructor // final 키워드가 붙은 필드에 자동으로 생성자 주입을 해주는 어노테이션
@@ -91,5 +96,16 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public void uploadProfileImg(@RequestParam MultipartFile file) {
         userImageStorageService.uploadUserImg(file);
+    }
+    
+    // 회원 프로필 이미지 조회
+    @Operation(
+            summary = "회원 프로필 이미지 다운로드 API",
+            description = "회원 ID(PK) 값을 요청값으로 받아 해당 회원의 프로필 사진을 다운로드하는 API 입니다."
+    )
+    @GetMapping("/api/v1/users/{userId}/img")
+    @ResponseStatus(HttpStatus.OK)
+    public byte[] showProfileImg(@PathVariable Long userId) throws MalformedURLException {
+        return userImageStorageService.showUserImg(userId);
     }
 }
