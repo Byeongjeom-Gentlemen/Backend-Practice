@@ -17,10 +17,12 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 
 @RestController
@@ -103,9 +105,9 @@ public class UserController {
             summary = "회원 프로필 이미지 다운로드 API",
             description = "회원 ID(PK) 값을 요청값으로 받아 해당 회원의 프로필 사진을 다운로드하는 API 입니다."
     )
-    @GetMapping("/api/v1/users/{userId}/img")
+    @GetMapping(value = "/api/v1/users/{userId}/img", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE})
     @ResponseStatus(HttpStatus.OK)
-    public byte[] showProfileImg(@PathVariable Long userId) throws MalformedURLException {
+    public byte[] showProfileImg(@PathVariable Long userId) {
         return userImageStorageService.showUserImg(userId);
     }
 }
