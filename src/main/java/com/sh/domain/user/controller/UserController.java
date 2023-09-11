@@ -1,6 +1,5 @@
 package com.sh.domain.user.controller;
 
-import com.sh.domain.file.dto.FileResponseDto;
 import com.sh.domain.user.dto.request.SignupRequestDto;
 import com.sh.domain.user.dto.request.UpdateUserRequestDto;
 import com.sh.domain.user.dto.response.UserBasicResponseDto;
@@ -12,18 +11,12 @@ import com.sh.global.aop.TokenValueRequired;
 import com.sh.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
 
 @RestController
 @RequiredArgsConstructor // final 키워드가 붙은 필드에 자동으로 생성자 주입을 해주는 어노테이션
@@ -92,20 +85,24 @@ public class UserController {
     // 회원 프로필 이미지 업로드
     @Operation(
             summary = "회원 프로필 이미지 업로드 API",
-            description = "파일을 요청값으로 받아 회원 프로필 사진으로 업로드하는 API 입니다."
-    )
+            description = "파일을 요청값으로 받아 회원 프로필 사진으로 업로드하는 API 입니다.")
     @PostMapping("/api/v1/users/me/img")
     @ResponseStatus(HttpStatus.OK)
     public void uploadProfileImg(@RequestParam MultipartFile file) {
         userImageStorageService.uploadUserImg(file);
     }
-    
+
     // 회원 프로필 이미지 조회
     @Operation(
             summary = "회원 프로필 이미지 다운로드 API",
-            description = "회원 ID(PK) 값을 요청값으로 받아 해당 회원의 프로필 사진을 다운로드하는 API 입니다."
-    )
-    @GetMapping(value = "/api/v1/users/{userId}/img", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE})
+            description = "회원 ID(PK) 값을 요청값으로 받아 해당 회원의 프로필 사진을 다운로드하는 API 입니다.")
+    @GetMapping(
+            value = "/api/v1/users/{userId}/img",
+            produces = {
+                MediaType.IMAGE_PNG_VALUE,
+                MediaType.IMAGE_GIF_VALUE,
+                MediaType.IMAGE_JPEG_VALUE
+            })
     @ResponseStatus(HttpStatus.OK)
     public byte[] showProfileImg(@PathVariable Long userId) {
         return userImageStorageService.showUserImg(userId);

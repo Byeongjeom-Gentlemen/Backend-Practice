@@ -11,7 +11,8 @@ public class FileResponseDto {
     private String originalFileName;
     private String filePath;
 
-    public static FileResponseDto of(String storeFileName, String originalFileName, String filePath) {
+    public static FileResponseDto of(
+            String storeFileName, String originalFileName, String filePath) {
         return FileResponseDto.builder()
                 .storeFileName(storeFileName)
                 .originalFileName(originalFileName)
