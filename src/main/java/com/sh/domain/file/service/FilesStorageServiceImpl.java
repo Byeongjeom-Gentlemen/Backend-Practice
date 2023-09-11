@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.file.Paths;
@@ -41,7 +42,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
             file.transferTo(Paths.get(saveFilePath));
 
             return FileResponseDto.of(storeFileName, file.getOriginalFilename(), saveFilePath);
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
