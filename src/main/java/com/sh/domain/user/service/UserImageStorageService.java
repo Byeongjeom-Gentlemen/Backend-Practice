@@ -1,13 +1,7 @@
 package com.sh.domain.user.service;
 
-import com.sh.domain.file.dto.FileResponseDto;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
 
 public interface UserImageStorageService {
 

@@ -7,5 +7,4 @@ public interface FilesStorageService {
 
     // 이미지 파일 업로드
     FileResponseDto uploadImg(String uploadPath, MultipartFile file);
-
 }
