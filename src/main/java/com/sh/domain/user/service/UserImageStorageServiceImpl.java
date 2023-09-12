@@ -15,9 +15,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.PrePersist;
+
 @Service
 @RequiredArgsConstructor
 public class UserImageStorageServiceImpl implements UserImageStorageService {
+
+    private static final String BASIC_USER_IMAGE_NAME = "basic_profile_img.jpg";
 
     @Value("${custom.userImage-upload-path}")
     private String uploadPath;
@@ -27,6 +31,14 @@ public class UserImageStorageServiceImpl implements UserImageStorageService {
     private final UserImageRepository imageRepository;
     private final UserRepository userRepository;
 
+    @PrePersist
+    public void init() {
+        File directory = new File(uploadPath);
+        if(!directory.exists()) {
+            directory.mkdirs();
+        }
+    }
+
     // 회원 프로필 이미지 업로드
     @Override
     public void uploadUserImg(MultipartFile file) {
@@ -34,25 +46,26 @@ public class UserImageStorageServiceImpl implements UserImageStorageService {
             throw FileCustomException.FILE_DOES_NOT_EXIST_REQUEST_VALUE;
         }
 
+        // 로그인한 회원의 정보
         User user = userService.getLoginUser();
+        // 회원의 이미지 정보
+        UserImage image = user.getImage();
 
-        // 이미지 업로드
+        // 기본 이미지가 아니라면, 회원의 이미지 삭제
+        if(image.getStoreName() != null) {
+            filesStorageService.deleteFile(image.getImagePath());
+        }
+
+        // 경로에 이미지 업로드
         FileResponseDto saveFile = filesStorageService.uploadImg(uploadPath, file);
         if (saveFile == null) {
             throw FileCustomException.FAILED_UPLOAD_FILE;
         }
 
-        UserImage userImage =
-                UserImage.builder()
-                        .user(user)
-                        .storeName(saveFile.getStoreFileName())
-                        .originalName(saveFile.getOriginalFileName())
-                        .imagePath(saveFile.getFilePath())
-                        .build();
-
-        // 이미지 수정
-        user.updateImage(userImage);
-        imageRepository.save(userImage);
+        // 새로운 이미지 정보로 update
+        image.updateImage(saveFile.getStoreFileName(), saveFile.getOriginalFileName(), saveFile.getFilePath());
+        // 회원의 이미지 정보 update
+        user.updateImage(image);
     }
 
     // 회원 프로필 이미지 불러오기
@@ -62,25 +75,34 @@ public class UserImageStorageServiceImpl implements UserImageStorageService {
                 userRepository
                         .findById(userId)
                         .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
-
-        // 기본 이미지 경로
-        String imagePath = uploadPath + File.separator + "basic_profile_img.jpg";
-
-        UserImage image = imageRepository.findByUser(user).orElse(null);
-        // 이미지 정보가 존재한다면 해당 이미지 정보 path 저장
-        // 존재하지 않으면 기본 이미지 정보 저장
-        if (image != null) {
-            imagePath = image.getImagePath();
-        }
-
+        
+        UserImage image = user.getImage();
         byte[] result = null;
 
-        try (InputStream imageStream = new FileInputStream(imagePath)) {
+        try (InputStream imageStream = new FileInputStream(image.getImagePath())) {
             result = IOUtils.toByteArray(imageStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return result;
+    }
+
+    // 회원 프로필 이미지 삭제(기본 이미지로 변경)
+    @Override
+    public void deleteImg() {
+        User user = userService.getLoginUser();
+
+        UserImage image = imageRepository.findByUser(user)
+                .orElseThrow(() -> FileCustomException.FILE_DOES_NOT_EXIST);
+
+        // 경로에서 이미지파일 삭제
+        filesStorageService.deleteFile(image.getImagePath());
+
+        // 기본 이미지 정보 저장
+        image.updateBasicImage(uploadPath + BASIC_USER_IMAGE_NAME);
+        
+        // 회원 이미지 정보 저장
+        user.updateImage(image);
     }
 }
