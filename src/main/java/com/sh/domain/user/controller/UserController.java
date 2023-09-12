@@ -94,8 +94,8 @@ public class UserController {
 
     // 회원 프로필 이미지 조회
     @Operation(
-            summary = "회원 프로필 이미지 다운로드 API",
-            description = "회원 ID(PK) 값을 요청값으로 받아 해당 회원의 프로필 사진을 다운로드하는 API 입니다.")
+            summary = "회원 프로필 이미지 조회 API",
+            description = "회원 ID(PK) 값을 요청 값으로 받아 해당 회원의 프로필 사진을 다운로드하는 API 입니다.")
     @GetMapping(
             value = "/api/v1/users/{userId}/img",
             produces = {
@@ -106,5 +106,16 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public byte[] showProfileImg(@PathVariable Long userId) {
         return userImageStorageService.showUserImg(userId);
+    }
+
+    // 회원 프로필 이미지 삭제
+    @Operation(
+            summary = "회원 프로필 이미지 삭제 API",
+            description = "로그인된 회원의 프로필 사진을 삭제하는 API 입니다."
+    )
+    @DeleteMapping("/api/v1/users/me/img")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteProfileImg() {
+        userImageStorageService.deleteImg();
     }
 }
