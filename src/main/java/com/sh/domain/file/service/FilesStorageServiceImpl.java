@@ -20,12 +20,6 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     // 이미지 파일 업로드
     @Override
     public FileResponseDto uploadImg(String uploadPath, MultipartFile file) {
-        // 디렉토리 체크 및 생성
-        File directory = new File(uploadPath);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-
         try (InputStream inputStream = file.getInputStream()) {
             // 이미지 파일 변조 체크
             fileUtils.validImgFile(inputStream);
@@ -34,7 +28,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
             // 랜덤 고유번호로 파일명을 변경해 저장하여 파일명 중복을 방지함. (파일 덮어쓰기 방지)
             String storeFileName = UUID.randomUUID() + "." + extractExt(file.getOriginalFilename());
             // 이미지 파일 저장 경로
-            String saveFilePath = uploadPath + File.separator + storeFileName;
+            String saveFilePath = uploadPath + storeFileName;
 
             // 파일 업로드
             file.transferTo(Paths.get(saveFilePath));
@@ -51,5 +45,11 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     private String extractExt(String originalFilename) {
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos + 1);
+    }
+
+    @Override
+    public void deleteFile(String uploadPath) {
+        File file = new File(uploadPath);
+        file.delete();
     }
 }
