@@ -12,4 +12,7 @@ public interface UserImageStorageService {
     // 회원 프로필 이미지 불러오기
     @Transactional(readOnly = true)
     byte[] showUserImg(Long userId);
+
+    @Transactional
+    void deleteImg();
 }
