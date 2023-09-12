@@ -35,8 +35,8 @@ spring:
       max-request-size: 50MB
 
 custom:
-  userImage-upload-path: C:\dev\userImage
-  boardImage-upload-path: C:\dev\boardImage
+  userImage-upload-path: C:\dev\userImage\
+  boardImage-upload-path: C:\dev\boardImage\
 
 logging:
   level:
