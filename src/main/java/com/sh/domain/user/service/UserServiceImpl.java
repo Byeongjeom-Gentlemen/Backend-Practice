@@ -48,10 +48,11 @@ public class UserServiceImpl implements UserService {
                         .status(UserStatus.ALIVE)
                         .build();
 
-        UserImage image = UserImage.builder()
-                .user(user)
-                .imagePath(BASIC_IMAGE_PATH + BASIC_IMAGE_NAME)
-                .build();
+        UserImage image =
+                UserImage.builder()
+                        .user(user)
+                        .imagePath(BASIC_IMAGE_PATH + BASIC_IMAGE_NAME)
+                        .build();
         user.updateImage(image);
 
         return userRepository.save(user).getUserId();

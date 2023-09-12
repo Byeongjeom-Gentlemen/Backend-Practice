@@ -9,13 +9,12 @@ import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.exception.customexcpetion.FileCustomException;
 import com.sh.global.exception.customexcpetion.UserCustomException;
 import java.io.*;
+import javax.persistence.PrePersist;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.persistence.PrePersist;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class UserImageStorageServiceImpl implements UserImageStorageService {
     @PrePersist
     public void init() {
         File directory = new File(uploadPath);
-        if(!directory.exists()) {
+        if (!directory.exists()) {
             directory.mkdirs();
         }
     }
@@ -52,7 +51,7 @@ public class UserImageStorageServiceImpl implements UserImageStorageService {
         UserImage image = user.getImage();
 
         // 기본 이미지가 아니라면, 회원의 이미지 삭제
-        if(image.getStoreName() != null) {
+        if (image.getStoreName() != null) {
             filesStorageService.deleteFile(image.getImagePath());
         }
 
@@ -63,7 +62,10 @@ public class UserImageStorageServiceImpl implements UserImageStorageService {
         }
 
         // 새로운 이미지 정보로 update
-        image.updateImage(saveFile.getStoreFileName(), saveFile.getOriginalFileName(), saveFile.getFilePath());
+        image.updateImage(
+                saveFile.getStoreFileName(),
+                saveFile.getOriginalFileName(),
+                saveFile.getFilePath());
         // 회원의 이미지 정보 update
         user.updateImage(image);
     }
@@ -75,7 +77,7 @@ public class UserImageStorageServiceImpl implements UserImageStorageService {
                 userRepository
                         .findById(userId)
                         .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
-        
+
         UserImage image = user.getImage();
         byte[] result = null;
 
@@ -93,15 +95,17 @@ public class UserImageStorageServiceImpl implements UserImageStorageService {
     public void deleteImg() {
         User user = userService.getLoginUser();
 
-        UserImage image = imageRepository.findByUser(user)
-                .orElseThrow(() -> FileCustomException.FILE_DOES_NOT_EXIST);
+        UserImage image =
+                imageRepository
+                        .findByUser(user)
+                        .orElseThrow(() -> FileCustomException.FILE_DOES_NOT_EXIST);
 
         // 경로에서 이미지파일 삭제
         filesStorageService.deleteFile(image.getImagePath());
 
         // 기본 이미지 정보 저장
         image.updateBasicImage(uploadPath + BASIC_USER_IMAGE_NAME);
-        
+
         // 회원 이미지 정보 저장
         user.updateImage(image);
     }
