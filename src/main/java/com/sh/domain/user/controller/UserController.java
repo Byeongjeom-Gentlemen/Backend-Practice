@@ -109,10 +109,7 @@ public class UserController {
     }
 
     // 회원 프로필 이미지 삭제
-    @Operation(
-            summary = "회원 프로필 이미지 삭제 API",
-            description = "로그인된 회원의 프로필 사진을 삭제하는 API 입니다."
-    )
+    @Operation(summary = "회원 프로필 이미지 삭제 API", description = "로그인된 회원의 프로필 사진을 삭제하는 API 입니다.")
     @DeleteMapping("/api/v1/users/me/img")
     @ResponseStatus(HttpStatus.OK)
     public void deleteProfileImg() {
