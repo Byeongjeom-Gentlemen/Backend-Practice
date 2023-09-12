@@ -1,6 +1,7 @@
 package com.sh.domain.user.service;
 
 import com.sh.domain.user.domain.User;
+import com.sh.domain.user.domain.UserImage;
 import com.sh.domain.user.dto.request.SignupRequestDto;
 import com.sh.domain.user.dto.request.UpdateUserRequestDto;
 import com.sh.domain.user.dto.response.UserBasicResponseDto;
@@ -10,12 +11,18 @@ import com.sh.domain.user.util.UserStatus;
 import com.sh.global.exception.customexcpetion.UserCustomException;
 import com.sh.global.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
+    private static final String BASIC_IMAGE_NAME = "basic_profile_img.jpg";
+
+    @Value("${custom.userImage-upload-path}")
+    private String BASIC_IMAGE_PATH;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -40,6 +47,12 @@ public class UserServiceImpl implements UserService {
                         .role(Role.USER)
                         .status(UserStatus.ALIVE)
                         .build();
+
+        UserImage image = UserImage.builder()
+                .user(user)
+                .imagePath(BASIC_IMAGE_PATH + BASIC_IMAGE_NAME)
+                .build();
+        user.updateImage(image);
 
         return userRepository.save(user).getUserId();
     }
