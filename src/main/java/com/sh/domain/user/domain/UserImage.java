@@ -38,7 +38,15 @@ public class UserImage extends BaseTimeEntity {
         this.imagePath = imagePath;
     }
 
-    public void updatePath(String imagePath) {
+    public void updateImage(String storeName, String originalName, String imagePath) {
+        this.storeName = storeName;
+        this.originalName = originalName;
+        this.imagePath = imagePath;
+    }
+
+    public void updateBasicImage(String imagePath) {
+        this.storeName = null;
+        this.originalName = null;
         this.imagePath = imagePath;
     }
 }
