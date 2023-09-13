@@ -4,6 +4,8 @@ import com.sh.domain.user.domain.User;
 import com.sh.global.common.BaseTimeEntity;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -38,6 +40,9 @@ public class Board extends BaseTimeEntity {
 
     @Column(name = "like_count")
     private Integer likeCount;
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<BoardAttachedFile> attachedFiles = new ArrayList<>();
 
     @Column private LocalDateTime delete_at;
 
@@ -81,5 +86,10 @@ public class Board extends BaseTimeEntity {
     // 게시글 조회수 up
     public void addViewCount() {
         this.viewCount += 1;
+    }
+
+    // 게시글 첨부파일 등록
+    public void setAttachedFiles(List<BoardAttachedFile> attachedFiles) {
+        this.attachedFiles = attachedFiles;
     }
 }
