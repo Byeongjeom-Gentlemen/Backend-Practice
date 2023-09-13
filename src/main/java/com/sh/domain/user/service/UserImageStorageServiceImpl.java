@@ -1,7 +1,6 @@
 package com.sh.domain.user.service;
 
-import com.sh.domain.file.dto.FileResponseDto;
-import com.sh.domain.file.service.FilesStorageService;
+import com.sh.global.util.file.FileResponseDto;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.domain.UserImage;
 import com.sh.domain.user.repository.UserImageRepository;
@@ -10,6 +9,8 @@ import com.sh.global.exception.customexcpetion.FileCustomException;
 import com.sh.global.exception.customexcpetion.UserCustomException;
 import java.io.*;
 import javax.persistence.PrePersist;
+
+import com.sh.global.util.file.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,18 +26,10 @@ public class UserImageStorageServiceImpl implements UserImageStorageService {
     @Value("${custom.userImage-upload-path}")
     private String uploadPath;
 
+    private final FileUtils fileUtils;
     private final UserService userService;
-    private final FilesStorageService filesStorageService;
     private final UserImageRepository imageRepository;
     private final UserRepository userRepository;
-
-    @PrePersist
-    public void init() {
-        File directory = new File(uploadPath);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-    }
 
     // 회원 프로필 이미지 업로드
     @Override
@@ -52,11 +45,14 @@ public class UserImageStorageServiceImpl implements UserImageStorageService {
 
         // 기본 이미지가 아니라면, 회원의 이미지 삭제
         if (image.getStoreName() != null) {
-            filesStorageService.deleteFile(image.getImagePath());
+            fileUtils.deleteFile(image.getImagePath());
         }
 
+        // 이미지파일 변조 체크
+        fileUtils.validImgFile(file);
+
         // 경로에 이미지 업로드
-        FileResponseDto saveFile = filesStorageService.uploadImg(uploadPath, file);
+        FileResponseDto saveFile = fileUtils.uploadFile(uploadPath, file);
         if (saveFile == null) {
             throw FileCustomException.FAILED_UPLOAD_FILE;
         }
@@ -101,7 +97,7 @@ public class UserImageStorageServiceImpl implements UserImageStorageService {
                         .orElseThrow(() -> FileCustomException.FILE_DOES_NOT_EXIST);
 
         // 경로에서 이미지파일 삭제
-        filesStorageService.deleteFile(image.getImagePath());
+        fileUtils.deleteFile(image.getImagePath());
 
         // 기본 이미지 정보 저장
         image.updateBasicImage(uploadPath + BASIC_USER_IMAGE_NAME);
