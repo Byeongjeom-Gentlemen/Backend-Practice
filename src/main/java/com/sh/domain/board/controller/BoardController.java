@@ -13,6 +13,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,8 +26,9 @@ public class BoardController {
     @Operation(summary = "게시글 등록 API", description = "게시글을 등록하는 API 입니다. 로그인 여부와 Title 값을 필요로 합니다.")
     @PostMapping("/api/v1/board")
     @ResponseStatus(HttpStatus.CREATED)
-    public Long create(@RequestBody @Valid CreateBoardRequestDto createRequest) {
-        return boardService.createBoard(createRequest);
+    public Long create(@RequestPart(value = "createRequest") @Valid CreateBoardRequestDto createRequest,
+                       @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+        return boardService.createBoard(createRequest, files);
     }
 
     // 게시글 상세 조회
