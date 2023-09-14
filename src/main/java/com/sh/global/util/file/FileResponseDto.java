@@ -14,7 +14,11 @@ public class FileResponseDto {
     private long fileSize;
 
     public static FileResponseDto of(
-            String storeFileName, String originalFileName, String filePath, String fileType, long fileSize) {
+            String storeFileName,
+            String originalFileName,
+            String filePath,
+            String fileType,
+            long fileSize) {
         return FileResponseDto.builder()
                 .storeFileName(storeFileName)
                 .originalFileName(originalFileName)

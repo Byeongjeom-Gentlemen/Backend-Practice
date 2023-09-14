@@ -8,18 +8,12 @@ import com.sh.domain.board.dto.response.BoardBasicResponseDto;
 import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
 import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.util.SearchType;
-import com.sh.global.util.file.FileResponseDto;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.customexcpetion.PageCustomException;
-
 import java.util.List;
-import java.util.stream.Collectors;
-
-import com.sh.global.util.file.FileUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,9 +43,10 @@ public class BoardServiceImpl implements BoardService {
                         .build();
 
         // 파일이 있을 경우
-        if(files != null && !files.isEmpty()) {
+        if (files != null && !files.isEmpty()) {
             // 파일 업로드
-            List<BoardAttachedFile> attachedFiles = boardFileService.uploadAttachedFiles(newBoard, files);
+            List<BoardAttachedFile> attachedFiles =
+                    boardFileService.uploadAttachedFiles(newBoard, files);
 
             // 게시글 정보에 첨부파일 정보 등록
             newBoard.setAttachedFiles(attachedFiles);

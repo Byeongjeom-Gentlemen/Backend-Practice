@@ -1,12 +1,11 @@
 package com.sh.domain.board.domain;
 
 import com.sh.global.common.BaseTimeEntity;
+import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Entity
 @Getter
@@ -38,7 +37,13 @@ public class BoardAttachedFile extends BaseTimeEntity {
     private long fileSize;
 
     @Builder
-    private BoardAttachedFile(Board board, String storeFileName, String originalFileName, String fileType, String filePath, long fileSize) {
+    private BoardAttachedFile(
+            Board board,
+            String storeFileName,
+            String originalFileName,
+            String fileType,
+            String filePath,
+            long fileSize) {
         this.board = board;
         this.storeFileName = storeFileName;
         this.originalFileName = originalFileName;

@@ -1,16 +1,14 @@
 package com.sh.domain.user.service;
 
-import com.sh.global.util.file.FileResponseDto;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.domain.UserImage;
 import com.sh.domain.user.repository.UserImageRepository;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.global.exception.customexcpetion.FileCustomException;
 import com.sh.global.exception.customexcpetion.UserCustomException;
-import java.io.*;
-import javax.persistence.PrePersist;
-
+import com.sh.global.util.file.FileResponseDto;
 import com.sh.global.util.file.FileUtils;
+import java.io.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
