@@ -23,7 +23,7 @@ public class BoardController {
     private final BoardService boardService;
 
     // 게시글 생성
-    @Operation(summary = "게시글 등록 API", description = "게시글을 등록하는 API 입니다. 로그인 여부와 Title 값을 필요로 합니다.")
+    @Operation(summary = "게시글 등록 API", description = "게시글을 등록하는 API 입니다. 로그인 여부와 Title 값을 필요로 하며 첨부파일을 등록할 수 있습니다.")
     @PostMapping("/api/v1/board")
     @ResponseStatus(HttpStatus.CREATED)
     public Long create(
