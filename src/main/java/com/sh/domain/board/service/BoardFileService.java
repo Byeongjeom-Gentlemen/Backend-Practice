@@ -2,9 +2,8 @@ package com.sh.domain.board.service;
 
 import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.domain.BoardAttachedFile;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface BoardFileService {
 
