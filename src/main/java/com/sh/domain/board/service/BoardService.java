@@ -6,12 +6,13 @@ import com.sh.domain.board.dto.response.BoardBasicResponseDto;
 import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface BoardService {
 
     // 게시글 생성
     @Transactional
-    Long createBoard(CreateBoardRequestDto createRequest);
+    Long createBoard(CreateBoardRequestDto createRequest, List<MultipartFile> files);
 
     // 게시글 상세 조회 (UnLock)
     @Transactional

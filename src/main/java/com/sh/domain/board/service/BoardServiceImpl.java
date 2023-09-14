@@ -1,20 +1,28 @@
 package com.sh.domain.board.service;
 
 import com.sh.domain.board.domain.Board;
+import com.sh.domain.board.domain.BoardAttachedFile;
 import com.sh.domain.board.dto.request.CreateBoardRequestDto;
 import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.board.dto.response.BoardBasicResponseDto;
 import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
 import com.sh.domain.board.repository.BoardRepository;
 import com.sh.domain.board.util.SearchType;
+import com.sh.global.util.file.FileResponseDto;
 import com.sh.domain.user.domain.User;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.customexcpetion.PageCustomException;
+
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.sh.global.util.file.FileUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -22,13 +30,15 @@ public class BoardServiceImpl implements BoardService {
 
     private static final String VIEW_KEY_PREFIX = "VIEW_COUNT_";
     private static final String LIKE_KEY_PREFIX = "LIKE_";
+
     private final UserService userService;
     private final BoardLockService boardLockService;
+    private final BoardFileService boardFileService;
     private final BoardRepository boardRepository;
 
     // 게시글 등록
     @Override
-    public Long createBoard(CreateBoardRequestDto createRequest) {
+    public Long createBoard(CreateBoardRequestDto createRequest, List<MultipartFile> files) {
         User user = userService.getLoginUser();
 
         Board newBoard =
@@ -37,6 +47,15 @@ public class BoardServiceImpl implements BoardService {
                         .content(createRequest.getContent())
                         .user(user)
                         .build();
+
+        // 파일이 있을 경우
+        if(files != null && !files.isEmpty()) {
+            // 파일 업로드
+            List<BoardAttachedFile> attachedFiles = boardFileService.uploadAttachedFiles(newBoard, files);
+
+            // 게시글 정보에 첨부파일 정보 등록
+            newBoard.setAttachedFiles(attachedFiles);
+        }
 
         return boardRepository.save(newBoard).getId();
     }
