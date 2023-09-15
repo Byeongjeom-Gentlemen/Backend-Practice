@@ -5,6 +5,7 @@ import com.sh.domain.board.domain.BoardAttachedFile;
 import java.util.List;
 
 import com.sh.domain.board.dto.response.BoardFileResponseDto;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface BoardFileService {
@@ -17,4 +18,8 @@ public interface BoardFileService {
 
     // 게시글 첨부파일 삭제
     void deleteAttachedFiles(Board Board);
+
+    // 일부 첨부파일 삭제
+    @Transactional
+    void deleteAttachedFile(Long boardId, String storeFileName);
 }
