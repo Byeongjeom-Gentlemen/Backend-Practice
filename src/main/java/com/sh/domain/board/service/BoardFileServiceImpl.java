@@ -57,6 +57,7 @@ public class BoardFileServiceImpl implements BoardFileService {
     public List<BoardFileResponseDto> getBoardFiles(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
+        board.verification();
 
         List<BoardAttachedFile> fileList = attachedFileRepository.findAllByBoard(board);
         List<BoardFileResponseDto> result = new ArrayList<>();
@@ -67,5 +68,16 @@ public class BoardFileServiceImpl implements BoardFileService {
         }
 
         return result;
+    }
+
+    // 게시글 첨부파일목록 삭제
+    @Override
+    public void deleteAttachedFiles(Board board) {
+        List<BoardAttachedFile> fileList = board.getAttachedFiles();
+
+        for(BoardAttachedFile file : fileList) {
+            // 실제 경로에서 파일 삭제
+            fileUtils.deleteFile(file.getFilePath());
+        }
     }
 }
