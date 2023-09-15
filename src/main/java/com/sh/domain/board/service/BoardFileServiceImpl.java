@@ -2,8 +2,14 @@ package com.sh.domain.board.service;
 
 import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.domain.BoardAttachedFile;
+import com.sh.domain.board.dto.response.BoardFileResponseDto;
+import com.sh.domain.board.repository.BoardAttachedFileRepository;
+import com.sh.domain.board.repository.BoardRepository;
+import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.util.file.FileResponseDto;
 import com.sh.global.util.file.FileUtils;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +25,8 @@ public class BoardFileServiceImpl implements BoardFileService {
     private String uploadPath;
 
     private final FileUtils fileUtils;
+    private final BoardRepository boardRepository;
+    private final BoardAttachedFileRepository attachedFileRepository;
 
     @Override
     public List<BoardAttachedFile> uploadAttachedFiles(Board board, List<MultipartFile> files) {
@@ -42,5 +50,22 @@ public class BoardFileServiceImpl implements BoardFileService {
                         .collect(Collectors.toList());
 
         return attachedFiles;
+    }
+
+    // 게시글 첨부파일 조회
+    @Override
+    public List<BoardFileResponseDto> getBoardFiles(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
+
+        List<BoardAttachedFile> fileList = attachedFileRepository.findAllByBoard(board);
+        List<BoardFileResponseDto> result = new ArrayList<>();
+        if(!fileList.isEmpty()) {
+            result = fileList.stream()
+                    .map(file -> BoardFileResponseDto.of(file.getOriginalFileName(), file.getFilePath(), file.getFileType()))
+                    .collect(Collectors.toList());
+        }
+
+        return result;
     }
 }
