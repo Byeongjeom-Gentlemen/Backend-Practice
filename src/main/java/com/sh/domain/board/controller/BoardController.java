@@ -3,7 +3,9 @@ package com.sh.domain.board.controller;
 import com.sh.domain.board.dto.request.CreateBoardRequestDto;
 import com.sh.domain.board.dto.request.UpdateBoardRequestDto;
 import com.sh.domain.board.dto.response.BoardBasicResponseDto;
+import com.sh.domain.board.dto.response.BoardFileResponseDto;
 import com.sh.domain.board.dto.response.SimpleBoardResponseDto;
+import com.sh.domain.board.service.BoardFileService;
 import com.sh.domain.board.service.BoardService;
 import com.sh.global.aop.DisableSwaggerSecurity;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class BoardController {
 
     private final BoardService boardService;
+    private final BoardFileService boardFileService;
 
     // 게시글 생성
     @Operation(summary = "게시글 등록 API", description = "게시글을 등록하는 API 입니다. 로그인 여부와 Title 값을 필요로 하며 첨부파일을 등록할 수 있습니다.")
@@ -41,6 +44,18 @@ public class BoardController {
     @ResponseStatus(HttpStatus.OK)
     public BoardBasicResponseDto selectBoard(@PathVariable Long boardId) {
         return boardService.selectBoard(boardId);
+    }
+
+    // 게시글 첨부파일 조회
+    @Operation(
+            summary = "게시글 첨부파일 조회 API",
+            description = "게시글을 첨부파일을 조회하는 API 입니다. 첨부파일의 저장된 이름, 저장된 경로, 종류를 반환합니다."
+    )
+    @DisableSwaggerSecurity
+    @GetMapping("/api/v1/board/{boardId}/files")
+    @ResponseStatus(HttpStatus.OK)
+    public List<BoardFileResponseDto> selectBoardFiles(@PathVariable Long boardId) {
+        return boardFileService.getBoardFiles(boardId);
     }
 
     // 게시글 수정
