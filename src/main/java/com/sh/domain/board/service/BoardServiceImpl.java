@@ -92,6 +92,11 @@ public class BoardServiceImpl implements BoardService {
         board.verification();
         checkWriter(board.getUser().getUserId());
 
+        // 첨부파일 삭제
+        if(!board.getAttachedFiles().isEmpty()) {
+            boardFileService.deleteAttachedFiles(board);
+        }
+
         boardRepository.delete(board);
     }
 
