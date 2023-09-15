@@ -14,6 +14,7 @@ public interface BoardFileService {
     List<BoardAttachedFile> uploadAttachedFiles(Board board, List<MultipartFile> files);
 
     // 게시글 첨부파일 조회
+    @Transactional(readOnly = true)
     List<BoardFileResponseDto> getBoardFiles(Long boardId);
 
     // 게시글 첨부파일 삭제
