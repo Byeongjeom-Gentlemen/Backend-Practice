@@ -92,4 +92,9 @@ public class Board extends BaseTimeEntity {
     public void setAttachedFiles(List<BoardAttachedFile> attachedFiles) {
         this.attachedFiles = attachedFiles;
     }
+
+    // 게시글 일부 첨부파일 삭제
+    public void removeAttachedFile(BoardAttachedFile attachedFile) {
+        this.attachedFiles.remove(attachedFile);
+    }
 }
