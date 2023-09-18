@@ -92,12 +92,13 @@ public class BoardServiceImpl implements BoardService {
         board.verification();
         checkWriter(board.getUser().getUserId());
 
-        // 첨부파일 삭제
-        if (!board.getAttachedFiles().isEmpty()) {
-            boardFileService.deleteAttachedFiles(board);
-        }
-
+        // 게시글 삭제
         boardRepository.delete(board);
+
+        // 실제 경로에서 첨부파일 삭제
+        if (!board.getAttachedFiles().isEmpty()) {
+            boardFileService.deleteAttachedFiles(board.getAttachedFiles());
+        }
     }
 
     // 작성자 검사
