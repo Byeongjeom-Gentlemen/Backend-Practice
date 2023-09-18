@@ -5,6 +5,7 @@ import com.sh.global.common.BaseTimeEntity;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.persistence.*;
 import lombok.*;
@@ -93,8 +94,15 @@ public class Board extends BaseTimeEntity {
         this.attachedFiles = attachedFiles;
     }
 
-    // 게시글 일부 첨부파일 삭제
+    // 게시글 첨부파일 삭제
+    // 연관관계를 끊고 고아 객체가 된 해당 게시글 첨부파일 엔티티가 자동으로 삭제됨
     public void removeAttachedFile(BoardAttachedFile attachedFile) {
         this.attachedFiles.remove(attachedFile);
+    }
+
+    // 게시글 첨부파일 추가
+    // 해당 게시글 첨부파일 엔티티가 자동으로 생성됨
+    public void addAttachedFile(BoardAttachedFile attachedFile) {
+        this.attachedFiles.add(attachedFile);
     }
 }
