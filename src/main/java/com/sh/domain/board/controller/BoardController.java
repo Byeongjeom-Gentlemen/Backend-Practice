@@ -26,7 +26,9 @@ public class BoardController {
     private final BoardFileService boardFileService;
 
     // 게시글 생성
-    @Operation(summary = "게시글 등록 API", description = "게시글을 등록하는 API 입니다. 로그인 여부와 Title 값을 필요로 하며 첨부파일을 등록할 수 있습니다.")
+    @Operation(
+            summary = "게시글 등록 API",
+            description = "게시글을 등록하는 API 입니다. 로그인 여부와 Title 값을 필요로 하며 첨부파일을 등록할 수 있습니다.")
     @PostMapping("/api/v1/board")
     @ResponseStatus(HttpStatus.CREATED)
     public Long create(
@@ -49,8 +51,7 @@ public class BoardController {
     // 게시글 첨부파일 조회
     @Operation(
             summary = "게시글 첨부파일 조회 API",
-            description = "게시글을 첨부파일을 조회하는 API 입니다. 첨부파일의 저장된 이름, 저장된 경로, 종류를 반환합니다."
-    )
+            description = "게시글을 첨부파일을 조회하는 API 입니다. 첨부파일의 저장된 이름, 저장된 경로, 종류를 반환합니다.")
     @DisableSwaggerSecurity
     @GetMapping("/api/v1/board/{boardId}/files")
     @ResponseStatus(HttpStatus.OK)

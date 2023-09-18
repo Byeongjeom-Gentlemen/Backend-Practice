@@ -12,7 +12,8 @@ public class BoardFileResponseDto {
     private String filePath;
     private String fileType;
 
-    public static BoardFileResponseDto of(String storeName, String originalName, String filePath, String fileType) {
+    public static BoardFileResponseDto of(
+            String storeName, String originalName, String filePath, String fileType) {
         return BoardFileResponseDto.builder()
                 .storeName(storeName)
                 .originalName(originalName)

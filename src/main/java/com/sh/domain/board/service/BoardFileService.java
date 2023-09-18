@@ -2,9 +2,8 @@ package com.sh.domain.board.service;
 
 import com.sh.domain.board.domain.Board;
 import com.sh.domain.board.domain.BoardAttachedFile;
-import java.util.List;
-
 import com.sh.domain.board.dto.response.BoardFileResponseDto;
+import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
