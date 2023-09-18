@@ -17,5 +17,5 @@ public interface BoardFileService {
     List<BoardFileResponseDto> getBoardFiles(Long boardId);
 
     // 게시글 첨부파일 삭제
-    void deleteAttachedFiles(Board Board);
+    void deleteAttachedFiles(List<BoardAttachedFile> fileList);
 }

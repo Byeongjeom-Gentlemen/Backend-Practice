@@ -81,9 +81,7 @@ public class BoardFileServiceImpl implements BoardFileService {
 
     // 게시글 첨부파일목록 삭제
     @Override
-    public void deleteAttachedFiles(Board board) {
-        List<BoardAttachedFile> fileList = board.getAttachedFiles();
-
+    public void deleteAttachedFiles(List<BoardAttachedFile> fileList) {
         for (BoardAttachedFile file : fileList) {
             // 실제 경로에서 파일 삭제
             fileUtils.deleteFile(file.getFilePath());
