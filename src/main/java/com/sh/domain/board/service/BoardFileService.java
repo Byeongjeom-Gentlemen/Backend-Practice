@@ -18,8 +18,4 @@ public interface BoardFileService {
 
     // 게시글 첨부파일 삭제
     void deleteAttachedFiles(Board Board);
-
-    // 일부 첨부파일 삭제
-    @Transactional
-    void deleteAttachedFile(Long boardId, String storeFileName);
 }
