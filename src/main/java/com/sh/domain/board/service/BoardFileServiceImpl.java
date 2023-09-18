@@ -9,7 +9,6 @@ import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.customexcpetion.FileCustomException;
 import com.sh.global.util.file.FileResponseDto;
 import com.sh.global.util.file.FileUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,16 +55,25 @@ public class BoardFileServiceImpl implements BoardFileService {
     // 게시글 첨부파일 조회
     @Override
     public List<BoardFileResponseDto> getBoardFiles(Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
+        Board board =
+                boardRepository
+                        .findById(boardId)
+                        .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
         board.verification();
 
         List<BoardAttachedFile> fileList = attachedFileRepository.findAllByBoard(board);
         List<BoardFileResponseDto> result = new ArrayList<>();
-        if(!fileList.isEmpty()) {
-            result = fileList.stream()
-                    .map(file -> BoardFileResponseDto.of(file.getStoreFileName(), file.getOriginalFileName(), file.getFilePath(), file.getFileType()))
-                    .collect(Collectors.toList());
+        if (!fileList.isEmpty()) {
+            result =
+                    fileList.stream()
+                            .map(
+                                    file ->
+                                            BoardFileResponseDto.of(
+                                                    file.getStoreFileName(),
+                                                    file.getOriginalFileName(),
+                                                    file.getFilePath(),
+                                                    file.getFileType()))
+                            .collect(Collectors.toList());
         }
 
         return result;
@@ -76,7 +84,7 @@ public class BoardFileServiceImpl implements BoardFileService {
     public void deleteAttachedFiles(Board board) {
         List<BoardAttachedFile> fileList = board.getAttachedFiles();
 
-        for(BoardAttachedFile file : fileList) {
+        for (BoardAttachedFile file : fileList) {
             // 실제 경로에서 파일 삭제
             fileUtils.deleteFile(file.getFilePath());
         }
@@ -86,13 +94,17 @@ public class BoardFileServiceImpl implements BoardFileService {
     @Override
     public void deleteAttachedFile(Long boardId, String storeFileName) {
         // 게시글 조회 및 검증
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
+        Board board =
+                boardRepository
+                        .findById(boardId)
+                        .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
         board.verification();
 
         // 게시글 첨부파일 조회
-        BoardAttachedFile attachedFile = attachedFileRepository.findByBoardAndStoreFileName(board, storeFileName)
-                .orElseThrow(() -> FileCustomException.FILE_DOES_NOT_EXIST);
+        BoardAttachedFile attachedFile =
+                attachedFileRepository
+                        .findByBoardAndStoreFileName(board, storeFileName)
+                        .orElseThrow(() -> FileCustomException.FILE_DOES_NOT_EXIST);
 
         // 실제 경로에 있는 해당 파일 삭제
         fileUtils.deleteFile(attachedFile.getFilePath());
