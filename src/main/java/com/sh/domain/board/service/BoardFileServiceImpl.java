@@ -89,27 +89,4 @@ public class BoardFileServiceImpl implements BoardFileService {
             fileUtils.deleteFile(file.getFilePath());
         }
     }
-
-    // 일부 첨부파일 삭제
-    @Override
-    public void deleteAttachedFile(Long boardId, String storeFileName) {
-        // 게시글 조회 및 검증
-        Board board =
-                boardRepository
-                        .findById(boardId)
-                        .orElseThrow(() -> BoardCustomException.BOARD_NOT_FOUND);
-        board.verification();
-
-        // 게시글 첨부파일 조회
-        BoardAttachedFile attachedFile =
-                attachedFileRepository
-                        .findByBoardAndStoreFileName(board, storeFileName)
-                        .orElseThrow(() -> FileCustomException.FILE_DOES_NOT_EXIST);
-
-        // 실제 경로에 있는 해당 파일 삭제
-        fileUtils.deleteFile(attachedFile.getFilePath());
-
-        // 게시글 엔티티에서 해당 첨부파일 삭제, 연관관계가 끊어져 고아객체가 된 첨부파일 엔티티도 자동으로 삭제
-        board.removeAttachedFile(attachedFile);
-    }
 }
