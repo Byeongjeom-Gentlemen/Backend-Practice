@@ -7,14 +7,16 @@ import lombok.Getter;
 @Getter
 public class BoardFileResponseDto {
 
+    private Long fileId;
     private String storeName;
     private String originalName;
     private String filePath;
     private String fileType;
 
     public static BoardFileResponseDto of(
-            String storeName, String originalName, String filePath, String fileType) {
+            Long fileId, String storeName, String originalName, String filePath, String fileType) {
         return BoardFileResponseDto.builder()
+                .fileId(fileId)
                 .storeName(storeName)
                 .originalName(originalName)
                 .filePath(filePath)
