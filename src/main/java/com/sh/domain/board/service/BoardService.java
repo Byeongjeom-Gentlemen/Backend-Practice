@@ -23,7 +23,7 @@ public interface BoardService {
 
     // 게시글 수정
     @Transactional
-    void modifyBoard(Long boardId, UpdateBoardRequestDto updateRequest);
+    void modifyBoard(Long boardId, UpdateBoardRequestDto updateRequest, List<MultipartFile> files, List<Long> deleteFileIds);
 
     // 게시글 삭제
     @Transactional

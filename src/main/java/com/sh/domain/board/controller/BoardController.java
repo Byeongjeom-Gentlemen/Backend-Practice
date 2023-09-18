@@ -62,12 +62,15 @@ public class BoardController {
     // 게시글 수정
     @Operation(
             summary = "게시글 수정 API",
-            description = "게시글을 수정하는 API 입니다. 로그인 여부와 Title, Content 값을 필요로 합니다.")
+            description = "게시글을 수정하는 API 입니다. 로그인 여부와 Title, Content 값을 필요로 합니다. 추가할 첨부파일, 삭제할 첨부파일 목록도 함께 요청 값으로 받을 수 있습니다.")
     @PutMapping("/api/v1/board/{boardId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modify(
-            @PathVariable Long boardId, @RequestBody @Valid UpdateBoardRequestDto updateRequest) {
-        boardService.modifyBoard(boardId, updateRequest);
+            @PathVariable Long boardId,
+            @RequestPart(value = "updateRequest") @Valid UpdateBoardRequestDto updateRequest,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            @RequestPart(value = "deleteFileIds", required = false) List<Long> deleteFileIds) {
+        boardService.modifyBoard(boardId, updateRequest, files, deleteFileIds);
     }
 
     // 게시글 삭제
