@@ -78,13 +78,6 @@ public class BoardController {
         boardService.deleteBoard(boardId);
     }
 
-    // 게시글 일부 첨부파일 삭제
-    @DeleteMapping("/api/v1/board/{boardId}/{storeFileName}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAttachedFile(@PathVariable Long boardId, @PathVariable String storeFileName) {
-        boardFileService.deleteAttachedFile(boardId, storeFileName);
-    }
-
     // 게시글 조회(전체 조회, 검색어를 통한 조회)
     @Operation(
             summary = "게시글 조회 API(전체 조회, 검색을 통한 조회)",
