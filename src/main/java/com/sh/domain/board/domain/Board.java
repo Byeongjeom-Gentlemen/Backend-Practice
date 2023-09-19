@@ -5,7 +5,6 @@ import com.sh.global.common.BaseTimeEntity;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.persistence.*;
 import lombok.*;

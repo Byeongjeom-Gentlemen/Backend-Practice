@@ -1,7 +1,6 @@
 package com.sh.domain.user.dto;
 
 import com.sh.domain.user.domain.User;
-import com.sh.domain.user.domain.UserImage;
 import lombok.*;
 
 @Getter
