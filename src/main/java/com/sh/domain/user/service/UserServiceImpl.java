@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private static final String BASIC_IMAGE_NAME = "basic_profile_img.jpg";
+    private static final String BASIC_IMAGE_NAME = "\\basic_profile_img.jpg";
 
     @Value("${custom.userImage-upload-path}")
     private String BASIC_IMAGE_PATH;
