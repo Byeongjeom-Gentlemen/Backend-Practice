@@ -12,8 +12,6 @@ import com.sh.domain.user.domain.User;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.exception.customexcpetion.BoardCustomException;
 import com.sh.global.exception.customexcpetion.PageCustomException;
-
-import java.util.Iterator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -79,7 +77,11 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 수정
     @Override
-    public void modifyBoard(Long boardId, UpdateBoardRequestDto updateRequest, List<MultipartFile> files, List<Long> deleteFileIds) {
+    public void modifyBoard(
+            Long boardId,
+            UpdateBoardRequestDto updateRequest,
+            List<MultipartFile> files,
+            List<Long> deleteFileIds) {
         Board board = queryBoard(boardId);
         board.verification();
         checkWriter(board.getUser().getUserId());
