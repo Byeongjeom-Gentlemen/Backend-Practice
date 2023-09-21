@@ -5,6 +5,8 @@ import com.sh.domain.user.util.UserStatus;
 import com.sh.global.common.BaseTimeEntity;
 import com.sh.global.exception.customexcpetion.UserCustomException;
 import javax.persistence.*;
+
+import com.sh.global.oauth.OAuthProvider;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 
@@ -22,13 +24,13 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(nullable = false, length = 10, unique = true)
+    @Column(name = "identification")
     private String id;
 
-    @Column(nullable = false, length = 200)
+    @Column(name = "password", length = 200)
     private String pw;
 
-    @Column(nullable = false, length = 4, unique = true)
+    @Column(length = 4, unique = true)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
@@ -44,13 +46,22 @@ public class User extends BaseTimeEntity {
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private UserImage image;
 
+    @Column(name = "oauth_provider")
+    @Enumerated(EnumType.STRING)
+    private OAuthProvider provider;
+
+    @Column(name = "oauth_provider_id")
+    private String providerId;
+
     @Builder
-    private User(String id, String pw, String nickname, Role role, UserStatus status) {
+    private User(String id, String pw, String nickname, Role role, UserStatus status, OAuthProvider provider, String providerId) {
         this.id = id;
         this.pw = pw;
         this.nickname = nickname;
         this.role = role;
         this.status = status;
+        this.provider = provider;
+        this.providerId = providerId;
     }
 
     // 회원 검증 (탈퇴한 회원인지 검증)
