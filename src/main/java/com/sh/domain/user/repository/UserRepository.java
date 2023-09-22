@@ -2,7 +2,10 @@ package com.sh.domain.user.repository;
 
 import com.sh.domain.user.domain.User;
 import java.util.Optional;
+
+import com.sh.global.oauth.OAuthProvider;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -26,4 +29,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 회원 삭제
     void delete(User user);
+
+    // OAuth 회원 조회
+    @Query(value = "select u from User u where u.provider = :provider and u.providerId = :providerId")
+    Optional<User> findByProviderAndProviderId(OAuthProvider provider, String providerId);
 }
