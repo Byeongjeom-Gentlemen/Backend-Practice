@@ -101,6 +101,7 @@ public class OAuthService {
                 .build();
 
         UserImage image = UserImage.builder()
+                .user(user)
                 .imagePath(imagePath + BASIC_IMAGE_NAME)
                 .build();
 
