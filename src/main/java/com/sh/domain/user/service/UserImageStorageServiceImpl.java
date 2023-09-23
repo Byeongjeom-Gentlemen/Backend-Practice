@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class UserImageStorageServiceImpl implements UserImageStorageService {
 
-    private static final String BASIC_USER_IMAGE_NAME = "basic_profile_img.jpg";
+    private static final String BASIC_USER_IMAGE_NAME = "\\basic_profile_img.jpg";
 
     @Value("${custom.userImage-upload-path}")
     private String uploadPath;
