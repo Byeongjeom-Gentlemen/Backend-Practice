@@ -35,13 +35,10 @@ public class GlobalExceptionManager {
      */
 
     @ExceptionHandler({
-        UserCustomException.class,
-        BoardCustomException.class,
-        CommentCustomException.class,
-        TokenCustomException.class,
-        PageCustomException.class,
-        CommentCustomException.class,
-        FileCustomException.class
+        UserCustomException.class, BoardCustomException.class,
+        CommentCustomException.class, TokenCustomException.class,
+        PageCustomException.class, CommentCustomException.class,
+        FileCustomException.class, OAuthCustomException.class
     })
     public ResponseEntity<ErrorResponse> customErrors(CustomException e) {
         final ErrorResponse response = ErrorResponse.from(e.getErrorCode());
