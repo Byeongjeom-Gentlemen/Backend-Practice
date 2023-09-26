@@ -1,10 +1,14 @@
 package com.sh.domain.user.controller;
 
+import antlr.Token;
 import com.sh.domain.user.dto.request.OAuthSignupRequestDto;
 import com.sh.domain.user.dto.response.OAuthLoginResponseDto;
 import com.sh.domain.user.dto.response.UserLoginResponseDto;
+import com.sh.domain.user.service.AuthService;
 import com.sh.domain.user.service.OAuthService;
+import com.sh.global.aop.TokenValueRequired;
 import com.sh.global.oauth.kakao.KakaoLoginParams;
+import com.sh.global.util.jwt.TokenDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class OAuthController {
 
     private final OAuthService oAuthService;
+    private final AuthService authService;
 
     @GetMapping("/api/v1/oauth/kakao/callback")
     @ResponseStatus(HttpStatus.OK)
@@ -33,5 +38,15 @@ public class OAuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public Long kakaoJoin(@RequestBody OAuthSignupRequestDto signupRequest) {
         return oAuthService.oauthJoin(signupRequest);
+    }
+
+    // OAuth 로그아웃
+    @TokenValueRequired
+    @GetMapping("/api/v1/oauth/logout")
+    @ResponseStatus(HttpStatus.OK)
+    public void oAuthLogout(TokenDto token) {
+        System.out.println("AT : " + token.getAccessToken());
+        System.out.println("RT : " + token.getRefreshToken());
+        authService.logout(token);
     }
 }
