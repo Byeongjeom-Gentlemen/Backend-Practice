@@ -9,4 +9,7 @@ public interface OAuthApiClient {
     
     // Access Token 을 기반으로 해당 사용자의 정보 획득
     OAuthInfoResponse requestOauthInfo(String accessToken);
+
+    // 로그아웃
+    OAuthLogoutResponse requestOauthLogout(Long oauthId);
 }
