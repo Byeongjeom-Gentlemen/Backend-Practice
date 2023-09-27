@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class OAuthController {
 
     private final OAuthService oAuthService;
-    private final AuthService authService;
 
     @GetMapping("/api/v1/oauth/kakao/callback")
     @ResponseStatus(HttpStatus.OK)
@@ -43,10 +42,8 @@ public class OAuthController {
     // OAuth 로그아웃
     @TokenValueRequired
     @GetMapping("/api/v1/oauth/logout")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void oAuthLogout(TokenDto token) {
-        System.out.println("AT : " + token.getAccessToken());
-        System.out.println("RT : " + token.getRefreshToken());
-        authService.logout(token);
+        oAuthService.oAuthLogout(token);
     }
 }
