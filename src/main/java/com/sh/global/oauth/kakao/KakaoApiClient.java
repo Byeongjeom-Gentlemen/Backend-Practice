@@ -1,9 +1,6 @@
 package com.sh.global.oauth.kakao;
 
-import com.sh.global.oauth.OAuthApiClient;
-import com.sh.global.oauth.OAuthInfoResponse;
-import com.sh.global.oauth.OAuthLoginParams;
-import com.sh.global.oauth.OAuthProvider;
+import com.sh.global.oauth.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -36,6 +33,9 @@ public class KakaoApiClient implements OAuthApiClient {
 
     @Value("${oauth.kakao.redirect_uri}")
     private String redirectUri;
+
+    @Value("${oauth.kakao.admin_key}")
+    private String adminKey;
 
     private final RestTemplate restTemplate;
 
@@ -81,5 +81,23 @@ public class KakaoApiClient implements OAuthApiClient {
         HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
 
         return restTemplate.postForObject(url, request, KakaoInfoResponse.class);
+    }
+
+    // 카카오 로그아웃 요청
+    @Override
+    public OAuthLogoutResponse requestOauthLogout(Long kakaoId) {
+        String url = apiUrl + "/v1/user/logout";
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        httpHeaders.set("Authorization", "KakaoAK " + adminKey);
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("target_id_type", "user_id");
+        body.add("target_id", kakaoId);
+
+        HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
+
+        return restTemplate.postForObject(url, request, KakaoLogoutResponse.class);
     }
 }
