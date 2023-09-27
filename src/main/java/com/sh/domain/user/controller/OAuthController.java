@@ -19,31 +19,25 @@ public class OAuthController {
 
     private final OAuthService oAuthService;
 
-    @GetMapping("/api/v1/oauth/kakao/callback")
+    // OAuth 로그인
+    @PostMapping("/api/v1/oauth/login/{oauthProvider}")
     @ResponseStatus(HttpStatus.OK)
-    public String callbackKakao(String code) {
-        return code;
+    public OAuthLoginResponseDto kakaoLogin(@PathVariable String oauthProvider, @RequestBody KakaoLoginParams params) {
+        return oAuthService.oauthLogin(oauthProvider, params);
     }
 
-    // 카카오 로그인
-    @PostMapping("/api/v1/oauth/kakao/login")
-    @ResponseStatus(HttpStatus.OK)
-    public OAuthLoginResponseDto kakaoLogin(@RequestBody KakaoLoginParams params) {
-        return oAuthService.oauthLogin(params);
-    }
-
-    // 카카오 회원가입
-    @PostMapping("/api/v1/oauth/kakao/join")
+    // OAuth 회원가입
+    @PostMapping("/api/v1/oauth/join/{oauthProvider}")
     @ResponseStatus(HttpStatus.CREATED)
-    public Long kakaoJoin(@RequestBody OAuthSignupRequestDto signupRequest) {
-        return oAuthService.oauthJoin(signupRequest);
+    public Long kakaoJoin(@PathVariable String oauthProvider, @RequestBody OAuthSignupRequestDto signupRequest) {
+        return oAuthService.oauthJoin(oauthProvider, signupRequest);
     }
 
     // OAuth 로그아웃
     @TokenValueRequired
-    @GetMapping("/api/v1/oauth/logout")
+    @GetMapping("/api/v1/oauth/logout/{oauthProvider}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void oAuthLogout(TokenDto token) {
-        oAuthService.oAuthLogout(token);
+    public void oAuthLogout(@PathVariable String oauthProvider, TokenDto token) {
+        oAuthService.oAuthLogout(oauthProvider, token);
     }
 }
