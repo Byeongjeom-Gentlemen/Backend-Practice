@@ -35,7 +35,7 @@ public class AuthController {
     @DisableSwaggerSecurity
     @TokenValueRequired
     @GetMapping("/api/v1/auth/logout")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(TokenDto token) {
         authService.logout(token);
     }
