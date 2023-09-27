@@ -37,17 +37,18 @@ public class OAuthService {
     private final UserRedisService userRedisService;
     private final AuthService authService;
     private final JwtProvider jwtProvider;
-    private final SecurityUtils securityUtils;
 
     // OAuth 로그인
-    public OAuthLoginResponseDto oauthLogin(OAuthLoginParams params) {
+    public OAuthLoginResponseDto oauthLogin(String oauthProvider, OAuthLoginParams params) {
+        OAuthProvider oAuthProvider = OAuthProvider.parsing(oauthProvider);
         OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
-        return isLoginCheck(oAuthInfoResponse);
+
+        return isLoginCheck(oAuthProvider, oAuthInfoResponse);
     }
 
     // 로그인 체크
-    private OAuthLoginResponseDto isLoginCheck(OAuthInfoResponse oAuthInfoResponse) {
-        User user =  userRepository.findByProviderAndProviderId(oAuthInfoResponse.getOAuthProvider(), oAuthInfoResponse.getOAuthProviderId())
+    private OAuthLoginResponseDto isLoginCheck(OAuthProvider oAuthProvider, OAuthInfoResponse oAuthInfoResponse) {
+        User user =  userRepository.findByProviderAndProviderId(oAuthProvider, oAuthInfoResponse.getOAuthProviderId())
                 .orElse(null);
 
         if(user != null) {
@@ -80,12 +81,12 @@ public class OAuthService {
     }
 
     // OAuth 회원가입
-    public Long oauthJoin(OAuthSignupRequestDto signupRequest) {
+    public Long oauthJoin(String oauthProvider, OAuthSignupRequestDto signupRequest) {
         // 닉네임 검증
         existsByNickname(signupRequest.getNickname());
 
         // String 값으로 넘어온 OAuth Provider 파싱
-        OAuthProvider oAuthProvider = OAuthProvider.parsing(signupRequest.getOauthProvider());
+        OAuthProvider oAuthProvider = OAuthProvider.parsing(oauthProvider);
         // OAuthProvider enum 에 없는 값이라면
         if(oAuthProvider == null) {
             throw OAuthCustomException.UNSUPPORTED_OAUTH_PROVIDER;
@@ -120,8 +121,9 @@ public class OAuthService {
         }
     }
 
-    // OAuth Logout
-    public void oAuthLogout(TokenDto token) {
+    // OAuth 로그아웃
+    public void oAuthLogout(String oauthProvider, TokenDto token) {
+        OAuthProvider oAuthProvider = OAuthProvider.parsing(oauthProvider);
         String userId = jwtProvider.parseClaims(token.getAccessToken()).getSubject();
 
         User user = userRepository.findById(userId)
@@ -130,7 +132,7 @@ public class OAuthService {
         // 서비스 로그아웃
         authService.logout(token);
 
-        // 카카오 서버에 로그아웃 요청
-        requestOAuthInfoService.requestLogout(user.getProvider(), Long.parseLong(user.getProviderId()));
+        // OAuth 서버에 로그아웃 요청
+        requestOAuthInfoService.requestLogout(oAuthProvider, Long.parseLong(user.getProviderId()));
     }
 }
