@@ -9,12 +9,14 @@ import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.util.Role;
 import com.sh.domain.user.util.UserStatus;
 import com.sh.global.exception.customexcpetion.OAuthCustomException;
+import com.sh.global.exception.customexcpetion.TokenCustomException;
 import com.sh.global.exception.customexcpetion.UserCustomException;
 import com.sh.global.oauth.OAuthInfoResponse;
 import com.sh.global.oauth.OAuthLoginParams;
 import com.sh.global.oauth.OAuthProvider;
 import com.sh.global.oauth.RequestOAuthInfoService;
 import com.sh.global.util.CustomUserDetails;
+import com.sh.global.util.SecurityUtils;
 import com.sh.global.util.jwt.JwtProvider;
 import com.sh.global.util.jwt.TokenDto;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +35,9 @@ public class OAuthService {
     private final UserRepository userRepository;
     private final RequestOAuthInfoService requestOAuthInfoService;
     private final UserRedisService userRedisService;
+    private final AuthService authService;
     private final JwtProvider jwtProvider;
+    private final SecurityUtils securityUtils;
 
     // OAuth 로그인
     public OAuthLoginResponseDto oauthLogin(OAuthLoginParams params) {
@@ -67,7 +71,7 @@ public class OAuthService {
         // 토큰정보
         TokenDto token = TokenDto.of(accessToken, refreshToken);
 
-        return OAuthLoginResponseDto.of(true, oAuthInfoResponse, token);
+        return OAuthLoginResponseDto.of(true, oAuthInfoResponse, user.getNickname(), token);
     }
 
     // 로그인 실패, 회원가입 필요
@@ -114,5 +118,19 @@ public class OAuthService {
         if(userRepository.existsByNickname(nickname)) {
             throw UserCustomException.ALREADY_USED_USER_NICKNAME;
         }
+    }
+
+    // OAuth Logout
+    public void oAuthLogout(TokenDto token) {
+        String userId = jwtProvider.parseClaims(token.getAccessToken()).getSubject();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
+
+        // 서비스 로그아웃
+        authService.logout(token);
+
+        // 카카오 서버에 로그아웃 요청
+        requestOAuthInfoService.requestLogout(user.getProvider(), Long.parseLong(user.getProviderId()));
     }
 }
