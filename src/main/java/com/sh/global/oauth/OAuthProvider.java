@@ -5,7 +5,8 @@ import com.sh.global.exception.customexcpetion.OAuthCustomException;
 import java.util.stream.Stream;
 
 public enum OAuthProvider {
-    KAKAO, NAVER;
+    KAKAO,
+    NAVER;
 
     @JsonCreator
     public static OAuthProvider parsing(String requestValue) {

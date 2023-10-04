@@ -76,7 +76,11 @@ public class SecurityConfig {
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/board/**")
                 .permitAll()
-                .antMatchers("https://kauth.kakao.com/**", "https://kapi.kakao.com/**", "https://nid.naver.com/**", "https://openapi.naver.com/**")
+                .antMatchers(
+                        "https://kauth.kakao.com/**",
+                        "https://kapi.kakao.com/**",
+                        "https://nid.naver.com/**",
+                        "https://openapi.naver.com/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

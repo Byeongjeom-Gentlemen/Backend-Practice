@@ -44,7 +44,7 @@ public class KakaoInfoResponse implements OAuthInfoResponse {
     /*
     @Override
     public String getProfileImage() {
-        return kakaoAccount.profile.image;
+    	return kakaoAccount.profile.image;
     }
      */
 
