@@ -3,7 +3,6 @@ package com.sh.global.exception.errorcode;
 import org.springframework.http.HttpStatus;
 
 public enum OAuthErrorCode implements ErrorCode {
-
     UNSUPPORTED_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, "OA_001", "지원하지 않는 OAuth Provider 입니다.");
 
     private final HttpStatus status;

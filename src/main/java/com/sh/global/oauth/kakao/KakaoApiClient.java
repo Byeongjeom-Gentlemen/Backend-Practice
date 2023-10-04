@@ -65,7 +65,7 @@ public class KakaoApiClient implements OAuthApiClient {
         assert response != null;
         return response.getAccessToken();
     }
-    
+
     // access token 값으로 사용자 정보 요청
     @Override
     public OAuthInfoResponse requestOauthInfo(String accessToken) {

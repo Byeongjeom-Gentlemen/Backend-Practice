@@ -1,19 +1,14 @@
 package com.sh.domain.user.dto.request;
 
-import com.sh.global.oauth.OAuthProvider;
-import com.sh.global.oauth.kakao.KakaoLoginParams;
-import lombok.Getter;
-
-import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import lombok.Getter;
 
 @Getter
 public class OAuthSignupRequestDto {
 
-    @NotBlank
-    private String oauthProviderId;
+    @NotBlank private String oauthProviderId;
 
     @NotBlank(message = "닉네임은 필수 입력값입니다.")
     @Size(min = 2, max = 4)

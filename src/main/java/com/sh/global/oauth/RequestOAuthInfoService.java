@@ -1,11 +1,10 @@
 package com.sh.global.oauth;
 
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
 
 // OAuthApiClient 를 사용하는 Service 클래스
 @Component
@@ -14,8 +13,11 @@ public class RequestOAuthInfoService {
     private final Map<OAuthProvider, OAuthApiClient> clients;
 
     public RequestOAuthInfoService(List<OAuthApiClient> clients) {
-        this.clients = clients.stream().collect(
-                Collectors.toUnmodifiableMap(OAuthApiClient::oAuthProvider, Function.identity()));
+        this.clients =
+                clients.stream()
+                        .collect(
+                                Collectors.toUnmodifiableMap(
+                                        OAuthApiClient::oAuthProvider, Function.identity()));
     }
 
     public OAuthInfoResponse request(OAuthLoginParams params) {

@@ -32,7 +32,9 @@ public class KakaoInfoResponse implements OAuthInfoResponse {
     }
 
     @Override
-    public String getOAuthProviderId() { return String.valueOf(kakaoId); }
+    public String getOAuthProviderId() {
+        return String.valueOf(kakaoId);
+    }
 
     @Override
     public String getProfileNickname() {
