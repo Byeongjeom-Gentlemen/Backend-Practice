@@ -5,6 +5,7 @@ import com.sh.domain.user.dto.response.OAuthLoginResponseDto;
 import com.sh.domain.user.service.OAuthService;
 import com.sh.global.aop.TokenValueRequired;
 import com.sh.global.oauth.kakao.KakaoLoginParams;
+import com.sh.global.oauth.naver.NaverLoginParams;
 import com.sh.global.util.jwt.TokenDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,17 @@ public class OAuthController {
 
     private final OAuthService oAuthService;
 
-    // 카카오 로그인
+    // 카카오 로그인 요청
     @PostMapping("/api/v1/oauth/kakao/login")
     @ResponseStatus(HttpStatus.OK)
     public OAuthLoginResponseDto kakaoLogin(@RequestBody KakaoLoginParams params) {
+        return oAuthService.oauthLogin(params);
+    }
+
+    // 네이버 로그인 요청
+    @PostMapping("/api/v1/oauth/naver/login")
+    @ResponseStatus(HttpStatus.OK)
+    public OAuthLoginResponseDto naverLogin(@RequestBody NaverLoginParams params) {
         return oAuthService.oauthLogin(params);
     }
 
