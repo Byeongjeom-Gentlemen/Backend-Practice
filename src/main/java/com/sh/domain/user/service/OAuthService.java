@@ -39,16 +39,15 @@ public class OAuthService {
     private final JwtProvider jwtProvider;
 
     // OAuth 로그인
-    public OAuthLoginResponseDto oauthLogin(String oauthProvider, OAuthLoginParams params) {
-        OAuthProvider oAuthProvider = OAuthProvider.parsing(oauthProvider);
+    public OAuthLoginResponseDto oauthLogin(OAuthLoginParams params) {
         OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
 
-        return isLoginCheck(oAuthProvider, oAuthInfoResponse);
+        return isLoginCheck(oAuthInfoResponse);
     }
 
     // 로그인 체크
-    private OAuthLoginResponseDto isLoginCheck(OAuthProvider oAuthProvider, OAuthInfoResponse oAuthInfoResponse) {
-        User user =  userRepository.findByProviderAndProviderId(oAuthProvider, oAuthInfoResponse.getOAuthProviderId())
+    private OAuthLoginResponseDto isLoginCheck(OAuthInfoResponse oAuthInfoResponse) {
+        User user =  userRepository.findByProviderAndProviderId(oAuthInfoResponse.getOAuthProvider(), oAuthInfoResponse.getOAuthProviderId())
                 .orElse(null);
 
         if(user != null) {
