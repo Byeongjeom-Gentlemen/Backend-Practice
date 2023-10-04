@@ -4,19 +4,16 @@ import com.sh.domain.user.domain.User;
 import com.sh.domain.user.domain.UserImage;
 import com.sh.domain.user.dto.request.OAuthSignupRequestDto;
 import com.sh.domain.user.dto.response.OAuthLoginResponseDto;
-import com.sh.domain.user.dto.response.UserLoginResponseDto;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.util.Role;
 import com.sh.domain.user.util.UserStatus;
 import com.sh.global.exception.customexcpetion.OAuthCustomException;
-import com.sh.global.exception.customexcpetion.TokenCustomException;
 import com.sh.global.exception.customexcpetion.UserCustomException;
 import com.sh.global.oauth.OAuthInfoResponse;
 import com.sh.global.oauth.OAuthLoginParams;
 import com.sh.global.oauth.OAuthProvider;
 import com.sh.global.oauth.RequestOAuthInfoService;
 import com.sh.global.util.CustomUserDetails;
-import com.sh.global.util.SecurityUtils;
 import com.sh.global.util.jwt.JwtProvider;
 import com.sh.global.util.jwt.TokenDto;
 import lombok.RequiredArgsConstructor;
@@ -47,10 +44,14 @@ public class OAuthService {
 
     // 로그인 체크
     private OAuthLoginResponseDto isLoginCheck(OAuthInfoResponse oAuthInfoResponse) {
-        User user =  userRepository.findByProviderAndProviderId(oAuthInfoResponse.getOAuthProvider(), oAuthInfoResponse.getOAuthProviderId())
-                .orElse(null);
+        User user =
+                userRepository
+                        .findByProviderAndProviderId(
+                                oAuthInfoResponse.getOAuthProvider(),
+                                oAuthInfoResponse.getOAuthProviderId())
+                        .orElse(null);
 
-        if(user != null) {
+        if (user != null) {
             return isLoginOk(user, oAuthInfoResponse);
         }
 
@@ -87,27 +88,25 @@ public class OAuthService {
         // String 값으로 넘어온 OAuth Provider 파싱
         OAuthProvider oAuthProvider = OAuthProvider.parsing(oauthProvider);
         // OAuthProvider enum 에 없는 값이라면
-        if(oAuthProvider == null) {
+        if (oAuthProvider == null) {
             throw OAuthCustomException.UNSUPPORTED_OAUTH_PROVIDER;
         }
 
         // 회원 id (OAuthProvider 이름 + OAuthProviderId)
-        String id = oAuthProvider
-                + "_" + signupRequest.getOauthProviderId();
+        String id = oAuthProvider + "_" + signupRequest.getOauthProviderId();
 
-        User user = User.builder()
-                .id(id)
-                .nickname(signupRequest.getNickname())
-                .role(Role.USER)
-                .status(UserStatus.ALIVE)
-                .provider(oAuthProvider)
-                .providerId(signupRequest.getOauthProviderId())
-                .build();
+        User user =
+                User.builder()
+                        .id(id)
+                        .nickname(signupRequest.getNickname())
+                        .role(Role.USER)
+                        .status(UserStatus.ALIVE)
+                        .provider(oAuthProvider)
+                        .providerId(signupRequest.getOauthProviderId())
+                        .build();
 
-        UserImage image = UserImage.builder()
-                .user(user)
-                .imagePath(imagePath + BASIC_IMAGE_NAME)
-                .build();
+        UserImage image =
+                UserImage.builder().user(user).imagePath(imagePath + BASIC_IMAGE_NAME).build();
 
         user.updateImage(image);
 
@@ -115,7 +114,7 @@ public class OAuthService {
     }
 
     private void existsByNickname(String nickname) {
-        if(userRepository.existsByNickname(nickname)) {
+        if (userRepository.existsByNickname(nickname)) {
             throw UserCustomException.ALREADY_USED_USER_NICKNAME;
         }
     }
@@ -125,8 +124,10 @@ public class OAuthService {
         OAuthProvider oAuthProvider = OAuthProvider.parsing(oauthProvider);
         String userId = jwtProvider.parseClaims(token.getAccessToken()).getSubject();
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
+        User user =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
 
         // 서비스 로그아웃
         authService.logout(token);

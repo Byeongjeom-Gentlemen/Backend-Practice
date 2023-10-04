@@ -1,13 +1,9 @@
 package com.sh.domain.user.controller;
 
-import antlr.Token;
 import com.sh.domain.user.dto.request.OAuthSignupRequestDto;
 import com.sh.domain.user.dto.response.OAuthLoginResponseDto;
-import com.sh.domain.user.dto.response.UserLoginResponseDto;
-import com.sh.domain.user.service.AuthService;
 import com.sh.domain.user.service.OAuthService;
 import com.sh.global.aop.TokenValueRequired;
-import com.sh.global.oauth.OAuthLoginParams;
 import com.sh.global.oauth.kakao.KakaoLoginParams;
 import com.sh.global.util.jwt.TokenDto;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +26,8 @@ public class OAuthController {
     // OAuth 회원가입
     @PostMapping("/api/v1/oauth/join/{oauthProvider}")
     @ResponseStatus(HttpStatus.CREATED)
-    public Long oAuthJoin(@PathVariable String oauthProvider, @RequestBody OAuthSignupRequestDto signupRequest) {
+    public Long oAuthJoin(
+            @PathVariable String oauthProvider, @RequestBody OAuthSignupRequestDto signupRequest) {
         return oAuthService.oauthJoin(oauthProvider, signupRequest);
     }
 

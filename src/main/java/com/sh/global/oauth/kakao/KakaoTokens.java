@@ -15,7 +15,7 @@ public class KakaoTokens {
     @JsonProperty("token_type")
     private String tokenType;
 
-    // refresh token  
+    // refresh token
     @JsonProperty("refresh_token")
     private String refreshToken;
 

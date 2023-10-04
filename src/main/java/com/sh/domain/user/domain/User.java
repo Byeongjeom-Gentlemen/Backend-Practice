@@ -4,9 +4,8 @@ import com.sh.domain.user.util.Role;
 import com.sh.domain.user.util.UserStatus;
 import com.sh.global.common.BaseTimeEntity;
 import com.sh.global.exception.customexcpetion.UserCustomException;
-import javax.persistence.*;
-
 import com.sh.global.oauth.OAuthProvider;
+import javax.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 
@@ -54,7 +53,14 @@ public class User extends BaseTimeEntity {
     private String providerId;
 
     @Builder
-    private User(String id, String pw, String nickname, Role role, UserStatus status, OAuthProvider provider, String providerId) {
+    private User(
+            String id,
+            String pw,
+            String nickname,
+            Role role,
+            UserStatus status,
+            OAuthProvider provider,
+            String providerId) {
         this.id = id;
         this.pw = pw;
         this.nickname = nickname;
