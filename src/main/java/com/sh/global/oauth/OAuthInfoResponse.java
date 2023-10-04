@@ -5,7 +5,9 @@ public interface OAuthInfoResponse {
 
     String getProfileNickname();
 
+    /*
     String getProfileImage();
+     */
 
     OAuthProvider getOAuthProvider();
 }
