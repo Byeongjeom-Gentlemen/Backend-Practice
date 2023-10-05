@@ -122,17 +122,21 @@ public class OAuthService {
     // OAuth 로그아웃
     public void oAuthLogout(String oauthProvider, TokenDto token) {
         OAuthProvider oAuthProvider = OAuthProvider.parsing(oauthProvider);
-        String userId = jwtProvider.parseClaims(token.getAccessToken()).getSubject();
-
-        User user =
-                userRepository
-                        .findById(userId)
-                        .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
 
         // 서비스 로그아웃
         authService.logout(token);
 
-        // OAuth 서버에 로그아웃 요청
-        requestOAuthInfoService.requestLogout(oAuthProvider, Long.parseLong(user.getProviderId()));
+        // 카카오는 카카오 로그아웃도 함께 진행
+        if(oAuthProvider == OAuthProvider.KAKAO) {
+            String userId = jwtProvider.parseClaims(token.getAccessToken()).getSubject();
+
+            User user =
+                    userRepository
+                            .findById(userId)
+                            .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
+
+            // OAuth 서버에 로그아웃 요청
+            requestOAuthInfoService.requestLogout(oAuthProvider, Long.parseLong(user.getProviderId()));
+        }
     }
 }
