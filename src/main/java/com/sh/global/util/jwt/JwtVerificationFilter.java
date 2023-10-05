@@ -31,8 +31,8 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
         String accessToken = jwtProvider.resolveAccessToken(request);
 
         if (accessToken != null
-                && jwtProvider.validateToken(accessToken)
-                && !doLogout(accessToken)) {
+                && !doLogout(accessToken)
+                && jwtProvider.validateToken(accessToken)) {
             Authentication authentication = jwtProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
