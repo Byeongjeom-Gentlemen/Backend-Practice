@@ -127,7 +127,7 @@ public class OAuthService {
         authService.logout(token);
 
         // 카카오는 카카오 로그아웃도 함께 진행
-        if(oAuthProvider == OAuthProvider.KAKAO) {
+        if (oAuthProvider == OAuthProvider.KAKAO) {
             String userId = jwtProvider.parseClaims(token.getAccessToken()).getSubject();
 
             User user =
@@ -136,7 +136,8 @@ public class OAuthService {
                             .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
 
             // OAuth 서버에 로그아웃 요청
-            requestOAuthInfoService.requestLogout(oAuthProvider, Long.parseLong(user.getProviderId()));
+            requestOAuthInfoService.requestLogout(
+                    oAuthProvider, Long.parseLong(user.getProviderId()));
         }
     }
 }
