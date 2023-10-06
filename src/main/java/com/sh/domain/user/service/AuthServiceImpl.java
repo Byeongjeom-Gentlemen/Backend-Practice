@@ -77,18 +77,21 @@ public class AuthServiceImpl implements AuthService {
             RefreshToken refreshToken =
                     refreshTokenRedisRepository
                             .findById(id)
-                            .orElseThrow(() -> TokenCustomException.EXPIRED_REFRESH_TOKEN);
-            // 해당 Refresh Token 정보 삭제
-            userRedisService.deleteRefreshToken(refreshToken);
+                            .orElse(null);
 
-            // access token 의 남은 만료시간 정보를 가져옴.
-            Long expiredTime = jwtProvider.getRemainExpiredTime(token.getAccessToken());
+            if(refreshToken != null) {
+                // 해당 Refresh Token 정보 삭제
+                userRedisService.deleteRefreshToken(refreshToken);
 
-            // 로그아웃 한 access token 을 blacklist token 으로 등록
-            // blacklist token 으로 등록하지 않으면, 서버는 해당 access token 이 로그아웃 처리된 토큰인지 모르고
-            // 아직 유효시간이 만료되지 않은 토큰으로 인식해 오류가 발생하지 않음.
-            // blacklist token 으로 등록함으로써 서버가 로그아웃 된 token 임을 알 수 있도록 하고 잘못된 접근을 방지함.
-            userRedisService.saveBlackListToken(token.getAccessToken(), expiredTime);
+                // access token 의 남은 만료시간 정보를 가져옴.
+                Long expiredTime = jwtProvider.getRemainExpiredTime(token.getAccessToken());
+
+                // 로그아웃 한 access token 을 blacklist token 으로 등록
+                // blacklist token 으로 등록하지 않으면, 서버는 해당 access token 이 로그아웃 처리된 토큰인지 모르고
+                // 아직 유효시간이 만료되지 않은 토큰으로 인식해 오류가 발생하지 않음.
+                // blacklist token 으로 등록함으로써 서버가 로그아웃 된 token 임을 알 수 있도록 하고 잘못된 접근을 방지함.
+                userRedisService.saveBlackListToken(token.getAccessToken(), expiredTime);
+            }
         }
     }
 
