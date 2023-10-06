@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OAuthService {
 
-    private final String BASIC_IMAGE_NAME = "\\basic_profile_img.jpg";
+    private static final String BASIC_IMAGE_NAME = "\\basic_profile_img.jpg";
 
     @Value("${custom.userImage-upload-path}")
     private String imagePath;
