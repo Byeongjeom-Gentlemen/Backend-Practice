@@ -38,12 +38,4 @@ public class OAuthController {
             @PathVariable String oauthProvider, @RequestBody OAuthSignupRequestDto signupRequest) {
         return oAuthService.oauthJoin(oauthProvider, signupRequest);
     }
-
-    // OAuth 로그아웃
-    @TokenValueRequired
-    @GetMapping("/api/v1/oauth/logout/{oauthProvider}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void oAuthLogout(@PathVariable String oauthProvider, TokenDto token) {
-        oAuthService.oAuthLogout(oauthProvider, token);
-    }
 }

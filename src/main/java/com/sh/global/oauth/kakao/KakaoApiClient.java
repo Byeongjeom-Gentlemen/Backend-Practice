@@ -82,22 +82,4 @@ public class KakaoApiClient implements OAuthApiClient {
 
         return restTemplate.postForObject(url, request, KakaoInfoResponse.class);
     }
-
-    // 카카오 로그아웃 요청
-    @Override
-    public OAuthLogoutResponse requestOauthLogout(Long kakaoId) {
-        String url = apiUrl + "/v1/user/logout";
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        httpHeaders.set("Authorization", "KakaoAK " + adminKey);
-
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("target_id_type", "user_id");
-        body.add("target_id", kakaoId);
-
-        HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
-
-        return restTemplate.postForObject(url, request, KakaoLogoutResponse.class);
-    }
 }

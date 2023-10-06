@@ -26,11 +26,4 @@ public class RequestOAuthInfoService {
 
         return client.requestOauthInfo(accessToken);
     }
-
-    public Long requestLogout(OAuthProvider provider, Long oauthId) {
-        OAuthApiClient client = clients.get(provider);
-        OAuthLogoutResponse response = client.requestOauthLogout(oauthId);
-
-        return response.getOAuthProviderId();
-    }
 }
