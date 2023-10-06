@@ -4,6 +4,7 @@ import com.sh.domain.user.domain.User;
 import com.sh.domain.user.domain.UserImage;
 import com.sh.domain.user.dto.request.OAuthSignupRequestDto;
 import com.sh.domain.user.dto.response.OAuthLoginResponseDto;
+import com.sh.domain.user.repository.RefreshTokenRedisRepository;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.util.Role;
 import com.sh.domain.user.util.UserStatus;
@@ -19,6 +20,7 @@ import com.sh.global.util.jwt.TokenDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +35,10 @@ public class OAuthService {
     private final RequestOAuthInfoService requestOAuthInfoService;
     private final UserRedisService userRedisService;
     private final AuthService authService;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final JwtProvider jwtProvider;
 
+    @Transactional
     // OAuth 로그인
     public OAuthLoginResponseDto oauthLogin(OAuthLoginParams params) {
         OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
@@ -80,6 +84,7 @@ public class OAuthService {
         return OAuthLoginResponseDto.of(false, oAuthInfoResponse, null);
     }
 
+    @Transactional
     // OAuth 회원가입
     public Long oauthJoin(String oauthProvider, OAuthSignupRequestDto signupRequest) {
         // 닉네임 검증
@@ -116,28 +121,6 @@ public class OAuthService {
     private void existsByNickname(String nickname) {
         if (userRepository.existsByNickname(nickname)) {
             throw UserCustomException.ALREADY_USED_USER_NICKNAME;
-        }
-    }
-
-    // OAuth 로그아웃
-    public void oAuthLogout(String oauthProvider, TokenDto token) {
-        OAuthProvider oAuthProvider = OAuthProvider.parsing(oauthProvider);
-
-        // 서비스 로그아웃
-        authService.logout(token);
-
-        // 카카오는 카카오 로그아웃도 함께 진행
-        if (oAuthProvider == OAuthProvider.KAKAO) {
-            String userId = jwtProvider.parseClaims(token.getAccessToken()).getSubject();
-
-            User user =
-                    userRepository
-                            .findById(userId)
-                            .orElseThrow(() -> UserCustomException.USER_NOT_FOUND);
-
-            // OAuth 서버에 로그아웃 요청
-            requestOAuthInfoService.requestLogout(
-                    oAuthProvider, Long.parseLong(user.getProviderId()));
         }
     }
 }

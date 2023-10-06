@@ -71,9 +71,4 @@ public class NaverApiClient implements OAuthApiClient {
 
         return restTemplate.postForObject(url, request, NaverInfoResponse.class);
     }
-
-    @Override
-    public OAuthLogoutResponse requestOauthLogout(Long oauthId) {
-        return null;
-    }
 }
