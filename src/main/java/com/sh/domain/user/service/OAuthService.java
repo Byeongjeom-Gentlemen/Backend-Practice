@@ -4,7 +4,6 @@ import com.sh.domain.user.domain.User;
 import com.sh.domain.user.domain.UserImage;
 import com.sh.domain.user.dto.request.OAuthSignupRequestDto;
 import com.sh.domain.user.dto.response.OAuthLoginResponseDto;
-import com.sh.domain.user.repository.RefreshTokenRedisRepository;
 import com.sh.domain.user.repository.UserRepository;
 import com.sh.domain.user.util.Role;
 import com.sh.domain.user.util.UserStatus;
@@ -35,11 +34,10 @@ public class OAuthService {
     private final RequestOAuthInfoService requestOAuthInfoService;
     private final UserRedisService userRedisService;
     private final AuthService authService;
-    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final JwtProvider jwtProvider;
 
-    @Transactional
     // OAuth 로그인
+    @Transactional
     public OAuthLoginResponseDto oauthLogin(OAuthLoginParams params) {
         OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
 
