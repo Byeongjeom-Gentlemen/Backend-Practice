@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class UserRedisServiceImpl implements UserRedisService {
 
     // Refresh Token 만료시간(초 단위)
-    private static final long REFRESH_TOKEN_EXPIRED_TIME = 1000 * 60 * 24 * 7; // 7일
+    private static final Long REFRESH_TOKEN_EXPIRED_TIME = 120000L; // 7일 1000L * 60L * 60L * 24L * 7L
 
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final BlackListTokenRedisRepository blackListTokenRedisRepository;
