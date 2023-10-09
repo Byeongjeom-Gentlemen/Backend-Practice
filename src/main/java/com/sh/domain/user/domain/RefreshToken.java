@@ -5,10 +5,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.RedisKeyValueAdapter;
 import org.springframework.data.redis.core.TimeToLive;
 import org.springframework.data.redis.core.index.Indexed;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,10 +26,10 @@ public class RefreshToken {
     @Indexed private String accessToken;
 
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
-    private long expiredTime;
+    private Long expiredTime;
 
     @Builder
-    private RefreshToken(String id, String refreshToken, String accessToken, long expiredTime) {
+    private RefreshToken(String id, String refreshToken, String accessToken, Long expiredTime) {
         this.id = id;
         this.refreshToken = refreshToken;
         this.accessToken = accessToken;
