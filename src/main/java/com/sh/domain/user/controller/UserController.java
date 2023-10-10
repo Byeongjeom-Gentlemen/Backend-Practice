@@ -51,24 +51,20 @@ public class UserController {
 
     // 회원 삭제
     @Operation(summary = "회원삭제 API", description = "회원을 삭제하는 API 입니다. 회원삭제 시에는 로그인 여부를 필요로 합니다.")
-    @TokenValueRequired
     @DeleteMapping("/api/v1/users")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(TokenDto token) {
+    public void deleteUser() {
         userService.deleteUser();
-        authService.logout(token);
     }
 
     // 회원 수정(PATCH)
     @Operation(
             summary = "회원수정 API",
             description = "회원정보를 수정하는 API 입니다. 로그인 여부를 필요로 하며, 수정필드 값이 존재할 경우 수정됩니다.")
-    @TokenValueRequired
     @PatchMapping("/api/v1/users/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void modify(@RequestBody @Valid UpdateUserRequestDto updateRequest, TokenDto token) {
+    public void modify(@RequestBody @Valid UpdateUserRequestDto updateRequest) {
         userService.modifyMe(updateRequest);
-        authService.logout(token);
     }
 
     // 다른 회원 조회
