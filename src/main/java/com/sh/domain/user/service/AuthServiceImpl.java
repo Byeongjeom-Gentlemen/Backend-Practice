@@ -74,12 +74,9 @@ public class AuthServiceImpl implements AuthService {
             String id = jwtProvider.parseClaims(token.getAccessToken()).getSubject();
 
             // 회원 아이디로 Refresh Token 정보 조회, 없다면 이미 만료되어 삭제된 상태
-            RefreshToken refreshToken =
-                    refreshTokenRedisRepository
-                            .findById(id)
-                            .orElse(null);
+            RefreshToken refreshToken = refreshTokenRedisRepository.findById(id).orElse(null);
 
-            if(refreshToken != null) {
+            if (refreshToken != null) {
                 // 해당 Refresh Token 정보 삭제
                 userRedisService.deleteRefreshToken(refreshToken);
 

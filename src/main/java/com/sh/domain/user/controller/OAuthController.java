@@ -4,10 +4,8 @@ import com.sh.domain.user.dto.request.OAuthSignupRequestDto;
 import com.sh.domain.user.dto.response.OAuthLoginResponseDto;
 import com.sh.domain.user.service.OAuthService;
 import com.sh.global.aop.DisableSwaggerSecurity;
-import com.sh.global.aop.TokenValueRequired;
 import com.sh.global.oauth.kakao.KakaoLoginParams;
 import com.sh.global.oauth.naver.NaverLoginParams;
-import com.sh.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,9 @@ public class OAuthController {
     private final OAuthService oAuthService;
 
     // 카카오 로그인 요청
-    @Operation(summary = "카카오 로그인 API", description = "카카오 로그인 API 입니다. 카카오 서버에서 발급받은 인가코드 값을 필요로 합니다.")
+    @Operation(
+            summary = "카카오 로그인 API",
+            description = "카카오 로그인 API 입니다. 카카오 서버에서 발급받은 인가코드 값을 필요로 합니다.")
     @DisableSwaggerSecurity
     @PostMapping("/api/v1/oauth/kakao")
     @ResponseStatus(HttpStatus.OK)
@@ -31,7 +31,9 @@ public class OAuthController {
     }
 
     // 네이버 로그인 요청
-    @Operation(summary = "네이버 로그인 API", description = "네이버 로그인 API 입니다. 네이버 서버에서 발급받은 인가코드 값과 상태 값을 필요로 합니다.")
+    @Operation(
+            summary = "네이버 로그인 API",
+            description = "네이버 로그인 API 입니다. 네이버 서버에서 발급받은 인가코드 값과 상태 값을 필요로 합니다.")
     @DisableSwaggerSecurity
     @PostMapping("/api/v1/oauth/naver")
     @ResponseStatus(HttpStatus.OK)
@@ -40,7 +42,9 @@ public class OAuthController {
     }
 
     // OAuth 회원가입
-    @Operation(summary = "OAuth 회원가입 API", description = "OAuth 회원의 가입 API 입니다. 각 OAuth 서비스의 회원 고유번호와 닉네임을 파라미터 값으로 받습니다.")
+    @Operation(
+            summary = "OAuth 회원가입 API",
+            description = "OAuth 회원의 가입 API 입니다. 각 OAuth 서비스의 회원 고유번호와 닉네임을 파라미터 값으로 받습니다.")
     @DisableSwaggerSecurity
     @PostMapping("/api/v1/oauth/{oauthProvider}/join")
     @ResponseStatus(HttpStatus.CREATED)
