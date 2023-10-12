@@ -25,9 +25,10 @@ public class AuthController {
     @Operation(summary = "로그인 API", description = "로그인하는 API 입니다. 로그인시에는 Id, Password 값이 필요합니다.")
     @DisableSwaggerSecurity
     @PostMapping("/api/v1/auth/login")
-    public ResponseEntity<UserLoginResponseDto> login(
+    @ResponseStatus(HttpStatus.OK)
+    public UserLoginResponseDto login(
             @RequestBody @Valid LoginRequestDto loginRequest) {
-        return ResponseEntity.ok().body(authService.login(loginRequest));
+        return authService.login(loginRequest);
     }
 
     // 로그아웃
