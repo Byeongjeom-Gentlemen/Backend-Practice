@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,8 +25,7 @@ public class AuthController {
     @DisableSwaggerSecurity
     @PostMapping("/api/v1/auth/login")
     @ResponseStatus(HttpStatus.OK)
-    public UserLoginResponseDto login(
-            @RequestBody @Valid LoginRequestDto loginRequest) {
+    public UserLoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequest) {
         return authService.login(loginRequest);
     }
 

@@ -7,8 +7,6 @@ import com.sh.domain.user.service.AuthService;
 import com.sh.domain.user.service.UserImageStorageService;
 import com.sh.domain.user.service.UserService;
 import com.sh.global.aop.DisableSwaggerSecurity;
-import com.sh.global.aop.TokenValueRequired;
-import com.sh.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
