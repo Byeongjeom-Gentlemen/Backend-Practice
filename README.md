@@ -1,4 +1,4 @@
-# Board Project
+# Board Community
 <br>
 
 # 💼  목표
@@ -14,7 +14,7 @@
 
 # 💻  중점 사항
 
-- Github 이슈와 PR 작성
+- Github 이슈와 PR 작성 (실제 협업 과정처럼 진행해보기)
 - 문서화 관리
 - 예외 처리
 
